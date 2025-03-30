@@ -27,30 +27,37 @@
         align-items: center;
       }
       .nav-links {
-        display: grid;
-        grid-template: 1fr 1fr ;
-      }
-      .nav-links a {
-        margin: 0 15px;
-        text-decoration: none;
-        font-size: 18px;
-        color: #333;
-        font-weight: bold;
-        padding: 30px;
-      }
-      .nav-links a:hover {
-        color: #007bff;
-      }
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 80%;
+            max-width: 1000px;
+            gap: 20px;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        .a {
+            text-decoration: none;
+            margin-top: 10px;
+            font-weight: bold;
+        }
     </style>
   </head>
   <body>
     <div class="header">Shakha's Logistics Page / Digital Literacy</div>
     <div class="nav-links">
-      <div class="excel-assignments">
+      <div class="excel-assignments section">
         <h1>DIGITAL LITERACY</h1>
         <a href="https://docs.google.com/document/d/119rv4JSu2-IwRsxTIaop3e6B1BxLXm_lhg_vch5eKjU/edit?usp=sharing">Find Me Assignment</a>
       </div>
-      <div class="global-logistics">
+      <div class="global-logistics section">
         <h1>GLOBAL LOGISTICS</h1>
         <a href="https://jakhongiromonboev.github.io/Logistics-flowchart/">Logistics Flowchart</a>
         <a href="#">Assignment</a>
