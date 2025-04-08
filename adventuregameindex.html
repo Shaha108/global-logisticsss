@@ -3,136 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TSP Adventure</title>
+    <title>Maze Escape</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background: linear-gradient(to right, #2c3e50, #4ca1af); color: white; }
+        body { font-family: Arial, sans-serif; text-align: center; background: linear-gradient(to right, #1e3c72, #2a5298); color: white; }
         h1 { font-size: 24px; margin-top: 20px; }
-        canvas { background: white; display: block; margin: auto; border-radius: 10px; border: 3px solid #2c3e50; }
-        button { padding: 12px 24px; font-size: 18px; margin-top: 15px; cursor: pointer; background-color: #e74c3c; color: white; border: none; border-radius: 5px; }
-        button:hover { background-color: #c0392b; }
+        canvas { background: white; display: block; margin: auto; border-radius: 10px; border: 3px solid #1e3c72; }
+        button { padding: 12px 24px; font-size: 18px; margin-top: 15px; cursor: pointer; background-color: #27ae60; color: white; border: none; border-radius: 5px; }
+        button:hover { background-color: #219150; }
         #status { font-size: 20px; margin-top: 15px; }
+        pre { background: black; color: white; padding: 10px; text-align: left; white-space: pre-wrap; font-size: 14px; }
     </style>
 </head>
 <body>
-    <h1>TSP Adventure: Find the Best Route</h1>
-    <canvas id="gameCanvas"></canvas>
-    <p id="status">Total Distance: 0</p>
+    <h1>Maze Escape: Find the Way Out</h1>
+    <canvas id="gameCanvas" width="500" height="500"></canvas>
+    <p id="status">Use arrow keys to move.</p>
     <button onclick="resetGame()">Restart Game</button>
+
+    <h2>Game Report</h2>
+    <pre>
+Maze Escape: The Challenge of Finding the Way Out
+
+Game Overview:
+Maze Escape is an easy and fun game where players must find their way through a maze 
+and reach the exit.
+
+Objective:
+- Move the player using arrow keys.
+- Find the shortest path to the exit.
+
+Game Mechanics:
+1. Maze Structure: The game has walls and paths.
+2. Player Movement: Use arrow keys to move.
+3. Goal: Reach the exit point.
+4. Victory: If the player reaches the exit, they win.
+
+Design Thinking Process:
+1. Empathize: We studied classic maze games to make this simple and fun.
+2. Define: The goal was to create an easy-to-play maze escape game.
+3. Ideate: We decided on a grid-based maze with movement using arrow keys.
+4. Prototype: A web-based version was developed using HTML, CSS, and JavaScript.
+5. Test: The game was played and improved based on feedback.
+
+How to Play:
+- Use arrow keys to move the player.
+- Try to reach the green exit square.
+- Avoid walls and find the best path.
+- If you win, a message will show.
+
+Technologies Used:
+- HTML for the game layout.
+- CSS for styling and better design.
+- JavaScript for interactive movement.
+
+Play the Game:
+Upload this file to GitHub and access it via GitHub Pages.
+    </pre>
 
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
-        canvas.width = 500;
-        canvas.height = 500;
 
-        let nodes = [
-            { x: 100, y: 100 }, { x: 400, y: 100 }, { x: 100, y: 400 },
-            { x: 400, y: 400 }, { x: 250, y: 250 }
+        const tileSize = 50;
+        const maze = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+            [1, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 0, 1, 1, 1],
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+            [1, 0, 1, 1, 0, 1, 1, 1, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ];
-        let edges = [ [0,1,4], [0,2,3], [0,4,2], [1,3,5], [1,4,3], [2,3,4], [2,4,1], [3,4,2] ];
 
-        let path = [], totalDistance = 0;
+        let player = { x: 1, y: 1 };
+        let goal = { x: 8, y: 8 };
 
-        function drawMap() {
+        function drawMaze() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            edges.forEach(([a, b, cost]) => {
-                ctx.beginPath();
-                ctx.moveTo(nodes[a].x, nodes[a].y);
-                ctx.lineTo(nodes[b].x, nodes[b].y);
-                ctx.strokeStyle = "gray";
-                ctx.stroke();
-                ctx.fillStyle = "red";
-                ctx.fillText(cost, (nodes[a].x + nodes[b].x) / 2, (nodes[a].y + nodes[b].y) / 2);
-            });
-            nodes.forEach((node, index) => {
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, 10, 0, Math.PI * 2);
-                ctx.fillStyle = "blue";
-                ctx.fill();
-                ctx.fillStyle = "white";
-                ctx.fillText(index, node.x - 5, node.y + 5);
-            });
+            for (let row = 0; row < maze.length; row++) {
+                for (let col = 0; col < maze[row].length; col++) {
+                    if (maze[row][col] === 1) {
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(col * tileSize, row * tileSize, tileSize, tileSize);
+                    }
+                }
+            }
+            ctx.fillStyle = "green";
+            ctx.fillRect(goal.x * tileSize, goal.y * tileSize, tileSize, tileSize);
+            ctx.fillStyle = "blue";
+            ctx.fillRect(player.x * tileSize, player.y * tileSize, tileSize, tileSize);
         }
 
-        canvas.addEventListener("click", (e) => {
-            let x = e.offsetX, y = e.offsetY;
-            nodes.forEach((node, index) => {
-                if (Math.hypot(node.x - x, node.y - y) < 15) {
-                    if (!path.includes(index)) {
-                        path.push(index);
-                        if (path.length > 1) {
-                            let prev = path[path.length - 2];
-                            let edge = edges.find(edge => (edge[0] === prev && edge[1] === index) || (edge[1] === prev && edge[0] === index));
-                            if (edge) totalDistance += edge[2];
-                        }
-                    }
-                    drawPath();
+        function movePlayer(dx, dy) {
+            let newX = player.x + dx;
+            let newY = player.y + dy;
+            if (maze[newY][newX] === 0) {
+                player.x = newX;
+                player.y = newY;
+                drawMaze();
+                if (player.x === goal.x && player.y === goal.y) {
+                    document.getElementById("status").innerText = "You escaped!";
                 }
-            });
+            }
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowUp") movePlayer(0, -1);
+            if (e.key === "ArrowDown") movePlayer(0, 1);
+            if (e.key === "ArrowLeft") movePlayer(-1, 0);
+            if (e.key === "ArrowRight") movePlayer(1, 0);
         });
 
-        function drawPath() {
-            drawMap();
-            ctx.strokeStyle = "yellow";
-            ctx.lineWidth = 2;
-            for (let i = 0; i < path.length - 1; i++) {
-                ctx.beginPath();
-                ctx.moveTo(nodes[path[i]].x, nodes[path[i]].y);
-                ctx.lineTo(nodes[path[i + 1]].x, nodes[path[i + 1]].y);
-                ctx.stroke();
-            }
-            document.getElementById("status").innerText = `Total Distance: ${totalDistance}`;
-        }
-
         function resetGame() {
-            path = [];
-            totalDistance = 0;
-            drawMap();
-            document.getElementById("status").innerText = "Total Distance: 0";
+            player = { x: 1, y: 1 };
+            document.getElementById("status").innerText = "Use arrow keys to move.";
+            drawMaze();
         }
 
-        drawMap();
+        drawMaze();
     </script>
-
-    <!-- REPORT (1-2 pages, simple English) -->
-    <!-- 
-    TSP Adventure: The Best Route Challenge
-
-    Game Overview:
-    TSP Adventure is a simple and fun game where players must find the best route 
-    to visit all locations and return to the starting point with the lowest total distance.
-
-    Objective:
-    - Visit all locations once and return to the start.
-    - Use the shortest route possible.
-
-    Game Mechanics:
-    1. Node-Based Map: The game has multiple locations connected by paths with distance values.
-    2. Route Selection: Players click on locations to create a route.
-    3. Route Validation: The game checks if all locations are visited and shows total distance.
-    4. Scoring System: The lower the total distance, the better the score.
-
-    Design Thinking Process:
-    1. Empathize: We studied map-based puzzle games to understand how to make this engaging.
-    2. Define: The goal was to create a simple, user-friendly game for planning optimal routes.
-    3. Ideate: We decided on a click-based game with a visual route display.
-    4. Prototype: A web-based version was developed using HTML, CSS, and JavaScript.
-    5. Test: The game was played and improved based on feedback.
-
-    How to Play:
-    - Click on a location to add it to your route.
-    - Try to visit all locations and return to the start using the shortest path.
-    - The total distance is displayed at the bottom.
-    - Click "Restart Game" to try again.
-
-    Technologies Used:
-    - HTML for the game layout.
-    - CSS for styling and better visual appeal.
-    - JavaScript for interactive features.
-
-    Play the Game:
-    Upload this file to GitHub and access it via GitHub Pages.
-    -->
-
 </body>
 </html>
