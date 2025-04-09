@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptography Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #111;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #222;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px #ffcc00;
+        }
+        h1 {
+            color: #ffcc00;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+        }
+        input, select {
+            background-color: #333;
+            color: white;
+        }
+        button {
+            background-color: #ff0000;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #cc0000;
+        }
+        h2 {
+            color: #ffcc00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cryptography Tool</h1>
+        <label for="message">Enter your message:</label>
+        <input type="text" id="message" placeholder="Type your message...">
+
+        <label for="algorithm">Select Algorithm:</label>
+        <select id="algorithm">
+            <option value="caesar">Caesar Cipher</option>
+            <option value="atbash">Atbash Cipher</option>
+        </select>
+
+        <label for="shift">Shift (for Caesar Cipher):</label>
+        <input type="number" id="shift" value="3">
+
+        <button onclick="encrypt()">Encrypt</button>
+        <button onclick="decrypt()">Decrypt</button>
+
+        <h2>Output:</h2>
+        <p id="output"></p>
+    </div>
+
+    <script>
+        function caesarCipher(str, shift) {
+            return str.split('').map(char => {
+                if (char.match(/[a-z]/i)) {
+                    let code = char.charCodeAt(0);
+                    let base = (char >= 'a') ? 97 : 65;
+                    return String.fromCharCode(((code - base + shift) % 26) + base);
+                }
+                return char;
+            }).join('');
+        }
+
+        function atbashCipher(str) {
+            return str.split('').map(char => {
+                if (char.match(/[a-z]/i)) {
+                    let code = char.charCodeAt(0);
+                    let base = (char >= 'a') ? 97 : 65;
+                    return String.fromCharCode(25 - (code - base) + base);
+                }
+                return char;
+            }).join('');
+        }
+
+        function encrypt() {
+            let message = document.getElementById("message").value;
+            let algorithm = document.getElementById("algorithm").value;
+            let shift = parseInt(document.getElementById("shift").value);
+            let output = "";
+
+            if (algorithm === "caesar") {
+                output = caesarCipher(message, shift);
+            } else if (algorithm === "atbash") {
+                output = atbashCipher(message);
+            }
+
+            document.getElementById("output").innerText = output;
+        }
+
+        function decrypt() {
+            let message = document.getElementById("message").value;
+            let algorithm = document.getElementById("algorithm").value;
+            let shift = parseInt(document.getElementById("shift").value);
+            let output = "";
+
+            if (algorithm === "caesar") {
+                output = caesarCipher(message, -shift);
+            } else if (algorithm === "atbash") {
+                output = atbashCipher(message);
+            }
+
+            document.getElementById("output").innerText = output;
+        }
+    </script>
+</body>
+</html>
