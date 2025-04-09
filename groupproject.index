@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptography Tool</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: #121212; color: #fff; padding: 20px; }
+        h1 { color: #ff4444; }
+        .container { max-width: 500px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(255, 68, 68, 0.5); }
+        input, button { width: 100%; padding: 10px; margin: 5px 0; font-size: 16px; border-radius: 5px; }
+        input { border: 1px solid #ffcc00; background: #2b2b2b; color: white; }
+        button { background: #ff4444; color: white; border: none; cursor: pointer; }
+        button:hover { background: #cc0000; }
+        .result { margin-top: 10px; font-size: 18px; color: #ffcc00; word-break: break-word; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cryptography Tool</h1>
+        <p>Encrypt and decrypt messages using different ciphers.</p>
+        
+        <h3>Caesar Cipher</h3>
+        <input type="text" id="caesarInput" placeholder="Enter text">
+        <input type="number" id="shift" value="3" min="1">
+        <button onclick="encryptCaesar()">Encrypt</button>
+        <button onclick="decryptCaesar()">Decrypt</button>
+        <div class="result" id="caesarResult"></div>
+
+        <h3>Atbash Cipher</h3>
+        <input type="text" id="atbashInput" placeholder="Enter text">
+        <button onclick="encryptAtbash()">Encrypt</button>
+        <div class="result" id="atbashResult"></div>
+    </div>
+
+    <script>
+        function encryptCaesar() {
+            let text = document.getElementById("caesarInput").value;
+            let shift = parseInt(document.getElementById("shift").value);
+            let result = "";
+            for (let i = 0; i < text.length; i++) {
+                let char = text[i];
+                if (char.match(/[a-z]/i)) {
+                    let code = text.charCodeAt(i);
+                    let isUpper = (code >= 65 && code <= 90);
+                    let isLower = (code >= 97 && code <= 122);
+                    if (isUpper) result += String.fromCharCode(((code - 65 + shift) % 26) + 65);
+                    else if (isLower) result += String.fromCharCode(((code - 97 + shift) % 26) + 97);
+                    else result += char;
+                } else {
+                    result += char;
+                }
+            }
+            document.getElementById("caesarResult").innerText = "Encrypted: " + result;
+        }
+
+        function decryptCaesar() {
+            let text = document.getElementById("caesarInput").value;
+            let shift = parseInt(document.getElementById("shift").value);
+            let result = "";
+            for (let i = 0; i < text.length; i++) {
+                let char = text[i];
+                if (char.match(/[a-z]/i)) {
+                    let code = text.charCodeAt(i);
+                    let isUpper = (code >= 65 && code <= 90);
+                    let isLower = (code >= 97 && code <= 122);
+                    if (isUpper) result += String.fromCharCode(((code - 65 - shift + 26) % 26) + 65);
+                    else if (isLower) result += String.fromCharCode(((code - 97 - shift + 26) % 26) + 97);
+                    else result += char;
+                } else {
+                    result += char;
+                }
+            }
+            document.getElementById("caesarResult").innerText = "Decrypted: " + result;
+        }
+
+        function encryptAtbash() {
+            let text = document.getElementById("atbashInput").value;
+            let result = "";
+            for (let i = 0; i < text.length; i++) {
+                let char = text[i];
+                if (char.match(/[a-z]/i)) {
+                    let code = text.charCodeAt(i);
+                    let isUpper = (code >= 65 && code <= 90);
+                    let isLower = (code >= 97 && code <= 122);
+                    if (isUpper) result += String.fromCharCode(90 - (code - 65));
+                    else if (isLower) result += String.fromCharCode(122 - (code - 97));
+                    else result += char;
+                } else {
+                    result += char;
+                }
+            }
+            document.getElementById("atbashResult").innerText = "Encrypted: " + result;
+        }
+    </script>
+</body>
+</html>
