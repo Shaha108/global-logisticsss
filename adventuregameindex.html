@@ -1,172 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Escape the Maze</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #111;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      overflow: hidden;
-    }
-
-    #game-container {
-      text-align: center;
-      width: 100%;
-      max-width: 600px;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 20px;
-    }
-
-    button {
-      background-color: #333;
-      color: #fff;
-      padding: 15px 30px;
-      border: none;
-      cursor: pointer;
-      font-size: 1.2rem;
-      margin: 10px;
-      border-radius: 10px;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #444;
-    }
-
-    #maze-container {
-      margin-top: 20px;
-      font-size: 1.2rem;
-    }
-
-    #options button {
-      margin: 10px;
-      padding: 12px 24px;
-      font-size: 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    #options button:hover {
-      background-color: #5c5c5c;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    #game-status {
-      margin-top: 20px;
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>TSP Adventure Levels</title>
+    <style>
+        body { font-family: Arial; background: linear-gradient(to right, #283e51, #485563); text-align: center; color: white; margin: 0; padding: 0; }
+        canvas { background: white; display: block; margin: 20px auto; border-radius: 10px; border: 3px solid #2c3e50; }
+        button { padding: 10px 20px; font-size: 18px; margin: 10px; cursor: pointer; border: none; border-radius: 5px; background-color: #27ae60; color: white; }
+        button:hover { background-color: #219150; }
+        #status { font-size: 20px; margin-top: 10px; }
+        #report { background: rgba(255,255,255,0.1); padding: 20px; margin: 30px auto; width: 90%; max-width: 800px; border-radius: 10px; text-align: left; }
+        h2 { color: #f1c40f; }
+    </style>
 </head>
 <body>
-  <div id="game-container">
-    <h1>Escape the Maze</h1>
-    <div id="maze-container">
-      <!-- Maze and choices will appear here -->
+
+    <h1>TSP Adventure - Level <span id="levelNum">1</span></h1>
+    <canvas id="gameCanvas" width="500" height="500"></canvas>
+    <p id="status">Total Distance: 0</p>
+    <button onclick="resetGame()">Restart Level</button>
+    <button onclick="nextLevel()">Next Level</button>
+
+    <div id="report">
+        <h2>📘 REPORT</h2>
+        <h3>TSP Adventure: The Best Route Challenge</h3>
+
+        <p><strong>Game Overview:</strong><br>
+        TSP Adventure is a simple and fun game where players must find the best route to visit all locations and return to the starting point with the lowest total distance.</p>
+
+        <p><strong>Objective:</strong><br>
+        - Visit all locations once and return to the start.<br>
+        - Use the shortest route possible.</p>
+
+        <p><strong>Game Mechanics:</strong></p>
+        <ol>
+            <li>Node-Based Map: The game has multiple locations connected by paths with distance values.</li>
+            <li>Route Selection: Players click on locations to create a route.</li>
+            <li>Route Validation: The game checks if all locations are visited and shows total distance.</li>
+            <li>Scoring System: The lower the total distance, the better the score.</li>
+        </ol>
+
+        <p><strong>Design Thinking Process:</strong></p>
+        <ol>
+            <li><strong>Empathize:</strong> We studied map-based puzzle games to understand how to make this engaging.</li>
+            <li><strong>Define:</strong> The goal was to create a simple, user-friendly game for planning optimal routes.</li>
+            <li><strong>Ideate:</strong> We decided on a click-based game with a visual route display.</li>
+            <li><strong>Prototype:</strong> A web-based version was developed using HTML, CSS, and JavaScript.</li>
+            <li><strong>Test:</strong> The game was played and improved based on feedback.</li>
+        </ol>
+
+        <p><strong>How to Play:</strong><br>
+        - Click on a location to add it to your route.<br>
+        - Try to visit all locations and return to the start using the shortest path.<br>
+        - The total distance is displayed at the bottom.<br>
+        - Click "Next Level" to play harder maps!</p>
+
+        <p><strong>Technologies Used:</strong><br>
+        - HTML for the game layout.<br>
+        - CSS for styling and better visual appeal.<br>
+        - JavaScript for interactive features and game logic.</p>
     </div>
-    <div id="game-controls">
-      <button onclick="startGame()">Start Game</button>
-    </div>
-  </div>
 
-  <script>
-    let currentLevel = 1;
-    let gameOver = false;
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
 
-    // Maze levels and choices
-    const levels = [
-      {
-        question: "You arrive at the first fork in the road. Do you go left or right?",
-        options: ["Left", "Right"],
-        correctAnswer: "Left",
-        nextLevel: 2
-      },
-      {
-        question: "You encounter a mysterious door. Do you open it or walk past?",
-        options: ["Open", "Walk past"],
-        correctAnswer: "Open",
-        nextLevel: 3
-      },
-      {
-        question: "You find a ladder leading down. Do you climb down or ignore it?",
-        options: ["Climb Down", "Ignore"],
-        correctAnswer: "Climb Down",
-        nextLevel: 4
-      },
-      {
-        question: "The maze gets darker. Do you use a flashlight or wait for your eyes to adjust?",
-        options: ["Use Flashlight", "Wait"],
-        correctAnswer: "Use Flashlight",
-        nextLevel: 5
-      },
-      {
-        question: "You reach the final room. A locked door blocks the way. Do you try to break it or look for a key?",
-        options: ["Break Door", "Look for Key"],
-        correctAnswer: "Look for Key",
-        nextLevel: null // Final level
-      }
-    ];
+        let levels = [
+            {
+                nodes: [
+                    { x: 100, y: 100 }, { x: 400, y: 100 },
+                    { x: 100, y: 400 }, { x: 400, y: 400 },
+                    { x: 250, y: 250 }
+                ],
+                edges: [
+                    [0,1,4], [0,2,3], [0,4,2],
+                    [1,3,5], [1,4,3],
+                    [2,3,4], [2,4,1], [3,4,2]
+                ]
+            },
+            {
+                nodes: [
+                    { x: 50, y: 250 }, { x: 150, y: 50 },
+                    { x: 250, y: 250 }, { x: 350, y: 50 },
+                    { x: 450, y: 250 }, { x: 250, y: 450 }
+                ],
+                edges: [
+                    [0,1,2], [1,2,2], [2,3,2], [3,4,2],
+                    [4,5,3], [5,0,3], [1,5,4], [2,4,3]
+                ]
+            }
+        ];
 
-    function startGame() {
-      gameOver = false;
-      currentLevel = 1;
-      document.getElementById('game-controls').classList.add('hidden');
-      document.getElementById('game-status').classList.remove('hidden');
-      showLevel(currentLevel);
-    }
+        let currentLevel = 0;
+        let path = [];
+        let totalDistance = 0;
 
-    function showLevel(level) {
-      if (gameOver) return;
+        function drawMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let { nodes, edges } = levels[currentLevel];
 
-      const levelData = levels[level - 1];
-      const mazeContainer = document.getElementById('maze-container');
-      mazeContainer.innerHTML = `
-        <h2>Level ${level}</h2>
-        <p>${levelData.question}</p>
-        <div id="options">
-          ${levelData.options.map(option => `<button onclick="makeChoice('${option}', ${level})">${option}</button>`).join('')}
-        </div>
-      `;
-    }
+            edges.forEach(([a, b, cost]) => {
+                ctx.beginPath();
+                ctx.moveTo(nodes[a].x, nodes[a].y);
+                ctx.lineTo(nodes[b].x, nodes[b].y);
+                ctx.strokeStyle = "gray";
+                ctx.stroke();
+                ctx.fillStyle = "red";
+                ctx.fillText(cost, (nodes[a].x + nodes[b].x) / 2, (nodes[a].y + nodes[b].y) / 2);
+            });
 
-    function makeChoice(choice, level) {
-      const levelData = levels[level - 1];
-      
-      if (choice === levelData.correctAnswer) {
-        if (level === levels.length) {
-          alert("Congratulations! You've escaped the maze!");
-          document.getElementById('game-status').innerText = "You won the game!";
-          gameOver = true;
-        } else {
-          currentLevel = levelData.nextLevel;
-          showLevel(currentLevel);
+            nodes.forEach((node, i) => {
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 10, 0, Math.PI * 2);
+                ctx.fillStyle = "blue";
+                ctx.fill();
+                ctx.fillStyle = "white";
+                ctx.fillText(i, node.x - 5, node.y + 5);
+            });
         }
-      } else {
-        alert("Wrong choice! Try again.");
-        showLevel(level);
-      }
-    }
-  </script>
+
+        canvas.addEventListener("click", (e) => {
+            let x = e.offsetX, y = e.offsetY;
+            let { nodes, edges } = levels[currentLevel];
+
+            nodes.forEach((node, index) => {
+                if (Math.hypot(node.x - x, node.y - y) < 15) {
+                    if (path.length === 0 || !path.includes(index)) {
+                        path.push(index);
+                        if (path.length > 1) {
+                            let prev = path[path.length - 2];
+                            let edge = edges.find(edge => (edge[0] === prev && edge[1] === index) || (edge[1] === prev && edge[0] === index));
+                            if (edge) totalDistance += edge[2];
+                        }
+                    } else if (index === path[0] && path.length === nodes.length) {
+                        let prev = path[path.length - 1];
+                        let edge = edges.find(edge => (edge[0] === prev && edge[1] === index) || (edge[1] === prev && edge[0] === index));
+                        if (edge) totalDistance += edge[2];
+                        path.push(index);
+                        document.getElementById("status").innerText = `✅ Completed! Total Distance: ${totalDistance}`;
+                    }
+                    drawPath();
+                }
+            });
+        });
+
+        function drawPath() {
+            drawMap();
+            let { nodes } = levels[currentLevel];
+            ctx.strokeStyle = "yellow";
+            ctx.lineWidth = 2;
+            for (let i = 0; i < path.length - 1; i++) {
+                ctx.beginPath();
+                ctx.moveTo(nodes[path[i]].x, nodes[path[i]].y);
+                ctx.lineTo(nodes[path[i + 1]].x, nodes[path[i + 1]].y);
+                ctx.stroke();
+            }
+            document.getElementById("status").innerText = `Total Distance: ${totalDistance}`;
+        }
+
+        function resetGame() {
+            path = [];
+            totalDistance = 0;
+            drawMap();
+            document.getElementById("status").innerText = "Total Distance: 0";
+        }
+
+        function nextLevel() {
+            if (currentLevel < levels.length - 1) {
+                currentLevel++;
+                document.getElementById("levelNum").innerText = currentLevel + 1;
+                resetGame();
+            } else {
+                alert("🎉 You finished all levels!");
+            }
+        }
+
+        drawMap();
+    </script>
 </body>
 </html>
