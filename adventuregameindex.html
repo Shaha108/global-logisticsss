@@ -2,109 +2,171 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Escape the Maze - 30 Levels</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Escape the Maze</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      background-color: #0a0a0a;
-      color: white;
-      font-family: 'Courier New', monospace;
-      padding: 20px;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
     }
-    .option {
-      margin: 10px 0;
-      padding: 10px;
-      background-color: #222;
-      border: 1px solid #444;
+
+    #game-container {
+      text-align: center;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #333;
+      color: #fff;
+      padding: 15px 30px;
+      border: none;
       cursor: pointer;
+      font-size: 1.2rem;
+      margin: 10px;
+      border-radius: 10px;
+      transition: background-color 0.3s;
     }
-    .option:hover {
+
+    button:hover {
       background-color: #444;
+    }
+
+    #maze-container {
+      margin-top: 20px;
+      font-size: 1.2rem;
+    }
+
+    #options button {
+      margin: 10px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #options button:hover {
+      background-color: #5c5c5c;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #game-status {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-
-  <h1>Escape the Maze</h1>
-  <h2 id="level-title">Level 1</h2>
-  <div id="story"></div>
-  <div id="options"></div>
+  <div id="game-container">
+    <h1>Escape the Maze</h1>
+    <div id="maze-container">
+      <!-- Maze and choices will appear here -->
+    </div>
+    <div id="game-controls">
+      <button onclick="startGame()">Start Game</button>
+    </div>
+  </div>
 
   <script>
-    const storyText = document.getElementById('story');
-    const optionsDiv = document.getElementById('options');
-    const levelTitle = document.getElementById('level-title');
-
     let currentLevel = 1;
+    let gameOver = false;
 
-    const levels = {
-      1: { text: "You are in Level 1. Choose your next move wisely.", options: [ { text: "Climb the ladder", correct: true }, { text: "Open the door", correct: false } ] },
-      2: { text: "You are in Level 2. Choose your next move wisely.", options: [ { text: "Take the left path", correct: false }, { text: "Take the right path", correct: true } ] },
-      3: { text: "You are in Level 3. Choose your next move wisely.", options: [ { text: "Climb the ladder", correct: true }, { text: "Open the door", correct: false } ] },
-      4: { text: "You are in Level 4. Choose your next move wisely.", options: [ { text: "Take the left path", correct: false }, { text: "Take the right path", correct: true } ] },
-      5: { text: "You are in Level 5. Choose your next move wisely.", options: [ { text: "Climb the ladder", correct: true }, { text: "Open the door", correct: false } ] },
-      6: { text: "You are in Level 6. Choose your next move wisely.", options: [ { text: "Take the left path", correct: false }, { text: "Take the right path", correct: true } ] },
-      7: { text: "You are in Level 7. Choose your next move wisely.", options: [ { text: "Climb the ladder", correct: true }, { text: "Open the door", correct: false } ] },
-      8: { text: "You are in Level 8. Choose your next move wisely.", options: [ { text: "Take the left path", correct: false }, { text: "Take the right path", correct: true } ] },
-      9: { text: "You are in Level 9. Choose your next move wisely.", options: [ { text: "Climb the ladder", correct: true }, { text: "Open the door", correct: false } ] },
-      10: { text: "You are in Level 10. Choose your next move wisely.", options: [ { text: "Take the left path", correct: false }, { text: "Take the right path", correct: true } ] },
-      11: { text: "You are in Level 11. Choose your next move wisely.", options: [ { text: "Climb the ladder", correct: true }, { text: "Open the door", correct: false } ] },
-      12: { text: "You are in Level 12. Choose your next move wisely.", options: [ { text: "Take the left path", correct: false }, { text: "Take the right path", correct: true } ] },
-      13: { text: "You are in Level 13. Choose your next move wisely.", options: [ { text: "Climb the ladder", correct: true }, { text: "Open the door", correct: false } ] },
-      14: { text: "You are in Level 14. Choose your next move wisely.", options: [ { text: "Take the left path", correct: false }, { text: "Take the right path", correct: true } ] },
-      15: { text: "You are in Level 15. Choose your next move wisely.", options: [ { text: "Climb the ladder", correct: true }, { text: "Open the door", correct: false } ] },
-      16: { text: "You are in Level 16. Choose your next move wisely.", options: [ { text: "Take the left path", correct: false }, { text: "Take the right path", correct: true } ] },
-      17: { text: "You are in Level 17. Choose your next move wisely.", options: [ { text: "Climb the ladder", correct: true }, { text: "Open the door", correct: false } ] },
-      18: { text: "You are in Level 18. Choose your next move wisely.", options: [ { text: "Take the left path", correct: false }, { text: "Take the right path", correct: true } ] },
-      19: { text: "You are in Level 19. Choose your next move wisely.", options: [ { text: "Climb the ladder", correct: true }, { text: "Open the door", correct: false } ] },
-      20: { text: "You are in Level 20. Choose your next move wisely.", options: [ { text: "Take the left path", correct: false }, { text: "Take the right path", correct: true } ] },
-      21: { text: "You are in Level 21. Choose your next move wisely.", options: [ { text: "Climb the ladder", correct: true }, { text: "Open the door", correct: false } ] },
-      22: { text: "You are in Level 22. Choose your next move wisely.", options: [ { text: "Take the left path", correct: false }, { text: "Take the right path", correct: true } ] },
-      23: { text: "You are in Level 23. Choose your next move wisely.", options: [ { text: "Climb the ladder", correct: true }, { text: "Open the door", correct: false } ] },
-      24: { text: "You are in Level 24. Choose your next move wisely.", options: [ { text: "Take the left path", correct: false }, { text: "Take the right path", correct: true } ] },
-      25: { text: "You are in Level 25. Choose your next move wisely.", options: [ { text: "Climb the ladder", correct: true }, { text: "Open the door", correct: false } ] },
-      26: { text: "You are in Level 26. Choose your next move wisely.", options: [ { text: "Take the left path", correct: false }, { text: "Take the right path", correct: true } ] },
-      27: { text: "You are in Level 27. Choose your next move wisely.", options: [ { text: "Climb the ladder", correct: true }, { text: "Open the door", correct: false } ] },
-      28: { text: "You are in Level 28. Choose your next move wisely.", options: [ { text: "Take the left path", correct: false }, { text: "Take the right path", correct: true } ] },
-      29: { text: "You are in Level 29. Choose your next move wisely.", options: [ { text: "Climb the ladder", correct: true }, { text: "Open the door", correct: false } ] },
-      30: { text: "You are in Level 30. Choose your next move wisely.", options: [ { text: "Take the left path", correct: false }, { text: "Take the right path", correct: true } ] }
-    };
+    // Maze levels and choices
+    const levels = [
+      {
+        question: "You arrive at the first fork in the road. Do you go left or right?",
+        options: ["Left", "Right"],
+        correctAnswer: "Left",
+        nextLevel: 2
+      },
+      {
+        question: "You encounter a mysterious door. Do you open it or walk past?",
+        options: ["Open", "Walk past"],
+        correctAnswer: "Open",
+        nextLevel: 3
+      },
+      {
+        question: "You find a ladder leading down. Do you climb down or ignore it?",
+        options: ["Climb Down", "Ignore"],
+        correctAnswer: "Climb Down",
+        nextLevel: 4
+      },
+      {
+        question: "The maze gets darker. Do you use a flashlight or wait for your eyes to adjust?",
+        options: ["Use Flashlight", "Wait"],
+        correctAnswer: "Use Flashlight",
+        nextLevel: 5
+      },
+      {
+        question: "You reach the final room. A locked door blocks the way. Do you try to break it or look for a key?",
+        options: ["Break Door", "Look for Key"],
+        correctAnswer: "Look for Key",
+        nextLevel: null // Final level
+      }
+    ];
 
-    function loadLevel(level) {
-      levelTitle.innerText = `Level ${level}`;
-      const scene = levels[level];
-      storyText.innerText = scene.text;
-      optionsDiv.innerHTML = '';
-
-      scene.options.forEach(option => {
-        const btn = document.createElement('div');
-        btn.className = 'option';
-        btn.innerText = option.text;
-        btn.onclick = () => {
-          if (option.correct) {
-            if (levels[level + 1]) {
-              currentLevel++;
-              loadLevel(currentLevel);
-            } else {
-              storyText.innerText = "Congratulations! You escaped the entire maze!";
-              optionsDiv.innerHTML = '';
-              levelTitle.innerText = "Game Complete";
-            }
-          } else {
-            storyText.innerText = "Wrong choice! You are trapped. Try again.";
-            optionsDiv.innerHTML = '';
-            const retry = document.createElement('div');
-            retry.className = 'option';
-            retry.innerText = 'Retry Level';
-            retry.onclick = () => loadLevel(level);
-            optionsDiv.appendChild(retry);
-          }
-        };
-        optionsDiv.appendChild(btn);
-      });
+    function startGame() {
+      gameOver = false;
+      currentLevel = 1;
+      document.getElementById('game-controls').classList.add('hidden');
+      document.getElementById('game-status').classList.remove('hidden');
+      showLevel(currentLevel);
     }
 
-    loadLevel(currentLevel);
-  </script>
+    function showLevel(level) {
+      if (gameOver) return;
 
+      const levelData = levels[level - 1];
+      const mazeContainer = document.getElementById('maze-container');
+      mazeContainer.innerHTML = `
+        <h2>Level ${level}</h2>
+        <p>${levelData.question}</p>
+        <div id="options">
+          ${levelData.options.map(option => `<button onclick="makeChoice('${option}', ${level})">${option}</button>`).join('')}
+        </div>
+      `;
+    }
+
+    function makeChoice(choice, level) {
+      const levelData = levels[level - 1];
+      
+      if (choice === levelData.correctAnswer) {
+        if (level === levels.length) {
+          alert("Congratulations! You've escaped the maze!");
+          document.getElementById('game-status').innerText = "You won the game!";
+          gameOver = true;
+        } else {
+          currentLevel = levelData.nextLevel;
+          showLevel(currentLevel);
+        }
+      } else {
+        alert("Wrong choice! Try again.");
+        showLevel(level);
+      }
+    }
+  </script>
 </body>
 </html>
