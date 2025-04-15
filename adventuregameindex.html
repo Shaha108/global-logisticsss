@@ -1,181 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>TSP Adventure Levels</title>
-    <style>
-        body { font-family: Arial; background: linear-gradient(to right, #283e51, #485563); text-align: center; color: white; margin: 0; padding: 0; }
-        canvas { background: white; display: block; margin: 20px auto; border-radius: 10px; border: 3px solid #2c3e50; }
-        button { padding: 10px 20px; font-size: 18px; margin: 10px; cursor: pointer; border: none; border-radius: 5px; background-color: #27ae60; color: white; }
-        button:hover { background-color: #219150; }
-        #status { font-size: 20px; margin-top: 10px; }
-        #report { background: rgba(255,255,255,0.1); padding: 20px; margin: 30px auto; width: 90%; max-width: 800px; border-radius: 10px; text-align: left; }
-        h2 { color: #f1c40f; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Maze Escape - Multi Level</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    canvas {
+      background: white;
+      display: block;
+      margin: 20px auto;
+      border-radius: 12px;
+      border: 4px solid #1e3c72;
+      box-shadow: 0px 8px 20px rgba(0,0,0,0.3);
+    }
+    button {
+      padding: 12px 28px;
+      font-size: 18px;
+      margin: 10px;
+      cursor: pointer;
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #1e8449;
+    }
+    #status {
+      font-size: 20px;
+      margin-top: 15px;
+      font-weight: bold;
+      text-shadow: 1px 1px #000;
+    }
+    #level {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    pre {
+      background: black;
+      color: white;
+      padding: 10px;
+      text-align: left;
+      white-space: pre-wrap;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
 
-    <h1>TSP Adventure - Level <span id="levelNum">1</span></h1>
-    <canvas id="gameCanvas" width="500" height="500"></canvas>
-    <p id="status">Total Distance: 0</p>
-    <button onclick="resetGame()">Restart Level</button>
-    <button onclick="nextLevel()">Next Level</button>
+  <h1>🧩 Maze Escape</h1>
+  <h2 id="level">Level: 1</h2>
+  <canvas id="gameCanvas" width="500" height="500"></canvas>
+  <p id="status">🎮 Use arrow keys to move.</p>
+  <button onclick="resetGame()">🔁 Restart Level</button>
+  <button onclick="nextLevel()" id="nextBtn" style="display:none;">➡️ Next Level</button>
 
-    <div id="report">
-        <h2>📘 REPORT</h2>
-        <h3>TSP Adventure: The Best Route Challenge</h3>
+  <h2>Game Report</h2>
+  <pre>
+Maze Escape: The Maze Challenge
 
-        <p><strong>Game Overview:</strong><br>
-        TSP Adventure is a simple and fun game where players must find the best route to visit all locations and return to the starting point with the lowest total distance.</p>
+Game Overview:
+Maze Escape is an exciting puzzle game where players must navigate through a maze to reach the exit.
+The game provides multiple levels of increasing difficulty, making it more engaging as the player progresses.
 
-        <p><strong>Objective:</strong><br>
-        - Visit all locations once and return to the start.<br>
-        - Use the shortest route possible.</p>
+Objective:
+- The objective is to find the exit in the shortest possible time.
+- Move the player using arrow keys to avoid obstacles and reach the exit point.
 
-        <p><strong>Game Mechanics:</strong></p>
-        <ol>
-            <li>Node-Based Map: The game has multiple locations connected by paths with distance values.</li>
-            <li>Route Selection: Players click on locations to create a route.</li>
-            <li>Route Validation: The game checks if all locations are visited and shows total distance.</li>
-            <li>Scoring System: The lower the total distance, the better the score.</li>
-        </ol>
+Game Mechanics:
+1. Maze Layout: Each level consists of a grid-based maze with walls (1) and open paths (0).
+2. Movement: Players use arrow keys to move the player icon through the maze.
+3. Goal: Reach the exit point marked in green.
+4. Victory Condition: If the player reaches the goal, they win the level and can proceed to the next one.
+5. Level Progression: The player starts with easy levels and faces increasingly complex mazes as they advance.
+6. Restart Feature: Players can restart the current level at any time.
 
-        <p><strong>Design Thinking Process:</strong></p>
-        <ol>
-            <li><strong>Empathize:</strong> We studied map-based puzzle games to understand how to make this engaging.</li>
-            <li><strong>Define:</strong> The goal was to create a simple, user-friendly game for planning optimal routes.</li>
-            <li><strong>Ideate:</strong> We decided on a click-based game with a visual route display.</li>
-            <li><strong>Prototype:</strong> A web-based version was developed using HTML, CSS, and JavaScript.</li>
-            <li><strong>Test:</strong> The game was played and improved based on feedback.</li>
-        </ol>
+Design Thinking Process:
+1. Empathize: We researched puzzle and maze games to understand how to make it engaging.
+2. Define: The challenge was to create a maze game with progressively harder levels and simple controls.
+3. Ideate: The game allows the user to move through the maze and navigate obstacles, while being intuitive and user-friendly.
+4. Prototype: The web-based prototype was created using HTML, CSS, and JavaScript to allow easy interactions.
+5. Test: The game was tested to ensure that the levels became progressively harder and the player controls were smooth.
 
-        <p><strong>How to Play:</strong><br>
-        - Click on a location to add it to your route.<br>
-        - Try to visit all locations and return to the start using the shortest path.<br>
-        - The total distance is displayed at the bottom.<br>
-        - Click "Next Level" to play harder maps!</p>
+How to Play:
+- Use the arrow keys to move the player through the maze.
+- Avoid the walls and try to reach the green exit square.
+- The game has multiple levels, and you can proceed to the next level after successfully completing the current one.
+- If you win a level, click the “Next Level” button to move on.
+- You can also restart a level at any time by clicking "Restart Level".
 
-        <p><strong>Technologies Used:</strong><br>
-        - HTML for the game layout.<br>
-        - CSS for styling and better visual appeal.<br>
-        - JavaScript for interactive features and game logic.</p>
-    </div>
+Technologies Used:
+- HTML: For the basic game layout and structure.
+- CSS: To style the game elements and provide an attractive interface.
+- JavaScript: For interactivity, handling player movement, level progression, and maze generation.
 
-    <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
+Conclusion:
+Maze Escape provides an entertaining way to challenge puzzle-solving skills while offering a fun and interactive experience. The game progresses through various levels, encouraging players to think strategically and plan their moves.
 
-        let levels = [
-            {
-                nodes: [
-                    { x: 100, y: 100 }, { x: 400, y: 100 },
-                    { x: 100, y: 400 }, { x: 400, y: 400 },
-                    { x: 250, y: 250 }
-                ],
-                edges: [
-                    [0,1,4], [0,2,3], [0,4,2],
-                    [1,3,5], [1,4,3],
-                    [2,3,4], [2,4,1], [3,4,2]
-                ]
-            },
-            {
-                nodes: [
-                    { x: 50, y: 250 }, { x: 150, y: 50 },
-                    { x: 250, y: 250 }, { x: 350, y: 50 },
-                    { x: 450, y: 250 }, { x: 250, y: 450 }
-                ],
-                edges: [
-                    [0,1,2], [1,2,2], [2,3,2], [3,4,2],
-                    [4,5,3], [5,0,3], [1,5,4], [2,4,3]
-                ]
-            }
-        ];
+Play the Game:
+Upload this file to GitHub and access it via GitHub Pages or run it locally for an immersive experience.
+  </pre>
 
-        let currentLevel = 0;
-        let path = [];
-        let totalDistance = 0;
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
 
-        function drawMap() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            let { nodes, edges } = levels[currentLevel];
+    const tileSize = 50;
+    let currentLevel = 0;
 
-            edges.forEach(([a, b, cost]) => {
-                ctx.beginPath();
-                ctx.moveTo(nodes[a].x, nodes[a].y);
-                ctx.lineTo(nodes[b].x, nodes[b].y);
-                ctx.strokeStyle = "gray";
-                ctx.stroke();
-                ctx.fillStyle = "red";
-                ctx.fillText(cost, (nodes[a].x + nodes[b].x) / 2, (nodes[a].y + nodes[b].y) / 2);
-            });
+    const levels = [
+      {
+        maze: [
+          [1,1,1,1,1],
+          [1,0,0,0,1],
+          [1,0,1,0,1],
+          [1,0,1,0,1],
+          [1,1,1,0,1]
+        ],
+        player: { x: 1, y: 1 },
+        goal: { x: 3, y: 4 }
+      },
+      {
+        maze: [
+          [1,1,1,1,1,1],
+          [1,0,0,0,0,1],
+          [1,0,1,1,0,1],
+          [1,0,0,0,0,1],
+          [1,1,1,0,1,1]
+        ],
+        player: { x: 1, y: 1 },
+        goal: { x: 4, y: 4 }
+      },
+      {
+        maze: [
+          [1,1,1,1,1,1,1],
+          [1,0,0,0,1,0,1],
+          [1,0,1,0,0,0,1],
+          [1,0,1,1,1,0,1],
+          [1,0,0,0,0,0,1],
+          [1,1,1,1,1,0,1]
+        ],
+        player: { x: 1, y: 1 },
+        goal: { x: 5, y: 5 }
+      },
+      // More levels can be added here...
+    ];
 
-            nodes.forEach((node, i) => {
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, 10, 0, Math.PI * 2);
-                ctx.fillStyle = "blue";
-                ctx.fill();
-                ctx.fillStyle = "white";
-                ctx.fillText(i, node.x - 5, node.y + 5);
-            });
+    function drawMaze() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const level = levels[currentLevel];
+      for (let row = 0; row < level.maze.length; row++) {
+        for (let col = 0; col < level.maze[row].length; col++) {
+          if (level.maze[row][col] === 1) {
+            ctx.fillStyle = "black";
+            ctx.fillRect(col * tileSize, row * tileSize, tileSize, tileSize);
+          }
         }
+      }
+      ctx.fillStyle = "green";
+      ctx.fillRect(level.goal.x * tileSize, level.goal.y * tileSize, tileSize, tileSize);
+      ctx.fillStyle = "blue";
+      ctx.fillRect(level.player.x * tileSize, level.player.y * tileSize, tileSize, tileSize);
+    }
 
-        canvas.addEventListener("click", (e) => {
-            let x = e.offsetX, y = e.offsetY;
-            let { nodes, edges } = levels[currentLevel];
-
-            nodes.forEach((node, index) => {
-                if (Math.hypot(node.x - x, node.y - y) < 15) {
-                    if (path.length === 0 || !path.includes(index)) {
-                        path.push(index);
-                        if (path.length > 1) {
-                            let prev = path[path.length - 2];
-                            let edge = edges.find(edge => (edge[0] === prev && edge[1] === index) || (edge[1] === prev && edge[0] === index));
-                            if (edge) totalDistance += edge[2];
-                        }
-                    } else if (index === path[0] && path.length === nodes.length) {
-                        let prev = path[path.length - 1];
-                        let edge = edges.find(edge => (edge[0] === prev && edge[1] === index) || (edge[1] === prev && edge[0] === index));
-                        if (edge) totalDistance += edge[2];
-                        path.push(index);
-                        document.getElementById("status").innerText = `✅ Completed! Total Distance: ${totalDistance}`;
-                    }
-                    drawPath();
-                }
-            });
-        });
-
-        function drawPath() {
-            drawMap();
-            let { nodes } = levels[currentLevel];
-            ctx.strokeStyle = "yellow";
-            ctx.lineWidth = 2;
-            for (let i = 0; i < path.length - 1; i++) {
-                ctx.beginPath();
-                ctx.moveTo(nodes[path[i]].x, nodes[path[i]].y);
-                ctx.lineTo(nodes[path[i + 1]].x, nodes[path[i + 1]].y);
-                ctx.stroke();
-            }
-            document.getElementById("status").innerText = `Total Distance: ${totalDistance}`;
+    function movePlayer(dx, dy) {
+      const level = levels[currentLevel];
+      let newX = level.player.x + dx;
+      let newY = level.player.y + dy;
+      if (level.maze[newY] && level.maze[newY][newX] === 0) {
+        level.player.x = newX;
+        level.player.y = newY;
+        drawMaze();
+        if (level.player.x === level.goal.x && level.player.y === level.goal.y) {
+          document.getElementById("status").innerText = "🎉 You reached the exit!";
+          document.getElementById("nextBtn").style.display = "inline-block";
         }
+      }
+    }
 
-        function resetGame() {
-            path = [];
-            totalDistance = 0;
-            drawMap();
-            document.getElementById("status").innerText = "Total Distance: 0";
-        }
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp") movePlayer(0, -1);
+      if (e.key === "ArrowDown") movePlayer(0, 1);
+      if (e.key === "ArrowLeft") movePlayer(-1, 0);
+      if (e.key === "ArrowRight") movePlayer(1, 0);
+    });
 
-        function nextLevel() {
-            if (currentLevel < levels.length - 1) {
-                currentLevel++;
-                document.getElementById("levelNum").innerText = currentLevel + 1;
-                resetGame();
-            } else {
-                alert("🎉 You finished all levels!");
-            }
-        }
+    function nextLevel() {
+      currentLevel++;
+      if (currentLevel < levels.length) {
+        drawMaze();
+        document.getElementById("level").innerText = `Level: ${currentLevel + 1}`;
+        document.getElementById("status").innerText = "🎮 Use arrow keys to move.";
+        document.getElementById("nextBtn").style.display = "none";
+      } else {
+        document.getElementById("status").innerText = "🎊 You completed all levels!";
+        document.getElementById("nextBtn").style.display = "none";
+      }
+    }
 
-        drawMap();
-    </script>
+    function resetGame() {
+      const level = levels[currentLevel];
+      level.player = { x: 1, y: 1 };
+      drawMaze();
+      document.getElementById("status").innerText = "🎮 Use arrow keys to move.";
+      document.getElementById("nextBtn").style.display = "none";
+    }
+
+    drawMaze();
+  </script>
+
 </body>
 </html>
