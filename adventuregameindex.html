@@ -1,287 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>TSP Adventure: Escape Route</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            height: 100vh;
-            background: linear-gradient(to right, #2c3e50, #4ca1af);
-            color: white;
-            overflow: hidden;
-            position: relative;
-        }
-
-        h1 {
-            font-size: 24px;
-            margin-top: 20px;
-            text-align: center;
-            color: #f39c12;
-        }
-
-        canvas {
-            background: white;
-            display: block;
-            margin: 20px auto;
-            border-radius: 10px;
-            border: 3px solid #34495e;
-        }
-
-        button {
-            padding: 12px 24px;
-            font-size: 18px;
-            margin-top: 20px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        button:hover {
-            background-color: #c0392b;
-        }
-
-        #status {
-            font-size: 20px;
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        #nextLevelBtn {
-            background-color: #27ae60;
-        }
-
-        #nextLevelBtn:hover {
-            background-color: #2ecc71;
-        }
-
-        #restartBtn {
-            background-color: #e67e22;
-        }
-
-        #restartBtn:hover {
-            background-color: #d35400;
-        }
-
-        #info {
-            text-align: left;
-            color: #ecf0f1;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 10px;
-            background-color: rgba(0,0,0,0.5);
-        }
-
-        #info h3 {
-            color: #f39c12;
-        }
-
-        #levelInfo {
-            margin-top: 10px;
-            font-size: 18px;
-        }
-
-        /* Yulduzlar fonini yaratish */
-        .star {
-            position: absolute;
-            background-color: white;
-            border-radius: 50%;
-            animation: twinkle 3s infinite alternate;
-        }
-
-        @keyframes twinkle {
-            0% {
-                opacity: 0.7;
-                transform: scale(1);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1.3);
-            }
-        }
-
-        /* Yulduzlarni ekranga joylashtirish */
-        .star1 {
-            width: 3px;
-            height: 3px;
-            animation-duration: 2s;
-        }
-
-        .star2 {
-            width: 2px;
-            height: 2px;
-            animation-duration: 1.5s;
-        }
-
-        .star3 {
-            width: 5px;
-            height: 5px;
-            animation-duration: 3s;
-        }
-
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Galactic Delivery</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: black;
+      color: white;
+      overflow: hidden;
+    }
+    #gameCanvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+    }
+    #ui {
+      position: absolute;
+      top: 10px; left: 10px;
+      z-index: 2;
+      background: rgba(0,0,50,0.7);
+      padding: 10px;
+      border-radius: 10px;
+    }
+    button {
+      margin-top: 5px;
+      padding: 5px 10px;
+      font-weight: bold;
+    }
+    #footer {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+      color: #888;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
-    <h1>TSP Adventure: Escape Route</h1>
-    <canvas id="gameCanvas" width="600" height="600"></canvas>
-    <p id="status">Total Distance: 0</p>
-    <button id="restartBtn" onclick="resetGame()">Restart Level</button>
-    <button id="nextLevelBtn" onclick="nextLevel()">Next Level</button>
-    <div id="info">
-        <h3>Game Instructions:</h3>
-        <p>Click on the locations to plan your route. Try to minimize the total distance!</p>
-        <div id="levelInfo">Current Level: <span id="levelNum">1</span></div>
-    </div>
+  <canvas id="gameCanvas"></canvas>
 
-    <!-- Yulduzlar animatsiyasi -->
-    <script>
-        // Yulduzlarni yaratish
-        function createStars() {
-            const numStars = 100; // Yulduzlar soni
-            for (let i = 0; i < numStars; i++) {
-                const star = document.createElement("div");
-                star.classList.add("star");
-                // Yulduzning pozitsiyasi
-                star.style.top = `${Math.random() * window.innerHeight}px`;
-                star.style.left = `${Math.random() * window.innerWidth}px`;
-                // Yulduzning o'lchami va animatsiyasi
-                const size = Math.random() * 3 + 1;
-                const animationDelay = Math.random() * 2;
-                star.style.width = `${size}px`;
-                star.style.height = `${size}px`;
-                star.style.animationDelay = `${animationDelay}s`;
-                // Yulduzga tasnif qo'shish
-                star.classList.add(`star${Math.floor(Math.random() * 3) + 1}`);
-                document.body.appendChild(star);
-            }
+  <div id="ui">
+    <h3>Galactic Delivery</h3>
+    <button onclick="startRoute()">Start Route</button>
+    <button onclick="clearRoute()">Clear Route</button>
+    <button onclick="showInstructions()">How to Play</button>
+    <p id="routeInfo">Route: None</p>
+  </div>
+
+  <div id="footer">Created by Shakhzodbek and Jakhongir</div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const stars = [
+      { name: 'HQ', x: 100, y: 100, color: 'red', isHub: true },
+      { name: 'A', x: 300, y: 200, color: 'blue' },
+      { name: 'B', x: 500, y: 150, color: 'blue' },
+      { name: 'C', x: 700, y: 300, color: 'blue' },
+      { name: 'D', x: 400, y: 400, color: 'blue' },
+      { name: 'E', x: 200, y: 350, color: 'blue' },
+    ];
+
+    let route = [];
+
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let star of stars) {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, 20, 0, 2 * Math.PI);
+        ctx.fillStyle = star.color;
+        ctx.fill();
+        ctx.fillStyle = 'white';
+        ctx.fillText(star.name, star.x - 5, star.y + 5);
+      }
+
+      ctx.strokeStyle = 'lime';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let i = 0; i < route.length; i++) {
+        const star = route[i];
+        if (i === 0) {
+          ctx.moveTo(star.x, star.y);
+        } else {
+          ctx.lineTo(star.x, star.y);
         }
+      }
+      ctx.stroke();
+    }
 
-        // O'yin boshlanishida yulduzlarni yaratish
-        createStars();
-
-        // O'yin uchun boshqa funksiyalar (masalan, canvas, tugmalar va boshqalar)
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-
-        // O'yin uchun joylar va masofalar (misol sifatida)
-        let nodes = [
-            { x: 100, y: 100 }, { x: 500, y: 100 },
-            { x: 100, y: 500 }, { x: 500, y: 500 },
-            { x: 300, y: 300 }
-        ];
-        let edges = [
-            [0, 1, 4], [0, 2, 3], [0, 4, 2],
-            [1, 3, 5], [1, 4, 3], [2, 3, 4], [2, 4, 1], [3, 4, 2]
-        ];
-
-        let path = [], totalDistance = 0;
-
-        function drawMap() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            edges.forEach(([a, b, cost]) => {
-                ctx.beginPath();
-                ctx.moveTo(nodes[a].x, nodes[a].y);
-                ctx.lineTo(nodes[b].x, nodes[b].y);
-                ctx.strokeStyle = "gray";
-                ctx.stroke();
-                ctx.fillStyle = "red";
-                ctx.fillText(cost, (nodes[a].x + nodes[b].x) / 2, (nodes[a].y + nodes[b].y) / 2);
-            });
-            nodes.forEach((node, index) => {
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, 10, 0, Math.PI * 2);
-                ctx.fillStyle = "blue";
-                ctx.fill();
-                ctx.fillStyle = "white";
-                ctx.fillText(index, node.x - 5, node.y + 5);
-            });
+    canvas.addEventListener('click', (e) => {
+      const x = e.clientX;
+      const y = e.clientY;
+      for (let star of stars) {
+        const dx = x - star.x;
+        const dy = y - star.y;
+        if (dx * dx + dy * dy < 400) {
+          route.push(star);
+          updateRouteDisplay();
+          drawStars();
+          break;
         }
+      }
+    });
 
-        canvas.addEventListener("click", (e) => {
-            let x = e.offsetX, y = e.offsetY;
-            nodes.forEach((node, index) => {
-                if (Math.hypot(node.x - x, node.y - y) < 15) {
-                    if (!path.includes(index)) {
-                        path.push(index);
-                        if (path.length > 1) {
-                            let prev = path[path.length - 2];
-                            let edge = edges.find(edge => (edge[0] === prev && edge[1] === index) || (edge[1] === prev && edge[0] === index));
-                            if (edge) totalDistance += edge[2];
-                        }
-                    }
-                    drawPath();
-                }
-            });
-        });
+    function updateRouteDisplay() {
+      const names = route.map(star => star.name).join(" → ");
+      document.getElementById("routeInfo").textContent = "Route: " + (names || "None");
+    }
 
-        function drawPath() {
-            drawMap();
-            ctx.strokeStyle = "yellow";
-            ctx.lineWidth = 2;
-            for (let i = 0; i < path.length - 1; i++) {
-                ctx.beginPath();
-                ctx.moveTo(nodes[path[i]].x, nodes[path[i]].y);
-                ctx.lineTo(nodes[path[i + 1]].x, nodes[path[i + 1]].y);
-                ctx.stroke();
-            }
-            document.getElementById("status").innerText = `Total Distance: ${totalDistance}`;
-        }
+    function clearRoute() {
+      route = [];
+      updateRouteDisplay();
+      drawStars();
+    }
 
-        function resetGame() {
-            path = [];
-            totalDistance = 0;
-            drawMap();
-            document.getElementById("status").innerText = "Total Distance: 0";
-        }
+    function startRoute() {
+      if (route.length < 2 || !route[0].isHub || !route[route.length - 1].isHub) {
+        alert("Route must start and end at the red hub (HQ).");
+        return;
+      }
+      alert("Route executed! Distance: " + calculateDistance().toFixed(1) + " units");
+    }
 
-        function nextLevel() {
-            alert("Congratulations! Moving to the next level...");
-            // Logic for level transition can go here
-        }
+    function calculateDistance() {
+      let dist = 0;
+      for (let i = 1; i < route.length; i++) {
+        const dx = route[i].x - route[i - 1].x;
+        const dy = route[i].y - route[i - 1].y;
+        dist += Math.sqrt(dx * dx + dy * dy) / 10;
+      }
+      return dist;
+    }
 
-        drawMap();
+    function showInstructions() {
+      alert(`HOW TO PLAY GALACTIC DELIVERY
 
-    </script>
+Welcome, pilot! Your mission is to deliver cargo to various systems in the galaxy.
 
-    <!-- O'yin hisobotining matni -->
+1. Click stars to plan your delivery route.
+2. Start and end the route at the red HQ hub.
+3. Press 'Start Route' to execute.
+4. 'Clear Route' resets your path.
+5. Aim to use the shortest distance!
 
-    <div style="margin: 30px; background-color: rgba(0, 0, 0, 0.6); padding: 20px; border-radius: 10px; color: white;">
-        <h2 style="color: #f39c12;">TSP Adventure: Escape Route - Game Report</h2>
-        <p style="color: #ecf0f1;">TSP Adventure: Escape Route is a fun and interactive game where the player has to choose the shortest possible route that visits all the locations once and then returns to the starting point. The game aims to simulate a version of the classic "Traveling Salesman Problem" (TSP).</p>
+Good luck, courier!`);
+    }
 
-        <h3 style="color: #f39c12;">Game Overview</h3>
-        <p>The game presents a map with different nodes (locations), each connected by edges (paths). Each edge has a specific cost (distance). The goal is to click on the nodes to select a path, minimizing the total distance traveled.</p>
-
-        <h3 style="color: #f39c12;">Objective</h3>
-        <ul>
-            <li>Visit all the locations once and return to the starting point.</li>
-            <li>Minimize the total distance traveled.</li>
-        </ul>
-
-        <h3 style="color: #f39c12;">Game Mechanics</h3>
-        <ul>
-            <li>Click on the nodes to create a path.</li>
-            <li>The game tracks the total distance as the player selects the nodes.</li>
-            <li>The player can reset the game and try again if they are not happy with their route.</li>
-        </ul>
-
-        <h3 style="color: #f39c12;">Technologies Used</h3>
-        <p>This game is built using the following technologies:</p>
-        <ul>
-            <li><strong>HTML</strong>: For the structure of the game page.</li>
-            <li><strong>CSS</strong>: For styling the game and making it visually appealing.</li>
-            <li><strong>JavaScript</strong>: For creating the game logic, interactivity, and animations.</li>
-        </ul>
-
-        <h3 style="color: #f39c12;">How to Play</h3>
-        <p>To play the game, click on the locations to create a path. Try to minimize the distance traveled. The total distance will be displayed at the bottom of the game. Use the "Restart Level" button to reset the game or "Next Level" to proceed to the next challenge.</p>
-
-        <h3 style="color: #f39c12;">Conclusion</h3>
-        <p>This game combines logic, planning, and optimization, making it both educational and fun. It encourages players to think critically about how to minimize the distance while visiting all locations.</p>
-    </div>
-
+    drawStars();
+  </script>
 </body>
 </html>
