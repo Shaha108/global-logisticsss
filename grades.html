@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Grade Breakdown - Shakhzod</title>
+  <style>
+    body {
+      background-color: #0b0c1a;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #f0f;
+    }
+    .bar-container {
+      background-color: #222;
+      border-radius: 5px;
+      margin: 10px auto;
+      padding: 10px;
+      width: 90%;
+      max-width: 500px;
+    }
+    .bar {
+      height: 10px;
+      border-radius: 5px;
+      background-color: #0ff;
+      margin-top: 5px;
+    }
+    .label {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    .summary {
+      border-top: 2px solid #f0f;
+      margin-top: 20px;
+      padding-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Grade Breakdown</h1>
+
+  <div id="grades"></div>
+
+  <div class="summary" id="summary"></div>
+
+  <script>
+    const grades = [
+      { name: "Current Attendance", received: 15, total: 16 },
+      { name: "Week 2 - Find Me!", received: 2.0, total: 3 },
+      { name: "Week 3 - CLI", received: 2.0, total: 3 },
+      { name: "Week 4 - Quiz 1", received: 2, total: 5 },
+      { name: "Week 4 - Virtual Library", received: 2.75, total: 3 },
+      { name: "Week 5 - Idea Sourcing", received: 3, total: 3 },
+      { name: "Week 6 - Crypto", received: 9, total: 10 },
+      { name: "Week 7 - Backend Simulation", received: 0, total: 3 },
+      { name: "Week 10 - Quiz 2", received: 2.5, total: 5 },
+      { name: "Week 10 - HIF LUMEN", received: 0, total: 3 },
+      { name: "Week 11 - Project 2", received: 0, total: 10 }
+    ];
+
+    let totalReceived = 0, totalPossible = 0;
+    const container = document.getElementById("grades");
+
+    grades.forEach(item => {
+      const percent = ((item.received / item.total) * 100).toFixed(1);
+      totalReceived += item.received;
+      totalPossible += item.total;
+
+      const box = document.createElement("div");
+      box.className = "bar-container";
+      box.innerHTML = `
+        <div class="label">${item.name}<br>Received: ${item.received} / ${item.total} (${percent}%)</div>
+        <div class="bar" style="width:${percent}%"></div>
+      `;
+      container.appendChild(box);
+    });
+
+    const finalPercent = ((totalReceived / totalPossible) * 100).toFixed(1);
+    let status = "";
+    if (finalPercent >= 90) status = "Excellent";
+    else if (finalPercent >= 80) status = "Good";
+    else if (finalPercent >= 70) status = "Average";
+    else status = "Needs Improvement";
+
+    document.getElementById("summary").innerHTML = `
+      <h2>Course Summary</h2>
+      <p>Total Points: ${totalReceived} / ${totalPossible}</p>
+      <p>Overall Grade: ${finalPercent}%</p>
+      <p>Status: <strong>${status}</strong></p>
+    `;
+  </script>
+
+</body>
+</html>
