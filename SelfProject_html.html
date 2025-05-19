@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uzbekistan Travel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <div class="header__inner">
+                <div class="logo">
+                    <a href="#" class="logo__link">
+                        <i class="fas fa-mountain"></i>
+                        <span>Uzbekistan</span>
+                    </a>
+                </div>
+                
+                <nav class="nav">
+                    <ul class="nav__list">
+                        <li class="nav__item"><a href="#home" class="nav__link active">Home</a></li>
+                        <li class="nav__item"><a href="#destinations" class="nav__link">Destinations</a></li>
+                        <li class="nav__item"><a href="#culture" class="nav__link">Culture</a></li>
+                        <li class="nav__item"><a href="#tips" class="nav__link">Travel Tips</a></li>
+                        <li class="nav__item"><a href="#contact" class="nav__link">Contact</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="header__buttons">
+                    <a href="#" class="theme-toggle" id="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </a>
+                    <div class="language-selector">
+                        <span class="current-lang">EN</span>
+                        <div class="language-dropdown">
+                            <a href="#" class="lang-option">EN</a>
+                            <a href="#" class="lang-option">UZ</a>
+                            <a href="#" class="lang-option">RU</a>
+                        </div>
+                    </div>
+                    <button class="mobile-nav-toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero__content">
+                <h1 class="hero__title">Discover the Magic of <span>Uzbekistan</span></h1>
+                <p class="hero__text">Experience the ancient Silk Road treasures, breathtaking landscapes, and rich cultural heritage of Central Asia's hidden gem.</p>
+                <div class="hero__buttons">
+                    <a href="#destinations" class="btn btn--primary">Explore Destinations</a>
+                    <a href="#tips" class="btn btn--secondary">Travel Tips</a>
+                </div>
+            </div>
+        </div>
+        <div class="hero__overlay"></div>
+    </section>
+
+    <!-- Featured Destinations -->
+    <section class="destinations" id="destinations">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Top Destinations</h2>
+                <p class="section-subtitle">Explore the most beautiful places in Uzbekistan</p>
+            </div>
+            
+            <div class="destinations__grid">
+                <!-- Destination Card 1 -->
+                <div class="destination-card">
+                    <div class="destination-card__image">
+                        <img src="https://source.unsplash.com/random/600x400/?samarkand" alt="Samarkand">
+                        <div class="destination-card__tag">Popular</div>
+                    </div>
+                    <div class="destination-card__content">
+                        <h3 class="destination-card__title">Samarkand</h3>
+                        <p class="destination-card__text">Discover the jewel of the Silk Road with its magnificent Registan Square and ancient architectural wonders.</p>
+                        <div class="destination-card__meta">
+                            <span><i class="fas fa-map-marker-alt"></i> Central Uzbekistan</span>
+                            <span><i class="fas fa-star"></i> 4.9</span>
+                        </div>
+                        <a href="#" class="btn btn--small">Learn More</a>
+                    </div>
+                </div>
+                
+                <!-- Destination Card 2 -->
+                <div class="destination-card">
+                    <div class="destination-card__image">
+                        <img src="https://source.unsplash.com/random/600x400/?bukhara" alt="Bukhara">
+                        <div class="destination-card__tag">Historic</div>
+                    </div>
+                    <div class="destination-card__content">
+                        <h3 class="destination-card__title">Bukhara</h3>
+                        <p class="destination-card__text">Walk through the living history of this UNESCO World Heritage city with over 140 architectural monuments.</p>
+                        <div class="destination-card__meta">
+                            <span><i class="fas fa-map-marker-alt"></i> Western Uzbekistan</span>
+                            <span><i class="fas fa-star"></i> 4.8</span>
+                        </div>
+                        <a href="#" class="btn btn--small">Learn More</a>
+                    </div>
+                </div>
+                
+                <!-- Destination Card 3 -->
+                <div class="destination-card">
+                    <div class="destination-card__image">
+                        <img src="https://source.unsplash.com/random/600x400/?khiva" alt="Khiva">
+                        <div class="destination-card__tag">Heritage</div>
+                    </div>
+                    <div class="destination-card__content">
+                        <h3 class="destination-card__title">Khiva</h3>
+                        <p class="destination-card__text">Step into a fairy tale in this well-preserved medieval city with its stunning Itchan Kala fortress walls.</p>
+                        <div class="destination-card__meta">
+                            <span><i class="fas fa-map-marker-alt"></i> Khorezm Region</span>
+                            <span><i class="fas fa-star"></i> 4.7</span>
+                        </div>
+                        <a href="#" class="btn btn--small">Learn More</a>
+                    </div>
+                </div>
+                
+                <!-- Destination Card 4 -->
+                <div class="destination-card">
+                    <div class="destination-card__image">
+                        <img src="https://source.unsplash.com/random/600x400/?tashkent" alt="Tashkent">
+                        <div class="destination-card__tag">Modern</div>
+                    </div>
+                    <div class="destination-card__content">
+                        <h3 class="destination-card__title">Tashkent</h3>
+                        <p class="destination-card__text">Experience the vibrant capital city blending Soviet architecture, modern developments, and traditional Uzbek elements.</p>
+                        <div class="destination-card__meta">
+                            <span><i class="fas fa-map-marker-alt"></i> Eastern Uzbekistan</span>
+                            <span><i class="fas fa-star"></i> 4.6</span>
+                        </div>
+                        <a href="#" class="btn btn--small">Learn More</a>
+                    </div>
+                </div>
+                
+                <!-- Destination Card 5 -->
+                <div class="destination-card">
+                    <div class="destination-card__image">
+                        <img src="https://source.unsplash.com/random/600x400/?fergana" alt="Fergana Valley">
+                        <div class="destination-card__tag">Nature</div>
+                    </div>
+                    <div class="destination-card__content">
+                        <h3 class="destination-card__title">Fergana Valley</h3>
+                        <p class="destination-card__text">Explore the fertile valley known for its silk production, traditional crafts, and breathtaking mountain landscapes.</p>
+                        <div class="destination-card__meta">
+                            <span><i class="fas fa-map-marker-alt"></i> Eastern Uzbekistan</span>
+                            <span><i class="fas fa-star"></i> 4.5</span>
+                        </div>
+                        <a href="#" class="btn btn--small">Learn More</a>
+                    </div>
+                </div>
+                
+                <!-- Destination Card 6 -->
+                <div class="destination-card">
+                    <div class="destination-card__image">
+                        <img src="https://source.unsplash.com/random/600x400/?nurataymountains" alt="Nuratay Mountains">
+                        <div class="destination-card__tag">Adventure</div>
+                    </div>
+                    <div class="destination-card__content">
+                        <h3 class="destination-card__title">Nuratay Mountains</h3>
+                        <p class="destination-card__text">Discover the hidden gems of Uzbekistan's mountains with stunning hiking trails and authentic village experiences.</p>
+                        <div class="destination-card__meta">
+                            <span><i class="fas fa-map-marker-alt"></i> Central Uzbekistan</span>
+                            <span><i class="fas fa-star"></i> 4.7</span>
+                        </div>
+                        <a href="#" class="btn btn--small">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="#" class="btn btn--primary">View All Destinations</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Culture & History Section -->
+    <section class="culture-section" id="culture">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Culture & History</h2>
+                <p class="section-subtitle">Immerse yourself in Uzbekistan's rich heritage</p>
+            </div>
+            
+            <div class="culture-grid">
+                <div class="culture-content">
+                    <h3>A Crossroads of Civilizations</h3>
+                    <p>For over two millennia, Uzbekistan has been at the heart of the ancient Silk Road, connecting East and West through trade, ideas, and cultural exchange. This strategic position has shaped the country into a unique melting pot of Persian, Turkic, Mongol, and Russian influences.</p>
+                    
+                    <h3>Architectural Treasures</h3>
+                    <p>The country boasts some of the world's most stunning Islamic architecture, with blue-domed mosques, intricate madrasas, and towering minarets that have stood for centuries. Each city preserves its own architectural style and historical significance.</p>
+                    
+                    <h3>Artistic Heritage</h3>
+                    <p>Uzbekistan is renowned for its traditional crafts including silk weaving, ceramics, carpet making, and intricate woodcarving. Visit local workshops to witness artisans practicing techniques passed down through generations.</p>
+                    
+                    <div class="culture-buttons">
+                        <a href="#" class="btn btn--secondary">Explore Cultural Tours</a>
+                        <a href="#" class="btn btn--outline">Historical Timeline</a>
+                    </div>
+                </div>
+                
+                <div class="culture-gallery">
+                    <div class="gallery-item large">
+                        <img src="https://source.unsplash.com/random/600x400/?uzbekistan-culture" alt="Uzbek Culture">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="https://source.unsplash.com/random/300x300/?uzbekistan-craft" alt="Uzbek Craft">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="https://source.unsplash.com/random/300x300/?uzbekistan-art" alt="Uzbek Art">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="https://source.unsplash.com/random/300x300/?uzbekistan-music" alt="Uzbek Music">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="https://source.unsplash.com/random/300x300/?uzbekistan-dance" alt="Uzbek Dance">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Travel Tips Section -->
+    <section class="tips-section" id="tips">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Travel Tips</h2>
+                <p class="section-subtitle">Essential information for your Uzbekistan journey</p>
+            </div>
+            
+            <div class="tips-container">
+                <!-- Tip Card 1 -->
+                <div class="tip-card">
+                    <div class="tip-card__icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="tip-card__content">
+                        <h3>Best Time to Visit</h3>
+                        <p>The ideal times to visit Uzbekistan are spring (April-May) and autumn (September-October) when temperatures are moderate and comfortable for sightseeing.</p>
+                    </div>
+                </div>
+                
+                <!-- Tip Card 2 -->
+                <div class="tip-card">
+                    <div class="tip-card__icon">
+                        <i class="fas fa-passport"></i>
+                    </div>
+                    <div class="tip-card__content">
+                        <h3>Visa Information</h3>
+                        <p>Many countries now enjoy visa-free access to Uzbekistan for stays up to 30 days. Check the latest visa regulations before planning your trip.</p>
+                    </div>
+                </div>
+                
+                <!-- Tip Card 3 -->
+                <div class="tip-card">
+                    <div class="tip-card__icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="tip-card__content">
+                        <h3>Currency & Money</h3>
+                        <p>The local currency is the Uzbek Som (UZS). Credit cards are accepted in larger hotels and restaurants, but cash is preferred for markets and small businesses.</p>
+                    </div>
+                </div>
+                
+                <!-- Tip Card 4 -->
+                <div class="tip-card">
+                    <div class="tip-card__icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <div class="tip-card__content">
+                        <h3>Language Basics</h3>
+                        <p>Uzbek is the official language, but Russian is widely spoken. Learning a few basic phrases in Uzbek will be greatly appreciated by locals.</p>
+                    </div>
+                </div>
+                
+                <!-- Tip Card 5 -->
+                <div class="tip-card">
+                    <div class="tip-card__icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="tip-card__content">
+                        <h3>Food & Cuisine</h3>
+                        <p>Don't miss trying plov (rice pilaf), shashlik (grilled meat), and samsa (pastry). Tea is the national drink and is served throughout the day.</p>
+                    </div>
+                </div>
+                
+                <!-- Tip Card 6 -->
+                <div class="tip-card">
+                    <div class="tip-card__icon">
+                        <i class="fas fa-subway"></i>
+                    </div>
+                    <div class="tip-card__content">
+                        <h3>Getting Around</h3>
+                        <p>High-speed trains connect major cities. Shared taxis and buses are common for shorter distances. Tashkent has a clean and efficient metro system.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="#" class="btn btn--primary">Download Complete Travel Guide</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Traveler Stories</h2>
+                <p class="section-subtitle">Hear from those who've experienced Uzbekistan</p>
+            </div>
+            
+            <div class="testimonials-slider">
+                <!-- Testimonial 1 -->
+                <div class="testimonial-card">
+                    <div class="testimonial-card__content">
+                        <p>"Visiting Uzbekistan was like stepping into a history book. The architecture was breathtaking, the people incredibly hospitable, and the food delicious. I'll never forget watching the sunset over Registan Square."</p>
+                    </div>
+                    <div class="testimonial-card__author">
+                        <img src="https://source.unsplash.com/random/100x100/?portrait" alt="Sarah">
+                        <div>
+                            <h4>Sarah Johnson</h4>
+                            <p>from United States</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="testimonial-card">
+                    <div class="testimonial-card__content">
+                        <p>"The Silk Road cities of Uzbekistan exceeded all my expectations. The blue domes of Samarkand, the ancient walls of Khiva, and the bazaars of Bukhara created an unforgettable journey through time."</p>
+                    </div>
+                    <div class="testimonial-card__author">
+                        <img src="https://source.unsplash.com/random/100x100/?man" alt="Marco">
+                        <div>
+                            <h4>Marco Rossi</h4>
+                            <p>from Italy</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="testimonial-card">
+                    <div class="testimonial-card__content">
+                        <p>"As a solo female traveler, I felt completely safe in Uzbekistan. The locals were incredibly welcoming, always ready to help or share a cup of tea. The craftsmanship in ceramics and textiles was absolutely stunning."</p>
+                    </div>
+                    <div class="testimonial-card__author">
+                        <img src="https://source.unsplash.com/random/100x100/?woman" alt="Aiko">
+                        <div>
+                            <h4>Aiko Tanaka</h4>
+                            <p>from Japan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slider-controls">
+                <button class="slider-btn prev"><i class="fas fa-chevron-left"></i></button>
+                <div class="slider-dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <button class="slider-btn next"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Contact Us</h2>
+                <p class="section-subtitle">Have questions about traveling to Uzbekistan?</p>
+            </div>
+            
+            <div class="contact-container">
+                <div class="contact-info">
+                    <div class="contact-card">
+                        <div class="contact-card__icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-card__content">
+                            <h3>Email Us</h3>
+                            <p>info@uzbekistantravel.com</p>
+                            <p>support@uzbekistantravel.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-card__icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-card__content">
+                            <h3>Call Us</h3>
+                            <p>+998 71 123 4567</p>
+                            <p>+998 90 987 6543</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-card__icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-card__content">
+                            <h3>Visit Us</h3>
+                            <p>123 Tourism Street</p>
+                            <p>Tashkent, Uzbekistan</p>
+                        </div>
+                    </div>
+                    
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="contact-form">
+                    <form action="#" method="POST">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" placeholder="Your name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="Your email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" name="subject" placeholder="Subject of your message">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" placeholder="Your message" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn--primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter">
+        <div class="container">
+            <div class="newsletter__inner">
+                <div class="newsletter__content">
+                    <h2>Subscribe to Our Newsletter</h2>
+                    <p>Get the latest updates, travel tips, and exclusive offers.</p>
+                </div>
+                <form class="newsletter__form">
+                    <input type="email" placeholder="Your email address" required>
+                    <button type="submit" class="btn btn--primary">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__grid">
+                <div class="footer__column">
+                    <div class="footer__logo">
+                        <i class="fas fa-mountain"></i>
+                        <span>Uzbekistan</span>
+                    </div>
+                    <p>Your comprehensive guide to exploring the wonders of Uzbekistan. Discover ancient cities, stunning landscapes, and rich cultural experiences.</p>
+                    <div class="footer__social">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer__column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer__links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#destinations">Destinations</a></li>
+                        <li><a href="#culture">Culture & History</a></li>
+                        <li><a href="#tips">Travel Tips</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer__column">
+                    <h3>Destinations</h3>
+                    <ul class="footer__links">
+                        <li><a href="#">Samarkand</a></li>
+                        <li><a href="#">Bukhara</a></li>
+                        <li><a href="#">Khiva</a></li>
+                        <li><a href="#">Tashkent</a></li>
+                        <li><a href="#">Fergana Valley</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer__column">
+                    <h3>Contact Info</h3>
+                    <ul class="footer__contact">
+                        <li><i class="fas fa-map-marker-alt"></i>123 Tourism Street, Tashkent</li>
+                        <li><i class="fas fa-phone"></i>+998 71 123 4567</li>
+                        <li><i class="fas fa-envelope"></i>info@uzbekistantravel.com</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer__bottom">
+                <p>&copy; 2025 Uzbekistan Travel Guide. All rights reserved.</p>
+                <div class="footer__bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Sitemap</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <a href="#" class="back-to-top">
+        <i class="fas fa-chevron-up"></i>
+    </a>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
