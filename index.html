@@ -26,38 +26,71 @@
         height: 100px;
         align-items: center;
       }
+
       .nav-links {
-            margin-top: 100px;
-            display: grid;
-            justify-content: center;
-            align-items: center;
-            grid-template-columns: 1fr 1fr;
-            width: 80%;
-            max-width: 1000px;
-            gap: 20px;
-        }
-        .section {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        h1 {
-            margin-bottom: 10px;
-        }
-        .section a {
-            display : flex;
-            flex-direction: column;
-            gap: 10px;
-            text-decoration: none;
-            margin-top: 10px;
-            font-weight: bold;
-        }
+        margin-top: 100px;
+        display: grid;
+        justify-content: center;
+        align-items: center;
+        grid-template-columns: 1fr 1fr;
+        width: 80%;
+        max-width: 1000px;
+        gap: 20px;
+      }
+
+      .section {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+      }
+
+      .section a {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        text-decoration: none;
+        margin-top: 10px;
+        font-weight: bold;
+      }
+
+      /* Styles for Grades Box */
+      #grades-container {
+        margin: 30px auto;
+        max-width: 600px;
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: left;
+      }
+
+      #grades-container h2 {
+        color: #2c3e50;
+      }
+
+      #grades-list li {
+        line-height: 1.6;
+        font-size: 16px;
+      }
     </style>
   </head>
   <body>
     <div class="header">Shakha's Logistics Page / Digital Literacy</div>
+
+    <!-- Grades Display Box -->
+    <div id="grades-container">
+      <h2>Your Grades</h2>
+      <ul id="grades-list">
+        <li>Loading grades...</li>
+      </ul>
+    </div>
+
     <div class="nav-links">
       <div class="excel-assignments section">
         <h1>DIGITAL LITERACY</h1>
@@ -78,7 +111,33 @@
         <a href="PROBLEMRESEARCH.html">Problem Research</a> 
       </div>
     </div>
+
+    <!-- SCRIPT to fetch grades -->
+    <script>
+      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzongyNzLarAU6Egj9lv-MgrAp6U2CcHj0M_ysTaXoZFAkgrBwDdHALaKLx9J0Hz2ZhKA/exec";
+
+      async function fetchGrades() {
+        const container = document.getElementById('grades-list');
+        container.innerHTML = '<li>Loading grades...</li>';
+        try {
+          const response = await fetch(SCRIPT_URL);
+          if (!response.ok) throw new Error('Network response was not ok');
+          const data = await response.json();
+
+          container.innerHTML = '';
+
+          data.forEach(student => {
+            const li = document.createElement('li');
+            li.textContent = `${student.name}: ${student.grade}`;
+            container.appendChild(li);
+          });
+        } catch (error) {
+          container.innerHTML = '<li>Error loading grades. Please try again later.</li>';
+          console.error('Fetch error:', error);
+        }
+      }
+
+      fetchGrades();
+    </script>
   </body>
 </html>
-
-
