@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Google Apps Script Overview</title>
+  <meta charset="UTF-8" />
+  <title>Google Apps Script Overview with Dynamic Grade Calculator</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -23,6 +23,38 @@
     .cons li {
       color: red;
     }
+    table {
+      border-collapse: collapse;
+      width: 60%;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #2c3e50;
+      color: white;
+    }
+    #searchSection {
+      margin-top: 30px;
+    }
+    input[type="text"] {
+      padding: 8px;
+      width: 200px;
+      font-size: 16px;
+    }
+    button {
+      padding: 8px 12px;
+      font-size: 16px;
+      margin-left: 8px;
+      cursor: pointer;
+    }
+    #resultMessage {
+      margin-top: 15px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -31,6 +63,7 @@
     Google Apps Script is a cloud-based scripting language (similar to JavaScript) that allows you to automate tasks across Google products like Docs, Sheets, Drive, Gmail, and more.
     Think of it as a way to add your own "backend" to Google tools without needing your own server.
   </p>
+
   <h2>Understanding the 5Ws</h2>
   <ol>
     <li><strong>What is it?</strong> A scripting tool to automate, customize, and connect Google apps.</li>
@@ -39,6 +72,7 @@
     <li><strong>When should I use it?</strong> When you want to automate a task (e.g., sending daily emails, updating a sheet, managing calendar events) or connect multiple Google services.</li>
     <li><strong>Where does it run?</strong> In the cloud—no need to install anything. You write code directly in the browser using the Google Apps Script editor.</li>
   </ol>
+
   <h2>Creative Uses of App Script</h2>
   <ul>
     <li>Automatically send birthday wishes from a Google Sheet of friends.</li>
@@ -48,7 +82,9 @@
     <li>A classroom attendance tracker that updates in real-time.</li>
     <li>Schedule and send calendar invites to multiple people with custom messages.</li>
     <li>Build your own chatbot using Sheets + Gmail + Apps Script.</li>
+    <li><strong>Dynamic Event Reminder and Summary Email:</strong> A script that scans upcoming Google Calendar events every morning and sends personalized summary emails with notes and action items to participants, improving team communication and preparation.</li>
   </ul>
+
   <h2>Pros and Cons</h2>
   <h3>Pros</h3>
   <ul class="pros">
@@ -66,5 +102,86 @@
     <li>Requires some coding knowledge.</li>
     <li>Dependent on internet connection.</li>
   </ul>
+
+  <h2>Deeper Understanding of Google Apps Script</h2>
+  <p>
+    Google Apps Script runs on Google's servers, which means there is no need to worry about infrastructure or hosting. Its integration with Google Workspace is seamless, making it easy to link Sheets, Docs, Gmail, and other services in your workflows.
+    You can use triggers to run scripts automatically based on time or events, allowing real-time updates and notifications. It supports APIs and external web services, enabling complex automation scenarios.
+    Apps Script is particularly powerful for automating repetitive tasks, freeing up valuable time and reducing human error. Even users with basic programming knowledge can create meaningful automations.
+  </p>
+
+  <h1>Grade Calculator Connected to Google Sheets</h1>
+  <p>Your grades are dynamically fetched from Google Sheets using Google Apps Script, not hardcoded. This ensures accurate and up-to-date grade calculations.</p>
+
+  <table id="gradesTable">
+    <thead>
+      <tr>
+        <th>Student</th>
+        <th>Grade</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="searchSection">
+    <h2>Find Your Grade</h2>
+    <input type="text" id="studentName" placeholder="Enter your name here" />
+    <button onclick="showStudentGrade()">Show My Grade</button>
+    <p id="resultMessage"></p>
+  </div>
+
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzongyNzLarAU6Egj9lv-MgrAp6U2CcHj0M_ysTaXoZFAkgrBwDdHALaKLx9J0Hz2ZhKA/exec';
+
+    let gradesData = {};
+
+    async function fetchGrades() {
+      try {
+        const response = await fetch(SCRIPT_URL);
+        gradesData = await response.json();
+
+        const tbody = document.querySelector('#gradesTable tbody');
+        tbody.innerHTML = '';
+
+        for (const student in gradesData) {
+          const grade = gradesData[student];
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${student}</td>
+            <td>${grade.toFixed(2)}</td>
+          `;
+          tbody.appendChild(tr);
+        }
+      } catch (error) {
+        console.error('Error fetching grades:', error);
+        document.body.innerHTML += '<p style="color:red;">Failed to load grades. Please try again later.</p>';
+      }
+    }
+
+    function showStudentGrade() {
+      const input = document.getElementById('studentName').value.trim();
+      const messageEl = document.getElementById('resultMessage');
+
+      if (!input) {
+        messageEl.style.color = 'red';
+        messageEl.textContent = 'Please enter a student name.';
+        return;
+      }
+
+      const inputLower = input.toLowerCase();
+      const foundStudent = Object.keys(gradesData).find(student => student.toLowerCase() === inputLower);
+
+      if (foundStudent) {
+        const grade = gradesData[foundStudent];
+        messageEl.style.color = 'green';
+        messageEl.innerHTML = `Student <strong>${foundStudent}</strong> has grade <strong>${grade.toFixed(2)}</strong>.`;
+      } else {
+        messageEl.style.color = 'red';
+        messageEl.textContent = 'Student not found. Please check the spelling.';
+      }
+    }
+
+    fetchGrades();
+  </script>
 </body>
 </html>
