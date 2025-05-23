@@ -78,6 +78,29 @@
         line-height: 1.6;
         font-size: 16px;
       }
+
+      /* Total Score Styling */
+      #total-score {
+        background: #e8f5e8;
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 8px;
+        border: 2px solid #4CAF50;
+        text-align: center;
+      }
+
+      #total-score h3 {
+        margin: 0;
+        color: #2e7d32;
+        font-size: 24px;
+      }
+
+      #total-score-value {
+        font-size: 32px;
+        font-weight: bold;
+        color: #1b5e20;
+        margin-top: 10px;
+      }
     </style>
   </head>
   <body>
@@ -89,6 +112,11 @@
       <ul id="grades-list">
         <li>Loading grades...</li>
       </ul>
+      <!-- Total Score Display -->
+      <div id="total-score">
+        <h3>Total Score</h3>
+        <div id="total-score-value">Calculating...</div>
+      </div>
     </div>
 
     <div class="nav-links">
@@ -118,21 +146,35 @@
 
       async function fetchGrades() {
         const container = document.getElementById('grades-list');
+        const totalScoreElement = document.getElementById('total-score-value');
+        
         container.innerHTML = '<li>Loading grades...</li>';
+        totalScoreElement.textContent = 'Calculating...';
+        
         try {
           const response = await fetch(SCRIPT_URL);
           if (!response.ok) throw new Error('Network response was not ok');
           const data = await response.json();
 
           container.innerHTML = '';
+          let totalScore = 0;
 
           data.forEach(student => {
             const li = document.createElement('li');
             li.textContent = `${student.name}: ${student.grade}`;
             container.appendChild(li);
+            
+            // Extract numeric value from grade and add to total
+            const gradeValue = parseFloat(student.grade) || 0;
+            totalScore += gradeValue;
           });
+
+          // Display total score
+          totalScoreElement.textContent = totalScore.toFixed(2);
+          
         } catch (error) {
           container.innerHTML = '<li>Error loading grades. Please try again later.</li>';
+          totalScoreElement.textContent = 'Error';
           console.error('Fetch error:', error);
         }
       }
