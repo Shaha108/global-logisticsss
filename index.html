@@ -156,25 +156,63 @@
           if (!response.ok) throw new Error('Network response was not ok');
           const data = await response.json();
 
+          // Debug: Console'da ma'lumotlarni ko'rsatish
+          console.log('Received data:', data);
+
           container.innerHTML = '';
           let totalScore = 0;
+          let validScores = 0;
 
           data.forEach(student => {
             const li = document.createElement('li');
-            li.textContent = `${student.name}: ${student.grade}`;
+            // Agar grade_name va grade_received mavjud bo'lsa, ularni ishlatamiz
+            const gradeName = student.grade_name || student.name || 'Assignment';
+            const gradeReceived = student.grade_received || student.grade || 0;
+            const maxGrade = student.max_grade || '';
+            
+            // Ko'rsatish uchun matn
+            let displayText = `${gradeName}: ${gradeReceived}`;
+            if (maxGrade) {
+              displayText += ` / ${maxGrade}`;
+            }
+            
+            li.textContent = displayText;
             container.appendChild(li);
             
-            // Extract numeric value from grade and add to total
-            const gradeValue = parseFloat(student.grade) || 0;
-            totalScore += gradeValue;
+            // Bahoni raqamga aylantirish
+            let gradeValue = 0;
+            
+            if (typeof gradeReceived === 'number') {
+              gradeValue = gradeReceived;
+            } else if (typeof gradeReceived === 'string') {
+              // Raqamlarni ajratib olish
+              const numMatch = gradeReceived.toString().match(/[\d.]+/);
+              if (numMatch) {
+                gradeValue = parseFloat(numMatch[0]);
+              }
+            }
+            
+            // Faqat to'g'ri raqamlarni qo'shish
+            if (!isNaN(gradeValue) && gradeValue >= 0) {
+              totalScore += gradeValue;
+              validScores++;
+            }
+            
+            console.log(`Assignment: ${gradeName}, Grade Received: ${gradeReceived}, Parsed: ${gradeValue}`);
           });
 
-          // Display total score
-          totalScoreElement.textContent = totalScore.toFixed(2);
+          // Natijani ko'rsatish
+          if (validScores > 0) {
+            totalScoreElement.textContent = totalScore.toFixed(2);
+          } else {
+            totalScoreElement.textContent = 'No valid scores found';
+          }
+          
+          console.log(`Total Score: ${totalScore}, Valid Scores: ${validScores}`);
           
         } catch (error) {
           container.innerHTML = '<li>Error loading grades. Please try again later.</li>';
-          totalScoreElement.textContent = 'Error';
+          totalScoreElement.textContent = 'Connection Error';
           console.error('Fetch error:', error);
         }
       }
