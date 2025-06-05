@@ -1,161 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Galactic Delivery</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galaxy Courier | TSP Challenge</title>
   <style>
     body {
-      margin: 0;
       font-family: 'Arial', sans-serif;
-      background: black;
-      color: white;
-      overflow: hidden;
+      background: #0f0c29;
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
     }
-    #gameCanvas {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 1;
+    .game-container {
+      max-width: 800px;
+      margin: 0 auto;
     }
-    #ui {
-      position: absolute;
-      top: 10px; left: 10px;
-      z-index: 2;
-      background: rgba(0,0,50,0.7);
-      padding: 10px;
+    .map {
+      width: 100%;
+      height: 500px;
+      background: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1471&auto=format') center/cover;
+      position: relative;
+      border: 2px solid #4e54c8;
       border-radius: 10px;
+      margin: 20px 0;
+    }
+    .node {
+      width: 20px;
+      height: 20px;
+      background: #f5af19;
+      border-radius: 50%;
+      position: absolute;
+      cursor: pointer;
+      box-shadow: 0 0 10px #f5af19;
+    }
+    .edge {
+      position: absolute;
+      height: 2px;
+      background: rgba(78, 84, 200, 0.5);
+      transform-origin: 0 0;
+    }
+    .controls {
+      margin: 20px 0;
     }
     button {
-      margin-top: 5px;
-      padding: 5px 10px;
+      background: #4e54c8;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 0 10px;
+      border-radius: 5px;
+      cursor: pointer;
       font-weight: bold;
     }
-    #footer {
-      position: absolute;
-      bottom: 10px;
-      width: 100%;
-      text-align: center;
-      color: #888;
-      font-size: 14px;
+    button:hover {
+      background: #8f94fb;
+    }
+    #score {
+      font-size: 1.2em;
+      color: #f5af19;
     }
   </style>
 </head>
 <body>
-  <canvas id="gameCanvas"></canvas>
-
-  <div id="ui">
-    <h3>Galactic Delivery</h3>
-    <button onclick="startRoute()">Start Route</button>
-    <button onclick="clearRoute()">Clear Route</button>
-    <button onclick="showInstructions()">How to Play</button>
-    <p id="routeInfo">Route: None</p>
+  <div class="game-container">
+    <h1>🌌 Galaxy Courier</h1>
+    <p>Deliver packages across the cosmos with minimal fuel!</p>
+    <div class="game-ui">
+      <div class="map" id="map"></div>
+      <div class="controls">
+        <button id="validate-btn">Validate Route</button>
+        <button id="reset-btn">Reset</button>
+        <span id="score">Fuel used: 0</span>
+      </div>
+    </div>
   </div>
 
-  <div id="footer">Created by Shakhzodbek and Jakhongir</div>
-
   <script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    // Game Config
+    const NODES = 8;
+    const FUEL_MULTIPLIER = 10;
 
-    const stars = [
-      { name: 'HQ', x: 100, y: 100, color: 'red', isHub: true },
-      { name: 'A', x: 300, y: 200, color: 'blue' },
-      { name: 'B', x: 500, y: 150, color: 'blue' },
-      { name: 'C', x: 700, y: 300, color: 'blue' },
-      { name: 'D', x: 400, y: 400, color: 'blue' },
-      { name: 'E', x: 200, y: 350, color: 'blue' },
-    ];
+    // DOM Elements
+    const mapEl = document.getElementById('map');
+    const validateBtn = document.getElementById('validate-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const scoreEl = document.getElementById('score');
 
-    let route = [];
+    // Game State
+    let nodes = [];
+    let edges = [];
+    let selectedRoute = [];
+    let totalFuel = 0;
 
-    function drawStars() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let star of stars) {
-        ctx.beginPath();
-        ctx.arc(star.x, star.y, 20, 0, 2 * Math.PI);
-        ctx.fillStyle = star.color;
-        ctx.fill();
-        ctx.fillStyle = 'white';
-        ctx.fillText(star.name, star.x - 5, star.y + 5);
+    // Initialize the game
+    function init() {
+      createNodes();
+      createEdges();
+      renderEdges();
+      setupEventListeners();
+    }
+
+    // Create random nodes (planets)
+    function createNodes() {
+      const mapWidth = mapEl.offsetWidth;
+      const mapHeight = mapEl.offsetHeight;
+
+      for (let i = 0; i < NODES; i++) {
+        const node = {
+          id: i,
+          x: Math.random() * (mapWidth - 40) + 20,
+          y: Math.random() * (mapHeight - 40) + 20
+        };
+        nodes.push(node);
+
+        const nodeEl = document.createElement('div');
+        nodeEl.className = 'node';
+        nodeEl.style.left = `${node.x}px`;
+        nodeEl.style.top = `${node.y}px`;
+        nodeEl.dataset.id = i;
+        mapEl.appendChild(nodeEl);
       }
+    }
 
-      ctx.strokeStyle = 'lime';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      for (let i = 0; i < route.length; i++) {
-        const star = route[i];
-        if (i === 0) {
-          ctx.moveTo(star.x, star.y);
-        } else {
-          ctx.lineTo(star.x, star.y);
+    // Create edges (warp lanes) between all nodes
+    function createEdges() {
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          edges.push({
+            from: nodes[i],
+            to: nodes[j],
+            cost: calculateDistance(nodes[i], nodes[j]) * FUEL_MULTIPLIER
+          });
         }
       }
-      ctx.stroke();
     }
 
-    canvas.addEventListener('click', (e) => {
-      const x = e.clientX;
-      const y = e.clientY;
-      for (let star of stars) {
-        const dx = x - star.x;
-        const dy = y - star.y;
-        if (dx * dx + dy * dy < 400) {
-          route.push(star);
-          updateRouteDisplay();
-          drawStars();
-          break;
+    // Calculate Euclidean distance between two points
+    function calculateDistance(a, b) {
+      return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+    }
+
+    // Render edges (faint lines)
+    function renderEdges() {
+      edges.forEach(edge => {
+        const edgeEl = document.createElement('div');
+        edgeEl.className = 'edge';
+        edgeEl.style.width = `${calculateDistance(edge.from, edge.to)}px`;
+        edgeEl.style.left = `${edge.from.x}px`;
+        edgeEl.style.top = `${edge.from.y}px`;
+        edgeEl.style.transform = `rotate(${Math.atan2(edge.to.y - edge.from.y, edge.to.x - edge.from.x)}rad)`;
+        mapEl.appendChild(edgeEl);
+      });
+    }
+
+    // Event Listeners
+    function setupEventListeners() {
+      document.querySelectorAll('.node').forEach(node => {
+        node.addEventListener('click', () => {
+          const nodeId = parseInt(node.dataset.id);
+          if (!selectedRoute.includes(nodeId)) {
+            selectedRoute.push(nodeId);
+            node.style.background = '#4e54c8';
+            updateRoute();
+          }
+        });
+      });
+
+      validateBtn.addEventListener('click', validateRoute);
+      resetBtn.addEventListener('click', resetGame);
+    }
+
+    // Update the visual route
+    function updateRoute() {
+      // Clear previous route highlights
+      document.querySelectorAll('.edge').forEach(edge => edge.style.background = 'rgba(78, 84, 200, 0.5)');
+
+      // Calculate and highlight new route
+      totalFuel = 0;
+      for (let i = 0; i < selectedRoute.length - 1; i++) {
+        const fromNode = nodes[selectedRoute[i]];
+        const toNode = nodes[selectedRoute[i + 1]];
+        const edge = edges.find(e => 
+          (e.from.id === fromNode.id && e.to.id === toNode.id) || 
+          (e.from.id === toNode.id && e.to.id === fromNode.id)
+        );
+        if (edge) {
+          totalFuel += edge.cost;
+          const edgeEl = document.querySelector(`.edge[style*="left: ${fromNode.x}px"][style*="top: ${fromNode.y}px"]`);
+          if (edgeEl) edgeEl.style.background = '#f5af19';
         }
       }
-    });
-
-    function updateRouteDisplay() {
-      const names = route.map(star => star.name).join(" → ");
-      document.getElementById("routeInfo").textContent = "Route: " + (names || "None");
+      scoreEl.textContent = `Fuel used: ${totalFuel.toFixed(2)}`;
     }
 
-    function clearRoute() {
-      route = [];
-      updateRouteDisplay();
-      drawStars();
-    }
-
-    function startRoute() {
-      if (route.length < 2 || !route[0].isHub || !route[route.length - 1].isHub) {
-        alert("Route must start and end at the red hub (HQ).");
+    // Validate the route (must visit all nodes and return to start)
+    function validateRoute() {
+      if (selectedRoute.length === 0) {
+        alert("🚀 Plot a route first!");
         return;
       }
-      alert("Route executed! Distance: " + calculateDistance().toFixed(1) + " units");
-    }
 
-    function calculateDistance() {
-      let dist = 0;
-      for (let i = 1; i < route.length; i++) {
-        const dx = route[i].x - route[i - 1].x;
-        const dy = route[i].y - route[i - 1].y;
-        dist += Math.sqrt(dx * dx + dy * dy) / 10;
+      const uniqueNodes = new Set(selectedRoute);
+      if (uniqueNodes.size !== NODES) {
+        alert("⚠️ Visit ALL planets before returning!");
+      } else if (selectedRoute[0] !== selectedRoute[selectedRoute.length - 1]) {
+        alert("⛔ You must return to your starting planet!");
+      } else {
+        alert(`✅ Mission success! Fuel used: ${totalFuel.toFixed(2)}. Lower is better!`);
       }
-      return dist;
     }
 
-    function showInstructions() {
-      alert(`HOW TO PLAY GALACTIC DELIVERY
-
-Welcome, pilot! Your mission is to deliver cargo to various systems in the galaxy.
-
-1. Click stars to plan your delivery route.
-2. Start and end the route at the red HQ hub.
-3. Press 'Start Route' to execute.
-4. 'Clear Route' resets your path.
-5. Aim to use the shortest distance!
-
-Good luck, courier!`);
+    // Reset the game
+    function resetGame() {
+      selectedRoute = [];
+      totalFuel = 0;
+      scoreEl.textContent = "Fuel used: 0";
+      document.querySelectorAll('.node').forEach(node => {
+        node.style.background = '#f5af19';
+      });
+      document.querySelectorAll('.edge').forEach(edge => {
+        edge.style.background = 'rgba(78, 84, 200, 0.5)';
+      });
     }
 
-    drawStars();
+    // Start the game
+    init();
   </script>
 </body>
 </html>
