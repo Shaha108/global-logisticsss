@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Global Courier | Real-World TSP Challenge</title>
+  <title>Global Delivery Master | 3D TSP Challenge</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
   <script src="https://unpkg.com/globe.gl"></script>
@@ -160,19 +160,21 @@
   <!-- Game UI Overlay -->
   <div class="game-ui">
     <div class="header panel">
-      <h1>GLOBAL COURIER</h1>
-      <p>Deliver packages worldwide with maximum efficiency</p>
+      <h1>GLOBAL DELIVERY MASTER</h1>
+      <p>Optimize your worldwide delivery routes</p>
     </div>
 
     <div class="stats panel">
       <span id="score">Fuel: 0</span>
       <span id="cities-count">Cities: 0/8</span>
+      <span id="time">Time: 60s</span>
     </div>
 
     <div class="controls">
       <button id="validate-btn">VALIDATE ROUTE</button>
       <button id="reset-btn">RESET</button>
       <button id="add-city-btn">ADD CITY</button>
+      <button id="time-attack-btn">TIME ATTACK</button>
     </div>
   </div>
 
@@ -184,8 +186,23 @@
       INITIAL_CITIES: 8,
       MAX_CITIES: 15,
       FUEL_COST_PER_KM: 0.2,
-      EARTH_RADIUS_KM: 6371
+      EARTH_RADIUS_KM: 6371,
+      TIME_ATTACK_DURATION: 60
     };
+
+    // Real-world major cities with coordinates
+    const REAL_CITIES = [
+      { name: "New York", lat: 40.7128, lng: -74.0060 },
+      { name: "London", lat: 51.5074, lng: -0.1278 },
+      { name: "Tokyo", lat: 35.6762, lng: 139.6503 },
+      { name: "Paris", lat: 48.8566, lng: 2.3522 },
+      { name: "Dubai", lat: 25.2048, lng: 55.2708 },
+      { name: "Sydney", lat: -33.8688, lng: 151.2093 },
+      { name: "Rio de Janeiro", lat: -22.9068, lng: -43.1729 },
+      { name: "Cape Town", lat: -33.9249, lng: 18.4241 },
+      { name: "Moscow", lat: 55.7558, lng: 37.6173 },
+      { name: "Beijing", lat: 39.9042, lng: 116.4074 }
+    ];
 
     // =====================
     // GAME STATE
@@ -195,6 +212,9 @@
     let totalFuel = 0;
     let globe;
     let pathObject;
+    let timeLeft = CONFIG.TIME_ATTACK_DURATION;
+    let timerInterval;
+    let isTimeAttack = false;
 
     // =====================
     // INITIALIZE GLOBE
@@ -236,16 +256,16 @@
     function generateRandomCities(count) {
       cities = [];
       
-      for (let i = 0; i < count; i++) {
-        const lat = -75 + Math.random() * 150;
-        const lng = -180 + Math.random() * 360;
-        
+      // Shuffle real cities and take the requested number
+      const shuffled = [...REAL_CITIES].sort(() => 0.5 - Math.random());
+      
+      for (let i = 0; i < Math.min(count, shuffled.length); i++) {
         cities.push({
           id: i,
-          name: `City ${i+1}`,
-          lat,
-          lng,
-          size: 0.2 + Math.random() * 0.3
+          name: shuffled[i].name,
+          lat: shuffled[i].lat,
+          lng: shuffled[i].lng,
+          size: 0.3
         });
       }
       
@@ -256,14 +276,27 @@
       // Clear existing cities
       globe.objectsData([]);
       
-      // Add new cities
+      // Add new cities with animation
       globe.objectsData(cities)
         .objectLat(d => d.lat)
         .objectLng(d => d.lng)
         .objectAltitude(d => 0.01)
         .objectRadius(d => d.size)
         .objectColor(d => selectedRoute.includes(d.id) ? '#f72585' : '#4361ee')
-        .objectLabel(d => d.name);
+        .objectLabel(d => d.name)
+        .objectAltitude(d => selectedRoute.includes(d.id) ? 0.02 : 0.01)
+        .objectThreeObject(d => {
+          const obj = new THREE.Mesh(
+            new THREE.SphereGeometry(d.size, 16, 16),
+            new THREE.MeshPhongMaterial({
+              color: new THREE.Color(selectedRoute.includes(d.id) ? '#f72585' : '#4361ee'),
+              emissive: '#111',
+              shininess: 10
+            })
+          );
+          obj.userData.id = d.id;
+          return obj;
+        });
     }
 
     function renderPath() {
@@ -274,7 +307,7 @@
       
       if (selectedRoute.length < 2) return;
       
-      // Create path geometry
+      // Create path points
       const routePoints = selectedRoute.map(id => {
         const city = cities.find(c => c.id === id);
         return [city.lat, city.lng];
@@ -286,20 +319,38 @@
         routePoints.push([firstCity.lat, firstCity.lng]);
       }
       
-      // Create the path
-      pathObject = globe.arcsData([{
-        startLat: routePoints[0][0],
-        startLng: routePoints[0][1],
-        endLat: routePoints[1][0],
-        endLng: routePoints[1][1],
-        color: ['rgba(247, 37, 133, 0.8)', 'rgba(247, 37, 133, 0.8)']
-      }])
-        .arcColor(d => d.color)
-        .arcStroke(1.5)
-        .arcDashLength(0.5)
-        .arcDashGap(0.1)
-        .arcDashAnimateTime(2000)
-        .arcsTransitionDuration(1000);
+      // Create the path with animation
+      const curve = new THREE.CatmullRomCurve3(
+        routePoints.map(pt => {
+          const coord = globe.getCoords(pt[0], pt[1], 0.01);
+          return new THREE.Vector3(coord.x, coord.y, coord.z);
+        }),
+        false,
+        'centripetal',
+        0.5
+      );
+      
+      const points = curve.getPoints(50);
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const material = new THREE.LineBasicMaterial({
+        color: 0xf72585,
+        linewidth: 3,
+        transparent: true,
+        opacity: 0.8
+      });
+      
+      pathObject = new THREE.Line(geometry, material);
+      globe.scene().add(pathObject);
+      
+      // Animate path drawing
+      geometry.setDrawRange(0, 0);
+      let drawCount = 0;
+      const total = geometry.attributes.position.count;
+      const interval = setInterval(() => {
+        drawCount += 2;
+        geometry.setDrawRange(0, Math.min(drawCount, total));
+        if (drawCount >= total) clearInterval(interval);
+      }, 30);
     }
 
     function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -335,13 +386,45 @@
     }
 
     // =====================
+    // GAME MODES
+    // =====================
+    function startTimeAttack() {
+      isTimeAttack = true;
+      timeLeft = CONFIG.TIME_ATTACK_DURATION;
+      document.getElementById('time').style.display = 'block';
+      updateTimerDisplay();
+      
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          validateRoute();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      document.getElementById('time').textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+      
+      if (timeLeft <= 10) {
+        document.getElementById('time').style.color = '#ff6b6b';
+      }
+    }
+
+    // =====================
     // EVENT HANDLERS
     // =====================
     function setupEventListeners() {
       // City selection
       document.getElementById('globe-container').addEventListener('click', (e) => {
-        if (e.target.className.includes('object-sphere')) {
-          const cityId = parseInt(e.target.getAttribute('data-id'));
+        const intersects = globe.raycaster().intersectObjects(globe.scene().children, true);
+        if (intersects.length > 0 && intersects[0].object.userData.id !== undefined) {
+          const cityId = intersects[0].object.userData.id;
           selectCity(cityId);
         }
       });
@@ -350,6 +433,7 @@
       document.getElementById('validate-btn').addEventListener('click', validateRoute);
       document.getElementById('reset-btn').addEventListener('click', resetGame);
       document.getElementById('add-city-btn').addEventListener('click', addCity);
+      document.getElementById('time-attack-btn').addEventListener('click', startTimeAttack);
     }
 
     function selectCity(cityId) {
@@ -357,9 +441,21 @@
         selectedRoute.push(cityId);
         updateRoute();
         
-        // Animate the selected city
+        // Fly to the selected city
         const city = cities.find(c => c.id === cityId);
         globe.pointOfView({ lat: city.lat, lng: city.lng, altitude: 2 }, 1000);
+        
+        // Pulse animation
+        const cityObj = globe.scene().children.find(obj => 
+          obj.userData && obj.userData.id === cityId
+        );
+        if (cityObj) {
+          const scale = cityObj.scale.clone();
+          cityObj.scale.set(scale.x * 1.5, scale.y * 1.5, scale.z * 1.5);
+          setTimeout(() => {
+            cityObj.scale.copy(scale);
+          }, 300);
+        }
       }
     }
 
@@ -379,13 +475,26 @@
         return;
       }
 
-      const efficiency = (cities.length * 1000) / totalFuel;
-      alert(`✅ Route Complete!\nFuel Used: ${totalFuel.toFixed(0)}\nEfficiency: ${efficiency.toFixed(1)}%`);
+      let message = `✅ Route Complete!\nFuel Used: ${totalFuel.toFixed(0)}`;
+      
+      if (isTimeAttack) {
+        const timeBonus = Math.floor(timeLeft * 2);
+        message += `\n⏱️ Time Bonus: +${timeBonus}`;
+        totalFuel -= timeBonus;
+        message += `\nFinal Score: ${totalFuel.toFixed(0)}`;
+      }
+      
+      alert(message);
+      resetGame();
     }
 
     function resetGame() {
       selectedRoute = [];
       totalFuel = 0;
+      isTimeAttack = false;
+      clearInterval(timerInterval);
+      document.getElementById('time').style.display = 'none';
+      document.getElementById('time').style.color = '#f8f9fa';
       updateRoute();
     }
 
@@ -395,15 +504,21 @@
         return;
       }
       
-      const lat = -75 + Math.random() * 150;
-      const lng = -180 + Math.random() * 360;
+      // Get a city not already in our list
+      const availableCities = REAL_CITIES.filter(rc => 
+        !cities.some(c => c.name === rc.name)
+      );
+      
+      if (availableCities.length === 0) return;
+      
+      const newCity = availableCities[Math.floor(Math.random() * availableCities.length)];
       
       cities.push({
         id: cities.length,
-        name: `City ${cities.length+1}`,
-        lat,
-        lng,
-        size: 0.2 + Math.random() * 0.3
+        name: newCity.name,
+        lat: newCity.lat,
+        lng: newCity.lng,
+        size: 0.3
       });
       
       renderCities();
