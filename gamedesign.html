@@ -1,89 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Design Thinking - Space Game</title>
-  <style>
-    /* Make the body fill the entire page */
-    body {
-      background-color: #0a0a23;
-      color: #ffffff;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      height: 100vh; /* Full height */
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between; /* Distribute content from top to bottom */
-    }
-
-    /* Heading colors */
-    h1, h2 {
-      color: #00ffff;
-    }
-
-    /* Organize text and content */
-    .section {
-      margin-bottom: 30px;
-    }
-
-    /* Content width 100% */
-    #content {
-      width: 100%;
-      max-width: 100%; /* Limit the width */
-    }
-
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Design Thinking Process</title>
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --secondary: #4D44DB;
+            --accent: #FF6584;
+            --light: #F8F9FA;
+            --dark: #212529;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+        
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            scroll-snap-type: y mandatory;
+            overflow-y: scroll;
+        }
+        
+        .slide {
+            width: 100%;
+            height: 100%;
+            padding: 4rem;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.1) 0%, rgba(77, 68, 219, 0.1) 100%);
+            z-index: -1;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            color: var(--primary);
+        }
+        
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+        }
+        
+        p {
+            font-size: 1.25rem;
+            max-width: 800px;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        ul {
+            text-align: left;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            font-size: 1.25rem;
+        }
+        
+        li {
+            margin-bottom: 0.75rem;
+            list-style-type: none;
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        li::before {
+            content: '•';
+            color: var(--accent);
+            font-size: 2rem;
+            position: absolute;
+            left: 0;
+            top: -0.5rem;
+        }
+        
+        .phase-number {
+            font-size: 8rem;
+            font-weight: bold;
+            color: rgba(108, 99, 255, 0.2);
+            position: absolute;
+            top: 1rem;
+            right: 2rem;
+            z-index: -1;
+        }
+        
+        .game-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .nav-dots {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            opacity: 0.3;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .dot.active {
+            opacity: 1;
+            transform: scale(1.3);
+            background-color: var(--accent);
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 2rem; }
+            p, ul { font-size: 1.1rem; }
+            .slide { padding: 2rem; }
+        }
+    </style>
 </head>
 <body>
-  <h1>Design Thinking - Space Delivery Game</h1>
-  <h3>Created by Shakhzodbek and Jakhongir</h3>
-
-  <div id="content">
-    <div class="section">
-      <h2>Step 1: Empathize</h2>
-      <p><strong>Who is experiencing the problem?</strong> People who enjoy space games but want them to be quick and strategic.</p>
-      <p><strong>What are their needs and goals?</strong> They want to play short, brain-using games that are fun and challenging.</p>
-      <p><strong>What challenges do they face?</strong> Long or boring games, confusing instructions, lack of feedback.</p>
-      <p><strong>Emotions involved:</strong> Excitement, stress, joy.</p>
-      <p><strong>Success looks like:</strong> Winning with the best route, getting stars, enjoying a smooth experience.</p>
+    <div class="slide-container">
+        <!-- Title Slide -->
+        <div class="slide" id="slide1">
+            <div class="phase-number">DT</div>
+            <h1>Game Design Thinking Process</h1>
+            <p>Applying Design Thinking methodology to game development</p>
+            <div class="game-icon">🎮</div>
+        </div>
+        
+        <!-- Empathize -->
+        <div class="slide" id="slide2">
+            <div class="phase-number">1</div>
+            <h2>1. Empathize</h2>
+            <p>Understand your players' needs, motivations, and pain points</p>
+            <ul>
+                <li><strong>Player research:</strong> Interviews, surveys, observation</li>
+                <li><strong>Player personas:</strong> Create archetypes of your target audience</li>
+                <li><strong>Emotional mapping:</strong> Identify desired emotional journey</li>
+                <li><strong>Competitor analysis:</strong> Study similar games' strengths/weaknesses</li>
+            </ul>
+            <div class="game-icon">👥</div>
+        </div>
+        
+        <!-- Define -->
+        <div class="slide" id="slide3">
+            <div class="phase-number">2</div>
+            <h2>2. Define</h2>
+            <p>Clearly articulate the core player experience and design challenges</p>
+            <ul>
+                <li><strong>Problem statements:</strong> "Players need [X] because [Y]"</li>
+                <li><strong>Core pillars:</strong> Define 3-5 foundational game concepts</li>
+                <li><strong>Player goals:</strong> What players should feel/achieve</li>
+                <li><strong>Constraints:</strong> Technical, budgetary, time limitations</li>
+            </ul>
+            <div class="game-icon">✍️</div>
+        </div>
+        
+        <!-- Ideate -->
+        <div class="slide" id="slide4">
+            <div class="phase-number">3</div>
+            <h2>3. Ideate</h2>
+            <p>Generate creative solutions and game concepts</p>
+            <ul>
+                <li><strong>Brainstorming:</strong> Quantity over quality initially</li>
+                <li><strong>Mechanics mapping:</strong> How systems interact</li>
+                <li><strong>Paper prototyping:</strong> Quick physical mockups</li>
+                <li><strong>Feature prioritization:</strong> Must-have vs nice-to-have</li>
+            </ul>
+            <div class="game-icon">💡</div>
+        </div>
+        
+        <!-- Prototype -->
+        <div class="slide" id="slide5">
+            <div class="phase-number">4</div>
+            <h2>4. Prototype</h2>
+            <p>Build tangible representations of your ideas</p>
+            <ul>
+                <li><strong>Vertical slice:</strong> Small fully-polished section</li>
+                <li><strong>Grayboxing:</strong> Basic geometry testing</li>
+                <li><strong>Wizard of Oz:</strong> Fake backend with human control</li>
+                <li><strong>Modular approach:</strong> Build/test systems independently</li>
+            </ul>
+            <div class="game-icon">🛠️</div>
+        </div>
+        
+        <!-- Test -->
+        <div class="slide" id="slide6">
+            <div class="phase-number">5</div>
+            <h2>5. Test</h2>
+            <p>Validate your designs with real players</p>
+            <ul>
+                <li><strong>Playtesting:</strong> Observe players without guidance</li>
+                <li><strong>Analytics:</strong> Track in-game behavior metrics</li>
+                <li><strong>Iteration:</strong> Refine based on feedback</li>
+                <li><strong>Accessibility testing:</strong> Ensure inclusive design</li>
+            </ul>
+            <div class="game-icon">🧪</div>
+        </div>
+        
+        <!-- Final Slide -->
+        <div class="slide" id="slide7">
+            <h2>The Iterative Process</h2>
+            <p>Design Thinking is cyclical - each phase informs the others</p>
+            <div style="margin: 2rem auto; width: 300px; height: 300px; background: url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 300\"><path d=\"M150 50a100 100 0 0 1 70.7 170.7 100 100 0 0 1-141.4 0A100 100 0 0 1 150 50zm0 20a80 80 0 0 0-56.6 136.6 80 80 0 0 0 113.2 0A80 80 0 0 0 150 70z\" fill=\"none\" stroke=\"%236C63FF\" stroke-width=\"2\"/><text x=\"150\" y=\"70\" font-family=\"Arial\" font-size=\"16\" text-anchor=\"middle\" fill=\"%23FF6584\">Empathize</text><text x=\"230\" y=\"120\" font-family=\"Arial\" font-size=\"16\" text-anchor=\"middle\" fill=\"%23FF6584\">Define</text><text x=\"230\" y=\"200\" font-family=\"Arial\" font-size=\"16\" text-anchor=\"middle\" fill=\"%23FF6584\">Ideate</text><text x=\"150\" y=\"250\" font-family=\"Arial\" font-size=\"16\" text-anchor=\"middle\" fill=\"%23FF6584\">Prototype</text><text x=\"70\" y=\"200\" font-family=\"Arial\" font-size=\"16\" text-anchor=\"middle\" fill=\"%23FF6584\">Test</text></svg>') no-repeat center;"></div>
+            <p>Continue refining until you achieve the desired player experience</p>
+            <div class="game-icon">🔄</div>
+        </div>
     </div>
-
-    <div class="section">
-      <h2>Step 2: Define</h2>
-      <p><strong>Problem Statement:</strong><br>
-      Strategy game players need a fun and fast way to plan space routes because they enjoy brain challenges without wasting too much time.</p>
+    
+    <div class="nav-dots">
+        <div class="dot active" data-target="slide1"></div>
+        <div class="dot" data-target="slide2"></div>
+        <div class="dot" data-target="slide3"></div>
+        <div class="dot" data-target="slide4"></div>
+        <div class="dot" data-target="slide5"></div>
+        <div class="dot" data-target="slide6"></div>
+        <div class="dot" data-target="slide7"></div>
     </div>
-
-    <div class="section">
-      <h2>Step 3: Ideate</h2>
-      <ul>
-        <li>Add route planning with drag-and-drop</li>
-        <li>Show energy cost in real time</li>
-        <li>Star ratings based on route efficiency</li>
-        <li>Ship animation during travel</li>
-        <li>Multiple themes: space, robot, magic</li>
-        <li>Bonus stars for secret planets</li>
-        <li>Leaderboard to compare with friends</li>
-      </ul>
-    </div>
-
-    <div class="section">
-      <h2>Step 4: Prototype</h2>
-      <p>- A map with 6 star systems</p>
-      <p>- Player taps systems to build route</p>
-      <p>- Energy cost and path shown</p>
-      <p>- Rearrangement allowed before confirming</p>
-      <p>- Ship flies on click, score and rating shown</p>
-    </div>
-
-    <div class="section">
-      <h2>Step 5: Test</h2>
-      <p><strong>What did testers like?</strong> Energy counter and space visuals</p>
-      <p><strong>Questions they had:</strong> Undo option? Easy restart?</p>
-      <p><strong>What they suggested:</strong> Add levels, sound, hidden stars</p>
-      <p><strong>Improvements made:</strong> Undo button, music, new maps</p>
-    </div>
-  </div>
+    
+    <script>
+        // Navigation dots functionality
+        const dots = document.querySelectorAll('.dot');
+        const slides = document.querySelectorAll('.slide');
+        const container = document.querySelector('.slide-container');
+        
+        // Update active dot based on scroll position
+        container.addEventListener('scroll', () => {
+            const scrollPos = container.scrollTop;
+            const windowHeight = window.innerHeight;
+            
+            slides.forEach((slide, index) => {
+                const slideTop = slide.offsetTop;
+                const slideHeight = slide.offsetHeight;
+                
+                if (scrollPos >= slideTop - windowHeight/2 && 
+                    scrollPos < slideTop + slideHeight - windowHeight/2) {
+                    dots.forEach(dot => dot.classList.remove('active'));
+                    dots[index].classList.add('active');
+                }
+            });
+        });
+        
+        // Click on dot to scroll to corresponding slide
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const targetId = dot.getAttribute('data-target');
+                const targetSlide = document.getElementById(targetId);
+                container.scrollTo({
+                    top: targetSlide.offsetTop,
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                const currentIndex = Array.from(dots).findIndex(dot => dot.classList.contains('active'));
+                if (currentIndex < dots.length - 1) {
+                    dots[currentIndex + 1].click();
+                }
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                const currentIndex = Array.from(dots).findIndex(dot => dot.classList.contains('active'));
+                if (currentIndex > 0) {
+                    dots[currentIndex - 1].click();
+                }
+            }
+        });
+    </script>
 </body>
 </html>
