@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Galaxy Courier | TSP Challenge</title>
+  <title>Galaxy Courier | Ultimate TSP Challenge</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -12,6 +12,7 @@
       text-align: center;
       margin: 0;
       padding: 20px;
+      overflow-x: hidden;
     }
     .game-container {
       max-width: 800px;
@@ -20,209 +21,467 @@
     .map {
       width: 100%;
       height: 500px;
-      background: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1471&auto=format') center/cover;
+      background: #000 url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1471&auto=format') center/cover;
       position: relative;
       border: 2px solid #4e54c8;
       border-radius: 10px;
       margin: 20px 0;
+      overflow: hidden;
     }
     .node {
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
       background: #f5af19;
       border-radius: 50%;
       position: absolute;
       cursor: pointer;
-      box-shadow: 0 0 10px #f5af19;
+      box-shadow: 0 0 15px #f5af19;
+      transition: transform 0.2s;
+      z-index: 10;
+    }
+    .node:hover {
+      transform: scale(1.3);
     }
     .edge {
       position: absolute;
       height: 2px;
-      background: rgba(78, 84, 200, 0.5);
+      background: rgba(78, 84, 200, 0.3);
       transform-origin: 0 0;
+      z-index: 1;
+    }
+    .active-edge {
+      background: #f5af19 !important;
+      height: 3px;
+      box-shadow: 0 0 8px #f5af19;
     }
     .controls {
       margin: 20px 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
     button {
       background: #4e54c8;
       color: white;
       border: none;
-      padding: 10px 20px;
-      margin: 0 10px;
+      padding: 12px 24px;
       border-radius: 5px;
       cursor: pointer;
       font-weight: bold;
+      transition: all 0.3s;
     }
     button:hover {
       background: #8f94fb;
+      transform: translateY(-2px);
     }
     #score {
-      font-size: 1.2em;
+      font-size: 1.3em;
       color: #f5af19;
+      margin: 10px;
+    }
+    #timer {
+      font-size: 1.3em;
+      color: #ff6b6b;
+    }
+    .game-mode {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .game-mode button {
+      padding: 8px 16px;
+    }
+    .game-mode button.active {
+      background: #f5af19;
+      color: #000;
+    }
+    #leaderboard {
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .fuel-warning {
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
     }
   </style>
 </head>
 <body>
   <div class="game-container">
-    <h1>🌌 Galaxy Courier</h1>
-    <p>Deliver packages across the cosmos with minimal fuel!</p>
+    <h1>🌌 GALAXY COURIER 2.0</h1>
+    <p>Deliver interplanetary packages with MAXIMUM efficiency!</p>
+    
+    <div class="game-mode">
+      <button id="classic-mode" class="active">Classic Mode</button>
+      <button id="time-mode">Time Attack (60s)</button>
+    </div>
+    
     <div class="game-ui">
       <div class="map" id="map"></div>
       <div class="controls">
-        <button id="validate-btn">Validate Route</button>
-        <button id="reset-btn">Reset</button>
-        <span id="score">Fuel used: 0</span>
+        <button id="validate-btn">VALIDATE ROUTE</button>
+        <button id="reset-btn">RESET</button>
+        <span id="score">Fuel: 0</span>
+        <span id="timer"></span>
       </div>
+    </div>
+    
+    <div id="leaderboard">
+      <h3>🏆 TOP PILOTS</h3>
+      <ol id="highscores"></ol>
     </div>
   </div>
 
   <script>
-    // Game Config
-    const NODES = 8;
-    const FUEL_MULTIPLIER = 10;
+    // =====================
+    // GAME CONFIG
+    // =====================
+    const CONFIG = {
+      NODES: 12,                  // Optimal balance for performance
+      FUEL_MULTIPLIER: 8,         // Lower = more precision needed
+      TIME_ATTACK_DURATION: 60,   // 60 seconds
+      MAX_HIGHSCORES: 5           // Leaderboard entries
+    };
 
-    // DOM Elements
-    const mapEl = document.getElementById('map');
-    const validateBtn = document.getElementById('validate-btn');
-    const resetBtn = document.getElementById('reset-btn');
-    const scoreEl = document.getElementById('score');
-
-    // Game State
+    // =====================
+    // GAME STATE
+    // =====================
     let nodes = [];
     let edges = [];
     let selectedRoute = [];
     let totalFuel = 0;
+    let gameMode = 'classic';
+    let timeLeft = CONFIG.TIME_ATTACK_DURATION;
+    let timerInterval;
+    let highscores = JSON.parse(localStorage.getItem('highscores')) || [];
 
-    // Initialize the game
+    // =====================
+    // DOM ELEMENTS
+    // =====================
+    const mapEl = document.getElementById('map');
+    const validateBtn = document.getElementById('validate-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const scoreEl = document.getElementById('score');
+    const timerEl = document.getElementById('timer');
+    const classicBtn = document.getElementById('classic-mode');
+    const timeBtn = document.getElementById('time-mode');
+    const highscoresEl = document.getElementById('highscores');
+
+    // =====================
+    // INITIALIZATION
+    // =====================
     function init() {
       createNodes();
       createEdges();
       renderEdges();
       setupEventListeners();
+      updateLeaderboard();
+      
+      // Pre-calculate distances for performance
+      precomputeDistances();
     }
 
-    // Create random nodes (planets)
+    // =====================
+    // GAME LOGIC (OPTIMIZED)
+    // =====================
     function createNodes() {
       const mapWidth = mapEl.offsetWidth;
       const mapHeight = mapEl.offsetHeight;
+      const padding = 30;
 
-      for (let i = 0; i < NODES; i++) {
-        const node = {
-          id: i,
-          x: Math.random() * (mapWidth - 40) + 20,
-          y: Math.random() * (mapHeight - 40) + 20
-        };
+      // Clear existing nodes
+      mapEl.querySelectorAll('.node').forEach(el => el.remove());
+      nodes = [];
+
+      // Generate nodes with collision detection
+      for (let i = 0; i < CONFIG.NODES; i++) {
+        let attempts = 0;
+        let node;
+        
+        do {
+          node = {
+            id: i,
+            x: padding + Math.random() * (mapWidth - 2 * padding),
+            y: padding + Math.random() * (mapHeight - 2 * padding)
+          };
+          attempts++;
+        } while (attempts < 100 && nodes.some(n => calculateDistance(n, node) < 60));
+
         nodes.push(node);
 
         const nodeEl = document.createElement('div');
         nodeEl.className = 'node';
-        nodeEl.style.left = `${node.x}px`;
-        nodeEl.style.top = `${node.y}px`;
+        nodeEl.style.left = `${node.x - 12}px`;
+        nodeEl.style.top = `${node.y - 12}px`;
         nodeEl.dataset.id = i;
         mapEl.appendChild(nodeEl);
       }
     }
 
-    // Create edges (warp lanes) between all nodes
     function createEdges() {
+      edges = [];
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           edges.push({
             from: nodes[i],
             to: nodes[j],
-            cost: calculateDistance(nodes[i], nodes[j]) * FUEL_MULTIPLIER
+            cost: calculateDistance(nodes[i], nodes[j]) * CONFIG.FUEL_MULTIPLIER
           });
         }
       }
     }
 
-    // Calculate Euclidean distance between two points
+    // Precompute all distances for performance
+    function precomputeDistances() {
+      nodes.forEach(node => {
+        node.distances = {};
+        nodes.forEach(other => {
+          if (node.id !== other.id) {
+            node.distances[other.id] = calculateDistance(node, other);
+          }
+        });
+      });
+    }
+
     function calculateDistance(a, b) {
       return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
     }
 
-    // Render edges (faint lines)
     function renderEdges() {
+      // Clear existing edges
+      mapEl.querySelectorAll('.edge').forEach(el => el.remove());
+      
+      // Batch render edges using DocumentFragment
+      const fragment = document.createDocumentFragment();
+      
       edges.forEach(edge => {
         const edgeEl = document.createElement('div');
         edgeEl.className = 'edge';
-        edgeEl.style.width = `${calculateDistance(edge.from, edge.to)}px`;
+        
+        const dx = edge.to.x - edge.from.x;
+        const dy = edge.to.y - edge.from.y;
+        const length = Math.sqrt(dx * dx + dy * dy);
+        const angle = Math.atan2(dy, dx);
+        
+        edgeEl.style.width = `${length}px`;
         edgeEl.style.left = `${edge.from.x}px`;
         edgeEl.style.top = `${edge.from.y}px`;
-        edgeEl.style.transform = `rotate(${Math.atan2(edge.to.y - edge.from.y, edge.to.x - edge.from.x)}rad)`;
-        mapEl.appendChild(edgeEl);
+        edgeEl.style.transform = `rotate(${angle}rad)`;
+        
+        fragment.appendChild(edgeEl);
       });
+      
+      mapEl.appendChild(fragment);
     }
 
-    // Event Listeners
+    // =====================
+    // GAME INTERACTIVITY
+    // =====================
     function setupEventListeners() {
-      document.querySelectorAll('.node').forEach(node => {
-        node.addEventListener('click', () => {
-          const nodeId = parseInt(node.dataset.id);
-          if (!selectedRoute.includes(nodeId)) {
-            selectedRoute.push(nodeId);
-            node.style.background = '#4e54c8';
-            updateRoute();
-          }
-        });
+      // Node clicking
+      mapEl.addEventListener('click', (e) => {
+        const nodeEl = e.target.closest('.node');
+        if (nodeEl) {
+          const nodeId = parseInt(nodeEl.dataset.id);
+          handleNodeClick(nodeId, nodeEl);
+        }
       });
 
+      // Buttons
       validateBtn.addEventListener('click', validateRoute);
       resetBtn.addEventListener('click', resetGame);
+      classicBtn.addEventListener('click', () => setGameMode('classic'));
+      timeBtn.addEventListener('click', () => setGameMode('time'));
     }
 
-    // Update the visual route
-    function updateRoute() {
-      // Clear previous route highlights
-      document.querySelectorAll('.edge').forEach(edge => edge.style.background = 'rgba(78, 84, 200, 0.5)');
+    function handleNodeClick(nodeId, nodeEl) {
+      if (!selectedRoute.includes(nodeId)) {
+        selectedRoute.push(nodeId);
+        nodeEl.style.transform = 'scale(1.3)';
+        updateRoute();
+        
+        // Visual feedback
+        setTimeout(() => {
+          nodeEl.style.transform = 'scale(1)';
+        }, 200);
+      }
+    }
 
-      // Calculate and highlight new route
+    function updateRoute() {
+      // Reset all edges
+      document.querySelectorAll('.edge').forEach(edge => {
+        edge.classList.remove('active-edge');
+      });
+
+      // Calculate new route
       totalFuel = 0;
       for (let i = 0; i < selectedRoute.length - 1; i++) {
         const fromNode = nodes[selectedRoute[i]];
         const toNode = nodes[selectedRoute[i + 1]];
+        
         const edge = edges.find(e => 
           (e.from.id === fromNode.id && e.to.id === toNode.id) || 
           (e.from.id === toNode.id && e.to.id === fromNode.id)
         );
+
         if (edge) {
           totalFuel += edge.cost;
-          const edgeEl = document.querySelector(`.edge[style*="left: ${fromNode.x}px"][style*="top: ${fromNode.y}px"]`);
-          if (edgeEl) edgeEl.style.background = '#f5af19';
+          
+          // Highlight active edge (optimized selector)
+          const edgeEls = document.querySelectorAll('.edge');
+          edgeEls.forEach(el => {
+            const style = el.style.transform;
+            if (style.includes(`rotate(${Math.atan2(toNode.y - fromNode.y, toNode.x - fromNode.x)}rad)`)) {
+              el.classList.add('active-edge');
+            }
+          });
         }
       }
-      scoreEl.textContent = `Fuel used: ${totalFuel.toFixed(2)}`;
+
+      // Update UI
+      scoreEl.textContent = `Fuel: ${totalFuel.toFixed(1)}`;
+      
+      // Fuel warning
+      if (totalFuel > CONFIG.NODES * CONFIG.FUEL_MULTIPLIER * 8) {
+        scoreEl.classList.add('fuel-warning');
+      } else {
+        scoreEl.classList.remove('fuel-warning');
+      }
     }
 
-    // Validate the route (must visit all nodes and return to start)
+    // =====================
+    // GAME MODES
+    // =====================
+    function setGameMode(mode) {
+      gameMode = mode;
+      resetGame();
+      
+      classicBtn.classList.toggle('active', mode === 'classic');
+      timeBtn.classList.toggle('active', mode === 'time');
+      
+      if (mode === 'time') {
+        timerEl.style.display = 'inline';
+        startTimer();
+      } else {
+        timerEl.style.display = 'none';
+        clearInterval(timerInterval);
+      }
+    }
+
+    function startTimer() {
+      timeLeft = CONFIG.TIME_ATTACK_DURATION;
+      timerEl.textContent = `Time: ${timeLeft}s`;
+      
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = `Time: ${timeLeft}s`;
+        
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          validateRoute();
+        }
+      }, 1000);
+    }
+
+    // =====================
+    // GAME VALIDATION
+    // =====================
     function validateRoute() {
       if (selectedRoute.length === 0) {
-        alert("🚀 Plot a route first!");
+        showAlert("🚀 Plot a route first!");
         return;
       }
 
       const uniqueNodes = new Set(selectedRoute);
-      if (uniqueNodes.size !== NODES) {
-        alert("⚠️ Visit ALL planets before returning!");
+      let message = "";
+      
+      if (uniqueNodes.size !== CONFIG.NODES) {
+        message = `⚠️ Visited ${uniqueNodes.size}/${CONFIG.NODES} planets!`;
       } else if (selectedRoute[0] !== selectedRoute[selectedRoute.length - 1]) {
-        alert("⛔ You must return to your starting planet!");
+        message = "⛔ Return to your starting planet!";
       } else {
-        alert(`✅ Mission success! Fuel used: ${totalFuel.toFixed(2)}. Lower is better!`);
+        const efficiency = (CONFIG.NODES * 100) / totalFuel;
+        message = `✅ Success! Fuel: ${totalFuel.toFixed(1)} (${efficiency.toFixed(1)}% efficient)`;
+        
+        if (gameMode === 'time') {
+          const timeBonus = Math.floor(timeLeft * 2);
+          message += `\n⏱️ Time bonus: +${timeBonus}`;
+          totalFuel -= timeBonus;
+        }
+        
+        addHighscore(totalFuel);
       }
+      
+      showAlert(message);
     }
 
-    // Reset the game
+    function showAlert(message) {
+      alert(message);
+    }
+
+    // =====================
+    // LEADERBOARD
+    // =====================
+    function addHighscore(score) {
+      highscores.push({
+        score: score,
+        date: new Date().toLocaleDateString(),
+        mode: gameMode
+      });
+      
+      // Sort and keep top scores
+      highscores.sort((a, b) => a.score - b.score);
+      highscores = highscores.slice(0, CONFIG.MAX_HIGHSCORES);
+      
+      // Save to localStorage
+      localStorage.setItem('highscores', JSON.stringify(highscores));
+      updateLeaderboard();
+    }
+
+    function updateLeaderboard() {
+      highscoresEl.innerHTML = '';
+      highscores.forEach((entry, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${index + 1}. ${entry.score.toFixed(1)} fuel (${entry.mode}) - ${entry.date}`;
+        highscoresEl.appendChild(li);
+      });
+    }
+
+    // =====================
+    // GAME RESET
+    // =====================
     function resetGame() {
+      // Clear game state
       selectedRoute = [];
       totalFuel = 0;
-      scoreEl.textContent = "Fuel used: 0";
+      
+      // Reset UI
+      scoreEl.textContent = "Fuel: 0";
+      scoreEl.classList.remove('fuel-warning');
       document.querySelectorAll('.node').forEach(node => {
         node.style.background = '#f5af19';
+        node.style.transform = 'scale(1)';
       });
       document.querySelectorAll('.edge').forEach(edge => {
-        edge.style.background = 'rgba(78, 84, 200, 0.5)';
+        edge.classList.remove('active-edge');
       });
+      
+      // Reset timer if in time mode
+      if (gameMode === 'time') {
+        clearInterval(timerInterval);
+        startTimer();
+      }
     }
 
     // Start the game
