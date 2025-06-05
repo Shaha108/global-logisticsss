@@ -1,532 +1,812 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Global Delivery Master | 3D TSP Challenge</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
-  <script src="https://unpkg.com/globe.gl"></script>
-  <style>
-    /* ===== MODERN UI ===== */
-    :root {
-      --primary: #4361ee;
-      --secondary: #3a0ca3;
-      --accent: #f72585;
-      --dark: #1a1a2e;
-      --light: #f8f9fa;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced TSP Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--dark);
-      color: var(--light);
-      overflow: hidden;
-      height: 100vh;
-    }
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            max-width: 900px;
+            width: 100%;
+        }
 
-    #globe-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-    }
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
 
-    .game-ui {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 100;
-    }
+        @keyframes titleGlow {
+            from { text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+            to { text-shadow: 2px 2px 20px rgba(255,255,255,0.5); }
+        }
 
-    .panel {
-      background: rgba(26, 26, 46, 0.8);
-      backdrop-filter: blur(10px);
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      pointer-events: all;
-    }
+        .subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
 
-    .header {
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      text-align: center;
-    }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
 
-    .header h1 {
-      font-size: 2.5rem;
-      margin-bottom: 5px;
-      background: linear-gradient(90deg, #f72585, #4361ee);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-size: 16px;
+        }
 
-    .controls {
-      position: absolute;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 15px;
-    }
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #ff5252, #ffb74d);
+        }
 
-    button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      border-radius: 50px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
-      font-size: 1rem;
-    }
+        button:active {
+            transform: translateY(-1px);
+        }
 
-    button:hover {
-      background: var(--secondary);
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4);
-    }
+        .level-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
 
-    button:active {
-      transform: translateY(0);
-    }
+        .level-btn {
+            background: linear-gradient(45deg, #48cae4, #023e8a);
+            padding: 8px 16px;
+            font-size: 14px;
+        }
 
-    .stats {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      text-align: right;
-    }
+        .level-btn.active {
+            background: linear-gradient(45deg, #06ffa5, #00b4d8);
+            box-shadow: 0 0 20px rgba(6, 255, 165, 0.5);
+        }
 
-    .stats span {
-      display: block;
-      font-size: 1.2rem;
-      margin-bottom: 5px;
-    }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
 
-    #score {
-      color: #4cc9f0;
-      font-weight: bold;
-    }
+        .stat-item {
+            text-align: center;
+            animation: statPulse 2s ease-in-out infinite;
+        }
 
-    #cities-count {
-      color: #f72585;
-    }
+        @keyframes statPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
 
-    /* ===== ANIMATIONS ===== */
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
 
-    .pulse {
-      animation: pulse 2s infinite;
-    }
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #06ffa5;
+        }
 
-    .path-animation {
-      stroke-dasharray: 1000;
-      stroke-dashoffset: 1000;
-      animation: draw 3s linear forwards;
-    }
+        .game-canvas {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            margin: 0 auto;
+            display: block;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            cursor: crosshair;
+            transition: all 0.3s ease;
+        }
 
-    @keyframes draw {
-      to {
-        stroke-dashoffset: 0;
-      }
-    }
-  </style>
+        .game-canvas:hover {
+            box-shadow: 0 12px 35px rgba(0,0,0,0.3);
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.1rem;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .message.success {
+            background: linear-gradient(45deg, #06ffa5, #48cae4);
+            animation: successGlow 1s ease-in-out;
+        }
+
+        .message.fail {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+        }
+
+        @keyframes successGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(6, 255, 165, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(6, 255, 165, 0.8); }
+        }
+
+        .credit {
+            margin-top: 30px;
+            text-align: center;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 200px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #06ffa5;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particle 1s ease-out forwards;
+        }
+
+        @keyframes particle {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0) translate(var(--dx), var(--dy));
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- 3D Globe Container -->
-  <div id="globe-container"></div>
+    <div class="game-container">
+        <h1>🚚 Logistics Challenge</h1>
+        <p class="subtitle">Plan the shortest route to visit all warehouses and return to start</p>
+        
+        <div class="level-buttons">
+            <button class="level-btn active" onclick="setLevel('easy')">Easy (5 points)</button>
+            <button class="level-btn" onclick="setLevel('medium')">Medium (8 points)</button>
+            <button class="level-btn" onclick="setLevel('hard')">Hard (12 points)</button>
+        </div>
 
-  <!-- Game UI Overlay -->
-  <div class="game-ui">
-    <div class="header panel">
-      <h1>GLOBAL DELIVERY MASTER</h1>
-      <p>Optimize your worldwide delivery routes</p>
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-label">Current Distance</div>
+                <div class="stat-value" id="currentDistance">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Optimal Distance</div>
+                <div class="stat-value" id="optimalDistance">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Efficiency</div>
+                <div class="stat-value" id="efficiency">0%</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Points Visited</div>
+                <div class="stat-value" id="pointsVisited">0</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button onclick="restartGame()">🔄 Restart</button>
+            <button onclick="undoLastMove()">↶ Undo</button>
+            <button onclick="clearPath()">🗑️ Clear Path</button>
+            <button onclick="showHint()">💡 Hint</button>
+        </div>
+
+        <canvas id="gameCanvas" class="game-canvas" width="800" height="500"></canvas>
+
+        <div id="gameMessage" class="message"></div>
+
+        <div class="credit">
+            Created by Enhanced TSP Game Developer | Powered by Advanced Algorithms
+        </div>
     </div>
 
-    <div class="stats panel">
-      <span id="score">Fuel: 0</span>
-      <span id="cities-count">Cities: 0/8</span>
-      <span id="time">Time: 60s</span>
-    </div>
+    <script>
+        class TSPGame {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.points = [];
+                this.path = [];
+                this.level = 'easy';
+                this.gameComplete = false;
+                this.animationFrame = null;
+                this.particles = [];
+                
+                this.setupCanvas();
+                this.initGame();
+                this.setupEventListeners();
+                this.animate();
+            }
 
-    <div class="controls">
-      <button id="validate-btn">VALIDATE ROUTE</button>
-      <button id="reset-btn">RESET</button>
-      <button id="add-city-btn">ADD CITY</button>
-      <button id="time-attack-btn">TIME ATTACK</button>
-    </div>
-  </div>
+            setupCanvas() {
+                const rect = this.canvas.getBoundingClientRect();
+                const devicePixelRatio = window.devicePixelRatio || 1;
+                
+                this.canvas.width = 800 * devicePixelRatio;
+                this.canvas.height = 500 * devicePixelRatio;
+                this.canvas.style.width = '800px';
+                this.canvas.style.height = '500px';
+                
+                this.ctx.scale(devicePixelRatio, devicePixelRatio);
+                
+                // Mobile responsiveness
+                if (window.innerWidth < 850) {
+                    this.canvas.style.width = '100%';
+                    this.canvas.style.height = 'auto';
+                }
+            }
 
-  <script>
-    // =====================
-    // GAME CONFIG
-    // =====================
-    const CONFIG = {
-      INITIAL_CITIES: 8,
-      MAX_CITIES: 15,
-      FUEL_COST_PER_KM: 0.2,
-      EARTH_RADIUS_KM: 6371,
-      TIME_ATTACK_DURATION: 60
-    };
+            setupEventListeners() {
+                this.canvas.addEventListener('click', (e) => this.handleClick(e));
+                this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                window.addEventListener('resize', () => this.setupCanvas());
+            }
 
-    // Real-world major cities with coordinates
-    const REAL_CITIES = [
-      { name: "New York", lat: 40.7128, lng: -74.0060 },
-      { name: "London", lat: 51.5074, lng: -0.1278 },
-      { name: "Tokyo", lat: 35.6762, lng: 139.6503 },
-      { name: "Paris", lat: 48.8566, lng: 2.3522 },
-      { name: "Dubai", lat: 25.2048, lng: 55.2708 },
-      { name: "Sydney", lat: -33.8688, lng: 151.2093 },
-      { name: "Rio de Janeiro", lat: -22.9068, lng: -43.1729 },
-      { name: "Cape Town", lat: -33.9249, lng: 18.4241 },
-      { name: "Moscow", lat: 55.7558, lng: 37.6173 },
-      { name: "Beijing", lat: 39.9042, lng: 116.4074 }
-    ];
+            initGame() {
+                this.gameComplete = false;
+                this.path = [];
+                this.generatePoints();
+                this.calculateOptimalDistance();
+                this.updateStats();
+                this.hideMessage();
+            }
 
-    // =====================
-    // GAME STATE
-    // =====================
-    let cities = [];
-    let selectedRoute = [];
-    let totalFuel = 0;
-    let globe;
-    let pathObject;
-    let timeLeft = CONFIG.TIME_ATTACK_DURATION;
-    let timerInterval;
-    let isTimeAttack = false;
+            generatePoints() {
+                this.points = [];
+                const levels = {
+                    easy: 5,
+                    medium: 8,
+                    hard: 12
+                };
+                
+                const numPoints = levels[this.level];
+                const margin = 60;
+                const width = 800 - 2 * margin;
+                const height = 500 - 2 * margin;
 
-    // =====================
-    // INITIALIZE GLOBE
-    // =====================
-    function initGlobe() {
-      const container = document.getElementById('globe-container');
-      
-      globe = Globe()
-        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
-        .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
-        .backgroundColor('rgba(0,0,0,0)')
-        .showAtmosphere(true)
-        .atmosphereColor('rgba(100, 150, 255, 0.2)')
-        (container);
+                // Generate points with minimum distance constraints
+                for (let i = 0; i < numPoints; i++) {
+                    let point;
+                    let attempts = 0;
+                    
+                    do {
+                        point = {
+                            x: margin + Math.random() * width,
+                            y: margin + Math.random() * height,
+                            id: i,
+                            visited: false,
+                            pulse: Math.random() * Math.PI * 2
+                        };
+                        attempts++;
+                    } while (attempts < 100 && this.tooCloseToOthers(point));
+                    
+                    this.points.push(point);
+                }
 
-      // Add controls
-      globe.controls().autoRotate = true;
-      globe.controls().autoRotateSpeed = 0.5;
-      globe.controls().enableZoom = true;
-      globe.controls().enablePan = true;
+                // First point is the start point
+                this.points[0].isStart = true;
+            }
 
-      // Responsive sizing
-      window.addEventListener('resize', () => {
-        globe.width(window.innerWidth);
-        globe.height(window.innerHeight);
-      });
-    }
+            tooCloseToOthers(newPoint) {
+                const minDistance = 50;
+                return this.points.some(point => 
+                    this.distance(newPoint, point) < minDistance
+                );
+            }
 
-    // =====================
-    // GAME FUNCTIONS
-    // =====================
-    function initGame() {
-      initGlobe();
-      generateRandomCities(CONFIG.INITIAL_CITIES);
-      setupEventListeners();
-      updateUI();
-    }
+            distance(p1, p2) {
+                return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+            }
 
-    function generateRandomCities(count) {
-      cities = [];
-      
-      // Shuffle real cities and take the requested number
-      const shuffled = [...REAL_CITIES].sort(() => 0.5 - Math.random());
-      
-      for (let i = 0; i < Math.min(count, shuffled.length); i++) {
-        cities.push({
-          id: i,
-          name: shuffled[i].name,
-          lat: shuffled[i].lat,
-          lng: shuffled[i].lng,
-          size: 0.3
+            calculateOptimalDistance() {
+                // Simplified optimal calculation (for display purposes)
+                // In reality, TSP optimal solution requires complex algorithms
+                if (this.points.length < 2) return 0;
+                
+                let totalDistance = 0;
+                const visited = new Array(this.points.length).fill(false);
+                let current = 0;
+                visited[0] = true;
+                
+                for (let i = 1; i < this.points.length; i++) {
+                    let nearest = -1;
+                    let nearestDistance = Infinity;
+                    
+                    for (let j = 0; j < this.points.length; j++) {
+                        if (!visited[j]) {
+                            const dist = this.distance(this.points[current], this.points[j]);
+                            if (dist < nearestDistance) {
+                                nearestDistance = dist;
+                                nearest = j;
+                            }
+                        }
+                    }
+                    
+                    if (nearest !== -1) {
+                        totalDistance += nearestDistance;
+                        visited[nearest] = true;
+                        current = nearest;
+                    }
+                }
+                
+                // Return to start
+                totalDistance += this.distance(this.points[current], this.points[0]);
+                
+                this.optimalDistance = Math.round(totalDistance);
+            }
+
+            handleClick(e) {
+                if (this.gameComplete) return;
+                
+                const rect = this.canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * (800 / rect.width);
+                const y = (e.clientY - rect.top) * (500 / rect.height);
+                
+                const clickedPoint = this.getPointAt(x, y);
+                
+                if (clickedPoint && this.canVisitPoint(clickedPoint)) {
+                    this.visitPoint(clickedPoint);
+                    this.createParticles(x, y);
+                }
+            }
+
+            handleMouseMove(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * (800 / rect.width);
+                const y = (e.clientY - rect.top) * (500 / rect.height);
+                
+                this.mouseX = x;
+                this.mouseY = y;
+            }
+
+            getPointAt(x, y) {
+                const clickRadius = 25;
+                return this.points.find(point => 
+                    this.distance(point, {x, y}) <= clickRadius
+                );
+            }
+
+            canVisitPoint(point) {
+                if (this.path.length === 0) {
+                    return point.isStart;
+                }
+                
+                if (point.visited && !point.isStart) {
+                    return false;
+                }
+                
+                // Can return to start only if all points visited
+                if (point.isStart && this.path.length > 1) {
+                    return this.points.filter(p => !p.visited).length === 1; // Only start remains
+                }
+                
+                return !point.visited;
+            }
+
+            visitPoint(point) {
+                point.visited = true;
+                this.path.push(point);
+                
+                if (this.checkGameComplete()) {
+                    this.gameComplete = true;
+                    this.showCompletionMessage();
+                }
+                
+                this.updateStats();
+            }
+
+            checkGameComplete() {
+                return this.path.length > 1 && 
+                       this.path[this.path.length - 1].isStart && 
+                       this.points.every(p => p.visited);
+            }
+
+            createParticles(x, y) {
+                const colors = ['#06ffa5', '#48cae4', '#feca57', '#ff6b6b'];
+                
+                for (let i = 0; i < 8; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = x + 'px';
+                    particle.style.top = y + 'px';
+                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    const dx = (Math.random() - 0.5) * 100 + 'px';
+                    const dy = (Math.random() - 0.5) * 100 + 'px';
+                    particle.style.setProperty('--dx', dx);
+                    particle.style.setProperty('--dy', dy);
+                    
+                    document.body.appendChild(particle);
+                    
+                    setTimeout(() => particle.remove(), 1000);
+                }
+            }
+
+            getCurrentDistance() {
+                if (this.path.length < 2) return 0;
+                
+                let total = 0;
+                for (let i = 1; i < this.path.length; i++) {
+                    total += this.distance(this.path[i-1], this.path[i]);
+                }
+                return Math.round(total);
+            }
+
+            updateStats() {
+                const currentDist = this.getCurrentDistance();
+                const efficiency = this.optimalDistance > 0 ? 
+                    Math.round((this.optimalDistance / Math.max(currentDist, 1)) * 100) : 0;
+                
+                document.getElementById('currentDistance').textContent = currentDist;
+                document.getElementById('optimalDistance').textContent = this.optimalDistance;
+                document.getElementById('efficiency').textContent = efficiency + '%';
+                document.getElementById('pointsVisited').textContent = 
+                    `${this.path.length}/${this.points.length}`;
+            }
+
+            showCompletionMessage() {
+                const currentDist = this.getCurrentDistance();
+                const efficiency = Math.round((this.optimalDistance / currentDist) * 100);
+                
+                let message = '';
+                let messageClass = '';
+                
+                if (efficiency >= 90) {
+                    message = `🎉 Excellent! ${efficiency}% efficiency - You're a logistics master!`;
+                    messageClass = 'success';
+                } else if (efficiency >= 75) {
+                    message = `👍 Good job! ${efficiency}% efficiency - Well planned route!`;
+                    messageClass = 'success';
+                } else {
+                    message = `✅ Complete! ${efficiency}% efficiency - Try to optimize further!`;
+                    messageClass = 'fail';
+                }
+                
+                this.showMessage(message, messageClass);
+            }
+
+            showMessage(text, className = '') {
+                const messageEl = document.getElementById('gameMessage');
+                messageEl.textContent = text;
+                messageEl.className = `message show ${className}`;
+            }
+
+            hideMessage() {
+                const messageEl = document.getElementById('gameMessage');
+                messageEl.className = 'message';
+            }
+
+            animate() {
+                this.ctx.clearRect(0, 0, 800, 500);
+                
+                // Update point pulses
+                this.points.forEach(point => {
+                    point.pulse += 0.1;
+                });
+                
+                this.draw();
+                
+                this.animationFrame = requestAnimationFrame(() => this.animate());
+            }
+
+            draw() {
+                // Draw grid background
+                this.drawGrid();
+                
+                // Draw path lines with animation
+                this.drawPath();
+                
+                // Draw preview line to mouse
+                this.drawPreviewLine();
+                
+                // Draw points with pulse animation
+                this.drawPoints();
+                
+                // Draw labels and UI elements
+                this.drawLabels();
+            }
+
+            drawGrid() {
+                this.ctx.strokeStyle = 'rgba(150, 150, 150, 0.2)';
+                this.ctx.lineWidth = 1;
+                
+                for (let x = 0; x <= 800; x += 40) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, 0);
+                    this.ctx.lineTo(x, 500);
+                    this.ctx.stroke();
+                }
+                
+                for (let y = 0; y <= 500; y += 40) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(800, y);
+                    this.ctx.stroke();
+                }
+            }
+
+            drawPath() {
+                if (this.path.length < 2) return;
+                
+                this.ctx.strokeStyle = '#ff6b6b';
+                this.ctx.lineWidth = 4;
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+                
+                // Draw path with gradient
+                for (let i = 1; i < this.path.length; i++) {
+                    const gradient = this.ctx.createLinearGradient(
+                        this.path[i-1].x, this.path[i-1].y,
+                        this.path[i].x, this.path[i].y
+                    );
+                    gradient.addColorStop(0, '#ff6b6b');
+                    gradient.addColorStop(1, '#feca57');
+                    
+                    this.ctx.strokeStyle = gradient;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(this.path[i-1].x, this.path[i-1].y);
+                    this.ctx.lineTo(this.path[i].x, this.path[i].y);
+                    this.ctx.stroke();
+                    
+                    // Draw arrow
+                    this.drawArrow(this.path[i-1], this.path[i]);
+                }
+            }
+
+            drawArrow(from, to) {
+                const angle = Math.atan2(to.y - from.y, to.x - from.x);
+                const arrowLength = 15;
+                const arrowAngle = Math.PI / 6;
+                
+                const midX = (from.x + to.x) / 2;
+                const midY = (from.y + to.y) / 2;
+                
+                this.ctx.fillStyle = '#ff6b6b';
+                this.ctx.beginPath();
+                this.ctx.moveTo(midX, midY);
+                this.ctx.lineTo(
+                    midX - arrowLength * Math.cos(angle - arrowAngle),
+                    midY - arrowLength * Math.sin(angle - arrowAngle)
+                );
+                this.ctx.lineTo(
+                    midX - arrowLength * Math.cos(angle + arrowAngle),
+                    midY - arrowLength * Math.sin(angle + arrowAngle)
+                );
+                this.ctx.closePath();
+                this.ctx.fill();
+            }
+
+            drawPreviewLine() {
+                if (!this.mouseX || !this.mouseY || this.path.length === 0 || this.gameComplete) return;
+                
+                const lastPoint = this.path[this.path.length - 1];
+                
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                this.ctx.lineWidth = 2;
+                this.ctx.setLineDash([5, 5]);
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(lastPoint.x, lastPoint.y);
+                this.ctx.lineTo(this.mouseX, this.mouseY);
+                this.ctx.stroke();
+                
+                this.ctx.setLineDash([]);
+            }
+
+            drawPoints() {
+                this.points.forEach((point, index) => {
+                    const pulseSize = Math.sin(point.pulse) * 3;
+                    const baseRadius = point.isStart ? 20 : 15;
+                    const radius = baseRadius + pulseSize;
+                    
+                    // Point shadow
+                    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+                    this.ctx.beginPath();
+                    this.ctx.arc(point.x + 2, point.y + 2, radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    
+                    // Point fill
+                    if (point.isStart) {
+                        const gradient = this.ctx.createRadialGradient(
+                            point.x, point.y, 0, point.x, point.y, radius
+                        );
+                        gradient.addColorStop(0, '#06ffa5');
+                        gradient.addColorStop(1, '#48cae4');
+                        this.ctx.fillStyle = gradient;
+                    } else if (point.visited) {
+                        this.ctx.fillStyle = '#feca57';
+                    } else {
+                        this.ctx.fillStyle = '#667eea';
+                    }
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    
+                    // Point border
+                    this.ctx.strokeStyle = 'white';
+                    this.ctx.lineWidth = 3;
+                    this.ctx.stroke();
+                    
+                    // Point number
+                    this.ctx.fillStyle = 'white';
+                    this.ctx.font = 'bold 14px Arial';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.textBaseline = 'middle';
+                    this.ctx.fillText(point.isStart ? 'S' : index.toString(), point.x, point.y);
+                });
+            }
+
+            drawLabels() {
+                // Draw title for start point
+                if (this.points.length > 0) {
+                    const startPoint = this.points[0];
+                    this.ctx.fillStyle = '#333';
+                    this.ctx.font = 'bold 12px Arial';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillText('START/END', startPoint.x, startPoint.y - 35);
+                }
+            }
+
+            undoLastMove() {
+                if (this.path.length > 0) {
+                    const lastPoint = this.path.pop();
+                    if (!lastPoint.isStart || this.path.length === 0) {
+                        lastPoint.visited = false;
+                    }
+                    this.gameComplete = false;
+                    this.updateStats();
+                    this.hideMessage();
+                }
+            }
+
+            clearPath() {
+                this.path = [];
+                this.points.forEach(point => {
+                    point.visited = false;
+                });
+                this.gameComplete = false;
+                this.updateStats();
+                this.hideMessage();
+            }
+
+            showHint() {
+                if (this.path.length === 0) {
+                    this.showMessage('💡 Start by clicking the green START point!');
+                } else if (this.gameComplete) {
+                    this.showMessage('🎯 Game complete! Try a different difficulty level.');
+                } else {
+                    this.showMessage('💡 Visit the closest unvisited point to optimize your route!');
+                }
+            }
+
+            setLevel(level) {
+                this.level = level;
+                this.initGame();
+                
+                // Update button states
+                document.querySelectorAll('.level-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+            }
+        }
+
+        // Global game instance
+        let game;
+
+        // Initialize game when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            game = new TSPGame();
         });
-      }
-      
-      renderCities();
-    }
 
-    function renderCities() {
-      // Clear existing cities
-      globe.objectsData([]);
-      
-      // Add new cities with animation
-      globe.objectsData(cities)
-        .objectLat(d => d.lat)
-        .objectLng(d => d.lng)
-        .objectAltitude(d => 0.01)
-        .objectRadius(d => d.size)
-        .objectColor(d => selectedRoute.includes(d.id) ? '#f72585' : '#4361ee')
-        .objectLabel(d => d.name)
-        .objectAltitude(d => selectedRoute.includes(d.id) ? 0.02 : 0.01)
-        .objectThreeObject(d => {
-          const obj = new THREE.Mesh(
-            new THREE.SphereGeometry(d.size, 16, 16),
-            new THREE.MeshPhongMaterial({
-              color: new THREE.Color(selectedRoute.includes(d.id) ? '#f72585' : '#4361ee'),
-              emissive: '#111',
-              shininess: 10
-            })
-          );
-          obj.userData.id = d.id;
-          return obj;
-        });
-    }
-
-    function renderPath() {
-      // Clear existing path
-      if (pathObject) {
-        globe.scene().remove(pathObject);
-      }
-      
-      if (selectedRoute.length < 2) return;
-      
-      // Create path points
-      const routePoints = selectedRoute.map(id => {
-        const city = cities.find(c => c.id === id);
-        return [city.lat, city.lng];
-      });
-      
-      // Add closing loop if route is complete
-      if (selectedRoute.length === cities.length) {
-        const firstCity = cities.find(c => c.id === selectedRoute[0]);
-        routePoints.push([firstCity.lat, firstCity.lng]);
-      }
-      
-      // Create the path with animation
-      const curve = new THREE.CatmullRomCurve3(
-        routePoints.map(pt => {
-          const coord = globe.getCoords(pt[0], pt[1], 0.01);
-          return new THREE.Vector3(coord.x, coord.y, coord.z);
-        }),
-        false,
-        'centripetal',
-        0.5
-      );
-      
-      const points = curve.getPoints(50);
-      const geometry = new THREE.BufferGeometry().setFromPoints(points);
-      const material = new THREE.LineBasicMaterial({
-        color: 0xf72585,
-        linewidth: 3,
-        transparent: true,
-        opacity: 0.8
-      });
-      
-      pathObject = new THREE.Line(geometry, material);
-      globe.scene().add(pathObject);
-      
-      // Animate path drawing
-      geometry.setDrawRange(0, 0);
-      let drawCount = 0;
-      const total = geometry.attributes.position.count;
-      const interval = setInterval(() => {
-        drawCount += 2;
-        geometry.setDrawRange(0, Math.min(drawCount, total));
-        if (drawCount >= total) clearInterval(interval);
-      }, 30);
-    }
-
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-      // Haversine formula
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = 
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-        Math.sin(dLon/2) * Math.sin(dLon/2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-      return CONFIG.EARTH_RADIUS_KM * c;
-    }
-
-    function updateRoute() {
-      // Calculate total distance
-      totalFuel = 0;
-      for (let i = 0; i < selectedRoute.length - 1; i++) {
-        const city1 = cities.find(c => c.id === selectedRoute[i]);
-        const city2 = cities.find(c => c.id === selectedRoute[i+1]);
-        totalFuel += calculateDistance(city1.lat, city1.lng, city2.lat, city2.lng) * CONFIG.FUEL_COST_PER_KM;
-      }
-      
-      // Render updates
-      renderCities();
-      renderPath();
-      updateUI();
-    }
-
-    function updateUI() {
-      document.getElementById('score').textContent = `Fuel: ${totalFuel.toFixed(0)}`;
-      document.getElementById('cities-count').textContent = `Cities: ${selectedRoute.length}/${cities.length}`;
-    }
-
-    // =====================
-    // GAME MODES
-    // =====================
-    function startTimeAttack() {
-      isTimeAttack = true;
-      timeLeft = CONFIG.TIME_ATTACK_DURATION;
-      document.getElementById('time').style.display = 'block';
-      updateTimerDisplay();
-      
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        updateTimerDisplay();
-        
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          validateRoute();
+        // Global functions for buttons
+        function setLevel(level) {
+            game.setLevel(level);
+            
+            // Update button states
+            document.querySelectorAll('.level-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[onclick="setLevel('${level}')"]`).classList.add('active');
         }
-      }, 1000);
-    }
 
-    function updateTimerDisplay() {
-      const minutes = Math.floor(timeLeft / 60);
-      const seconds = timeLeft % 60;
-      document.getElementById('time').textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
-      
-      if (timeLeft <= 10) {
-        document.getElementById('time').style.color = '#ff6b6b';
-      }
-    }
-
-    // =====================
-    // EVENT HANDLERS
-    // =====================
-    function setupEventListeners() {
-      // City selection
-      document.getElementById('globe-container').addEventListener('click', (e) => {
-        const intersects = globe.raycaster().intersectObjects(globe.scene().children, true);
-        if (intersects.length > 0 && intersects[0].object.userData.id !== undefined) {
-          const cityId = intersects[0].object.userData.id;
-          selectCity(cityId);
+        function restartGame() {
+            game.initGame();
         }
-      });
 
-      // Buttons
-      document.getElementById('validate-btn').addEventListener('click', validateRoute);
-      document.getElementById('reset-btn').addEventListener('click', resetGame);
-      document.getElementById('add-city-btn').addEventListener('click', addCity);
-      document.getElementById('time-attack-btn').addEventListener('click', startTimeAttack);
-    }
-
-    function selectCity(cityId) {
-      if (!selectedRoute.includes(cityId)) {
-        selectedRoute.push(cityId);
-        updateRoute();
-        
-        // Fly to the selected city
-        const city = cities.find(c => c.id === cityId);
-        globe.pointOfView({ lat: city.lat, lng: city.lng, altitude: 2 }, 1000);
-        
-        // Pulse animation
-        const cityObj = globe.scene().children.find(obj => 
-          obj.userData && obj.userData.id === cityId
-        );
-        if (cityObj) {
-          const scale = cityObj.scale.clone();
-          cityObj.scale.set(scale.x * 1.5, scale.y * 1.5, scale.z * 1.5);
-          setTimeout(() => {
-            cityObj.scale.copy(scale);
-          }, 300);
+        function undoLastMove() {
+            game.undoLastMove();
         }
-      }
-    }
 
-    function validateRoute() {
-      if (selectedRoute.length === 0) {
-        alert("Please select at least one city!");
-        return;
-      }
+        function clearPath() {
+            game.clearPath();
+        }
 
-      if (selectedRoute.length < cities.length) {
-        alert(`You've only visited ${selectedRoute.length} out of ${cities.length} cities!`);
-        return;
-      }
-
-      if (selectedRoute[0] !== selectedRoute[selectedRoute.length - 1]) {
-        alert("Your route must end at the starting city!");
-        return;
-      }
-
-      let message = `✅ Route Complete!\nFuel Used: ${totalFuel.toFixed(0)}`;
-      
-      if (isTimeAttack) {
-        const timeBonus = Math.floor(timeLeft * 2);
-        message += `\n⏱️ Time Bonus: +${timeBonus}`;
-        totalFuel -= timeBonus;
-        message += `\nFinal Score: ${totalFuel.toFixed(0)}`;
-      }
-      
-      alert(message);
-      resetGame();
-    }
-
-    function resetGame() {
-      selectedRoute = [];
-      totalFuel = 0;
-      isTimeAttack = false;
-      clearInterval(timerInterval);
-      document.getElementById('time').style.display = 'none';
-      document.getElementById('time').style.color = '#f8f9fa';
-      updateRoute();
-    }
-
-    function addCity() {
-      if (cities.length >= CONFIG.MAX_CITIES) {
-        alert(`Maximum ${CONFIG.MAX_CITIES} cities reached!`);
-        return;
-      }
-      
-      // Get a city not already in our list
-      const availableCities = REAL_CITIES.filter(rc => 
-        !cities.some(c => c.name === rc.name)
-      );
-      
-      if (availableCities.length === 0) return;
-      
-      const newCity = availableCities[Math.floor(Math.random() * availableCities.length)];
-      
-      cities.push({
-        id: cities.length,
-        name: newCity.name,
-        lat: newCity.lat,
-        lng: newCity.lng,
-        size: 0.3
-      });
-      
-      renderCities();
-      updateUI();
-    }
-
-    // Start the game
-    initGame();
-  </script>
+        function showHint() {
+            game.showHint();
+        }
+    </script>
 </body>
 </html>
