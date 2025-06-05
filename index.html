@@ -3,155 +3,451 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Shakha's Logistics Page</title>
+    <title>SHAKHA'S LOGISTICS AND DIGITAL LITERACY PAGE</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: cornsilk;
-        text-align: center;
+      * {
         margin: 0;
         padding: 0;
+        box-sizing: border-box;
       }
 
-      .header {
-        background-image: url("https://raw.githubusercontent.com/Shaha108/global-logisticsss/72157f0c080f465de51b4fd34229262c952c3ef6/ff_logistics_001_misc_1920x1280.jpg");
-        background-repeat: no-repeat;
-        background-size: cover;
-        width: 100%;
-        height: 300px;
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        overflow-x: hidden;
         color: white;
-        padding: 50px 0;
-        font-size: 32px;
-        font-weight: bold;
-        height: 100px;
-        align-items: center;
       }
 
-      .nav-links {
-        margin-top: 100px;
-        display: grid;
-        justify-content: center;
-        align-items: center;
-        grid-template-columns: 1fr 1fr;
-        width: 80%;
-        max-width: 1000px;
-        gap: 20px;
+      /* Animated background particles */
+      .particles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
       }
 
-      .section {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        text-align: center;
+      .particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        animation: float 6s infinite linear;
       }
 
-      h1 {
-        margin-bottom: 10px;
+      @keyframes float {
+        0% {
+          transform: translateY(100vh) rotate(0deg);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100px) rotate(360deg);
+          opacity: 0;
+        }
       }
 
-      .section a {
+      /* Header with 3D effect */
+      .header {
+        position: relative;
+        background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,0,0,0.4)), 
+                    url("https://raw.githubusercontent.com/Shaha108/global-logisticsss/72157f0c080f465de51b4fd34229262c952c3ef6/ff_logistics_001_misc_1920x1280.jpg");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        height: 400px;
         display: flex;
-        flex-direction: column;
-        gap: 10px;
-        text-decoration: none;
-        margin-top: 10px;
-        font-weight: bold;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        z-index: 2;
+        position: relative;
+        overflow: hidden;
       }
 
-      /* Styles for Grades Box */
+      .header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+        animation: headerPulse 4s ease-in-out infinite;
+      }
+
+      @keyframes headerPulse {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 0.6; }
+      }
+
+      .header-title {
+        font-size: clamp(2rem, 5vw, 4rem);
+        font-weight: 900;
+        text-shadow: 0 0 20px rgba(255,255,255,0.5), 0 0 40px rgba(102, 126, 234, 0.8);
+        z-index: 3;
+        position: relative;
+        animation: titleGlow 3s ease-in-out infinite;
+        background: linear-gradient(45deg, #fff, #667eea, #764ba2, #fff);
+        background-size: 400% 400%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: titleGlow 3s ease-in-out infinite, gradientShift 8s ease-in-out infinite;
+      }
+
+      @keyframes titleGlow {
+        0%, 100% { 
+          filter: drop-shadow(0 0 10px rgba(255,255,255,0.8));
+          transform: scale(1);
+        }
+        50% { 
+          filter: drop-shadow(0 0 25px rgba(102, 126, 234, 1));
+          transform: scale(1.02);
+        }
+      }
+
+      @keyframes gradientShift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+      }
+
+      /* Main container */
+      .main-container {
+        position: relative;
+        z-index: 2;
+        padding: 50px 20px;
+      }
+
+      /* Grades container with glassmorphism */
       #grades-container {
-        margin: 30px auto;
-        max-width: 600px;
-        background: white;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin: 40px auto;
+        max-width: 700px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 30px;
+        border-radius: 25px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
         text-align: left;
+        animation: containerFloat 6s ease-in-out infinite;
+        transform-style: preserve-3d;
+        transition: all 0.3s ease;
+      }
+
+      #grades-container:hover {
+        transform: translateY(-10px) rotateX(5deg);
+        box-shadow: 0 35px 70px rgba(0, 0, 0, 0.4);
+      }
+
+      @keyframes containerFloat {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
       }
 
       #grades-container h2 {
-        color: #2c3e50;
+        color: #fff;
+        font-size: 2rem;
+        margin-bottom: 20px;
+        text-shadow: 0 0 15px rgba(255,255,255,0.5);
+        text-align: center;
+      }
+
+      #grades-list {
+        list-style: none;
+        padding: 0;
       }
 
       #grades-list li {
-        line-height: 1.6;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 10px 0;
+        padding: 15px 20px;
+        border-radius: 15px;
+        border-left: 4px solid #667eea;
         font-size: 16px;
+        transition: all 0.3s ease;
+        animation: slideIn 0.5s ease forwards;
+        opacity: 0;
+        transform: translateX(-50px);
       }
 
-      /* Total Score Styling */
+      #grades-list li:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateX(10px) scale(1.02);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      @keyframes slideIn {
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      /* Total Score with 3D effect */
       #total-score {
-        background: #e8f5e8;
-        padding: 15px;
-        margin-top: 20px;
-        border-radius: 8px;
-        border: 2px solid #4CAF50;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+        backdrop-filter: blur(15px);
+        padding: 25px;
+        margin-top: 30px;
+        border-radius: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
         text-align: center;
+        animation: scoreGlow 4s ease-in-out infinite;
+        transform-style: preserve-3d;
+        transition: all 0.3s ease;
+      }
+
+      #total-score:hover {
+        transform: scale(1.05) rotateY(5deg);
+      }
+
+      @keyframes scoreGlow {
+        0%, 100% { 
+          box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+        50% { 
+          box-shadow: 0 0 40px rgba(118, 75, 162, 0.8), inset 0 0 20px rgba(255,255,255,0.1);
+        }
       }
 
       #total-score h3 {
         margin: 0;
-        color: #2e7d32;
-        font-size: 24px;
+        color: #fff;
+        font-size: 1.5rem;
+        text-shadow: 0 0 10px rgba(255,255,255,0.5);
       }
 
       #total-score-value {
-        font-size: 32px;
+        font-size: 3rem;
         font-weight: bold;
-        color: #1b5e20;
-        margin-top: 10px;
+        color: #fff;
+        margin-top: 15px;
+        text-shadow: 0 0 20px rgba(255,255,255,0.8);
+        animation: numberPulse 2s ease-in-out infinite;
+      }
+
+      @keyframes numberPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+      }
+
+      /* Navigation with 3D cards */
+      .nav-links {
+        display: grid;
+        justify-content: center;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        max-width: 1200px;
+        margin: 50px auto;
+        gap: 40px;
+        padding: 0 20px;
+      }
+
+      .section {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        padding: 30px;
+        border-radius: 25px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transform-style: preserve-3d;
+        animation: cardFloat 8s ease-in-out infinite;
+      }
+
+      .section:nth-child(1) { animation-delay: -1s; }
+      .section:nth-child(2) { animation-delay: -3s; }
+
+      @keyframes cardFloat {
+        0%, 100% { 
+          transform: translateY(0px) rotateX(0deg);
+        }
+        25% { 
+          transform: translateY(-10px) rotateX(2deg);
+        }
+        75% { 
+          transform: translateY(-5px) rotateX(-1deg);
+        }
+      }
+
+      .section:hover {
+        transform: translateY(-20px) rotateX(10deg) rotateY(5deg) scale(1.03);
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4);
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .section h1 {
+        margin-bottom: 25px;
+        font-size: 1.8rem;
+        color: #fff;
+        text-shadow: 0 0 15px rgba(255,255,255,0.5);
+        animation: headerShine 3s ease-in-out infinite;
+      }
+
+      @keyframes headerShine {
+        0%, 100% { text-shadow: 0 0 15px rgba(255,255,255,0.5); }
+        50% { text-shadow: 0 0 25px rgba(102, 126, 234, 0.8), 0 0 35px rgba(118, 75, 162, 0.6); }
+      }
+
+      .section a {
+        display: block;
+        padding: 15px 20px;
+        margin: 15px 0;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        text-decoration: none;
+        border-radius: 15px;
+        font-weight: 600;
+        font-size: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .section a::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+      }
+
+      .section a:hover::before {
+        left: 100%;
+      }
+
+      .section a:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateX(10px) scale(1.05);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        text-shadow: 0 0 10px rgba(255,255,255,0.8);
+      }
+
+      /* Responsive design */
+      @media (max-width: 768px) {
+        .nav-links {
+          grid-template-columns: 1fr;
+          gap: 30px;
+        }
+        
+        .header-title {
+          font-size: 2.5rem;
+        }
+        
+        #grades-container {
+          margin: 30px 15px;
+          padding: 25px;
+        }
+        
+        .section {
+          padding: 25px;
+        }
+      }
+
+      /* Loading animation */
+      .loading {
+        animation: loadingPulse 1.5s ease-in-out infinite;
+      }
+
+      @keyframes loadingPulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
       }
     </style>
   </head>
   <body>
-    <div class="header">Shakha's Logistics Page / Digital Literacy</div>
+    <!-- Animated particles background -->
+    <div class="particles" id="particles"></div>
 
-    <!-- Grades Display Box -->
-    <div id="grades-container">
-      <h2>Your Grades</h2>
-      <ul id="grades-list">
-        <li>Loading grades...</li>
-      </ul>
-      <!-- Total Score Display -->
-      <div id="total-score">
-        <h3>Total Score</h3>
-        <div id="total-score-value">Calculating...</div>
+    <div class="header">
+      <h1 class="header-title">SHAKHA'S LOGISTICS AND DIGITAL LITERACY PAGE</h1>
+    </div>
+
+    <div class="main-container">
+      <!-- Grades Display Box -->
+      <div id="grades-container">
+        <h2>🎓 Your Grades</h2>
+        <ul id="grades-list">
+          <li class="loading">Loading grades...</li>
+        </ul>
+        <!-- Total Score Display -->
+        <div id="total-score">
+          <h3>📊 Total Score</h3>
+          <div id="total-score-value">Calculating...</div>
+        </div>
+      </div>
+
+      <div class="nav-links">
+        <div class="excel-assignments section">
+          <h1>💻 DIGITAL LITERACY</h1>
+          <a href="https://docs.google.com/document/d/119rv4JSu2-IwRsxTIaop3e6B1BxLXm_lhg_vch5eKjU/edit?usp=sharing">🔍 Find Me Assignment</a>
+          <a href="https://drive.google.com/drive/folders/19fbc3e2DM6bu191IKS5NHSANSwWKZ3pj?usp=sharing">📚 Virtual library</a>
+          <a href="https://shaha108.github.io/dungeoncraw-html/">🏰 DUNGEON CRAWL</a>  
+          <a href="modified-cryptography-showcase.html">🔐 CRYPTO TOOL AND DOCUMENTATION</a>
+          <a href="APPSCRIPT.html">📱 APP SCRIPT</a> 
+          <a href="hiflumen.html">💡 HIF LUMEN</a> 
+          <a href="LUXURRCARS.html">🚗 self project</a> 
+          <a href="aitutor.html">🤖 AI TUTOR</a> 
+        </div>
+        <div class="global-logistics section">
+          <h1>🌍 GLOBAL LOGISTICS</h1>
+          <a href="https://shaha108.github.io/ibm-flowchart/">📊 Logistics Flowchart</a>
+          <a href="https://shaha108.github.io/leadTime-answers/">⏱️ Lead time and Answers</a>
+          <a href="adventuregameindex.html">🎮 Adventure Game</a>
+          <a href="gamedesign.html">🎨 DESIGN THINKING</a>
+          <a href="PROBLEMRESEARCH.html">🔬 Problem Research</a> 
+          <a href="ABC_CLASSIFICATION.html">📋 ABC Classification</a> 
+          <a href="https://docs.google.com/spreadsheets/d/12J34Le4YHFJV0WZFZZrB3jSkPsZmzkoCwaCr0YrvX7Y/edit?gid=0#gid=0">💊 COUNTERFEIT SUPPLEMENTS</a> 
+        </div>
       </div>
     </div>
 
-    <div class="nav-links">
-      <div class="excel-assignments section">
-        <h1>DIGITAL LITERACY</h1>
-        <a href="https://docs.google.com/document/d/119rv4JSu2-IwRsxTIaop3e6B1BxLXm_lhg_vch5eKjU/edit?usp=sharing">Find Me Assignment</a>
-        <a href="https://drive.google.com/drive/folders/19fbc3e2DM6bu191IKS5NHSANSwWKZ3pj?usp=sharing">Virtual library</a>
-        <a href="https://shaha108.github.io/dungeoncraw-html/">DUNGEON CRAWL</a>  
-        <a href="modified-cryptography-showcase.html">CRYPTO TOOL AND DOCUMENTATION</a>
-        <a href="APPSCRIPT.html">APP SCRIPT</a> 
-        <a href="hiflumen.html">HIF LUMEN</a> 
-        <a href="LUXURRCARS.html">self project</a> 
-        <a href="aitutor.html">AI TUTOR</a> 
-      </div>
-      <div class="global-logistics section">
-        <h1>GLOBAL LOGISTICS</h1>
-        <a href="https://shaha108.github.io/ibm-flowchart/">Logistics Flowchart</a>
-        <a href="https://shaha108.github.io/leadTime-answers/">Lead time and Answers</a>
-        <a href="adventuregameindex.html">Adventure Game</a>
-        <a href="gamedesign.html">DESIGN THINKING</a>
-        <a href="PROBLEMRESEARCH.html">Problem Research</a> 
-        <a href="ABC_CLASSIFICATION.html">ABC Classification</a> 
-        <a href="https://docs.google.com/spreadsheets/d/12J34Le4YHFJV0WZFZZrB3jSkPsZmzkoCwaCr0YrvX7Y/edit?gid=0#gid=0">COUNTERFEIT SUPPLEMENTS</a> 
-      </div>
-    </div>
-
-    <!-- SCRIPT to fetch grades -->
+    <!-- SCRIPT to fetch grades and create particles -->
     <script>
       const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzongyNzLarAU6Egj9lv-MgrAp6U2CcHj0M_ysTaXoZFAkgrBwDdHALaKLx9J0Hz2ZhKA/exec";
+
+      // Create animated particles
+      function createParticles() {
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 50;
+
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'particle';
+          particle.style.left = Math.random() * 100 + '%';
+          particle.style.animationDelay = Math.random() * 6 + 's';
+          particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+          particlesContainer.appendChild(particle);
+        }
+      }
+
+      // Animate list items on load
+      function animateListItems() {
+        const listItems = document.querySelectorAll('#grades-list li');
+        listItems.forEach((item, index) => {
+          item.style.animationDelay = (index * 0.1) + 's';
+        });
+      }
 
       async function fetchGrades() {
         const container = document.getElementById('grades-list');
         const totalScoreElement = document.getElementById('total-score-value');
         
-        container.innerHTML = '<li>Loading grades...</li>';
+        container.innerHTML = '<li class="loading">Loading grades...</li>';
         totalScoreElement.textContent = 'Calculating...';
         
         try {
@@ -159,43 +455,38 @@
           if (!response.ok) throw new Error('Network response was not ok');
           const data = await response.json();
 
-          // Debug: Console'da ma'lumotlarni ko'rsatish
           console.log('Received data:', data);
 
           container.innerHTML = '';
           let totalScore = 0;
           let validScores = 0;
 
-          data.forEach(student => {
+          data.forEach((student, index) => {
             const li = document.createElement('li');
-            // Agar grade_name va grade_received mavjud bo'lsa, ularni ishlatamiz
             const gradeName = student.grade_name || student.name || 'Assignment';
             const gradeReceived = student.grade_received || student.grade || 0;
             const maxGrade = student.max_grade || '';
             
-            // Ko'rsatish uchun matn
             let displayText = `${gradeName}: ${gradeReceived}`;
             if (maxGrade) {
               displayText += ` / ${maxGrade}`;
             }
             
             li.textContent = displayText;
+            li.style.animationDelay = (index * 0.1) + 's';
             container.appendChild(li);
             
-            // Bahoni raqamga aylantirish
             let gradeValue = 0;
             
             if (typeof gradeReceived === 'number') {
               gradeValue = gradeReceived;
             } else if (typeof gradeReceived === 'string') {
-              // Raqamlarni ajratib olish
               const numMatch = gradeReceived.toString().match(/[\d.]+/);
               if (numMatch) {
                 gradeValue = parseFloat(numMatch[0]);
               }
             }
             
-            // Faqat to'g'ri raqamlarni qo'shish
             if (!isNaN(gradeValue) && gradeValue >= 0) {
               totalScore += gradeValue;
               validScores++;
@@ -204,7 +495,6 @@
             console.log(`Assignment: ${gradeName}, Grade Received: ${gradeReceived}, Parsed: ${gradeValue}`);
           });
 
-          // Natijani ko'rsatish
           if (validScores > 0) {
             totalScoreElement.textContent = totalScore.toFixed(2);
           } else {
@@ -214,13 +504,17 @@
           console.log(`Total Score: ${totalScore}, Valid Scores: ${validScores}`);
           
         } catch (error) {
-          container.innerHTML = '<li>Error loading grades. Please try again later.</li>';
+          container.innerHTML = '<li>❌ Error loading grades. Please try again later.</li>';
           totalScoreElement.textContent = 'Connection Error';
           console.error('Fetch error:', error);
         }
       }
 
-      fetchGrades();
+      // Initialize everything
+      document.addEventListener('DOMContentLoaded', function() {
+        createParticles();
+        fetchGrades();
+      });
     </script>
   </body>
 </html>
