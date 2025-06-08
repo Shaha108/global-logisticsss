@@ -1,379 +1,307 @@
-.enhancement-item h3 {
-margin-bottom: 15px;
-color: #2d3748;
-font-weight: 600;
-}
-
-```
-    .enhancement-item p {
-        color: #2d3748;
-        font-weight: 500;
-    }<!DOCTYPE html>
-```
+<!DOCTYPE html>
 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Review Web App - PRD</title>
+    <title>FoodZone - Order Review Web App PRD</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 ```
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
     body {
-        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family: 'Inter', sans-serif;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: #333;
         overflow-x: hidden;
     }
-
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 20px;
-    }
-
-    /* Header */
-    .header {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        padding: 20px 0;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .header-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .logo {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: white;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .logo::before {
-        content: "🛍️";
-        font-size: 2rem;
-        animation: bounce 2s infinite;
-    }
-
-    .github-link {
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
-        padding: 10px 20px;
-        border-radius: 50px;
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .github-link:hover {
-        background: rgba(255, 255, 255, 0.3);
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Hero Section */
+    
     .hero {
-        text-align: center;
-        padding: 80px 0;
-        color: white;
+        position: relative;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #ff6b6b, #ffa726, #66bb6a, #42a5f5);
+        background-size: 400% 400%;
+        animation: gradientShift 8s ease infinite;
+        overflow: hidden;
     }
-
+    
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    .hero-content {
+        text-align: center;
+        z-index: 10;
+        color: white;
+        animation: fadeInUp 1.2s ease-out;
+    }
+    
     .hero h1 {
-        font-size: 3.5rem;
-        font-weight: 800;
-        margin-bottom: 20px;
-        background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+        font-size: clamp(3rem, 8vw, 8rem);
+        font-weight: 900;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        letter-spacing: -0.02em;
+        background: linear-gradient(45deg, #fff, #f0f0f0);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        animation: fadeInUp 1s ease;
     }
-
+    
     .hero p {
-        font-size: 1.3rem;
+        font-size: clamp(1.2rem, 3vw, 2rem);
         opacity: 0.9;
-        max-width: 600px;
-        margin: 0 auto 40px;
-        animation: fadeInUp 1s ease 0.2s both;
+        margin-bottom: 2rem;
+        font-weight: 300;
     }
-
-    .hero-icons {
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-        margin-top: 40px;
-        animation: fadeInUp 1s ease 0.4s both;
+    
+    .cta-button {
+        display: inline-block;
+        padding: 1rem 3rem;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50px;
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
     }
-
-    .hero-icon {
-        font-size: 3rem;
-        animation: float 3s ease-in-out infinite;
+    
+    .cta-button:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
-
-    .hero-icon:nth-child(2) { animation-delay: -1s; }
-    .hero-icon:nth-child(3) { animation-delay: -2s; }
-
-    /* Content Sections */
+    
+    .floating-elements {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .floating-element {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(180deg); }
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 4rem 2rem;
+    }
+    
     .section {
-        background: white;
-        margin: 40px 0;
+        margin-bottom: 4rem;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
         border-radius: 20px;
-        padding: 50px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        padding: 3rem;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .section.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .section h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .section h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 2rem 0 1rem;
+        color: #333;
+    }
+    
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin: 2rem 0;
+    }
+    
+    .feature-card {
+        background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+        padding: 2rem;
+        border-radius: 15px;
+        border-left: 5px solid #667eea;
+        transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-        transition: all 0.3s ease;
     }
-
-    .section:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
-    }
-
-    .section::before {
+    
+    .feature-card::before {
         content: '';
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
-        height: 4px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        opacity: 0;
+        transition: opacity 0.3s ease;
     }
-
-    .section h2 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 30px;
-        color: #2d3748;
-        display: flex;
-        align-items: center;
-        gap: 15px;
+    
+    .feature-card:hover::before {
+        opacity: 1;
     }
-
-    .section p {
-        color: #4a5568;
-        line-height: 1.7;
-    }
-
-    .section-icon {
-        font-size: 2.5rem;
-        animation: pulse 2s infinite;
-    }
-
-    /* Feature Cards */
-    .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 30px;
-        margin-top: 40px;
-    }
-
-    .feature-card {
-        background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
-        padding: 30px;
-        border-radius: 15px;
-        border: 1px solid rgba(102, 126, 234, 0.1);
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-
+    
     .feature-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(102, 126, 234, 0.2);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
     }
-
-    .feature-card::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-        transform: rotate(45deg);
-        transition: all 0.6s ease;
-        opacity: 0;
-    }
-
-    .feature-card:hover::before {
-        animation: shimmer 0.6s ease;
-    }
-
-    .feature-card h3 {
-        font-size: 1.5rem;
+    
+    .feature-card h4 {
+        font-size: 1.3rem;
         font-weight: 600;
-        margin-bottom: 15px;
-        color: #2d3748;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .feature-card p {
-        color: #4a5568;
-        line-height: 1.6;
-        margin-bottom: 15px;
-    }
-
-    .feature-list {
-        list-style: none;
-        padding: 0;
-    }
-
-    .feature-list li {
-        padding: 8px 0;
-        color: #2d3748;
+        margin-bottom: 1rem;
+        color: #333;
         position: relative;
-        padding-left: 25px;
+        z-index: 1;
     }
-
-    .feature-list li::before {
-        content: "✓";
-        position: absolute;
-        left: 0;
-        color: #667eea;
-        font-weight: bold;
+    
+    .feature-card p, .feature-card ul {
+        color: #666;
+        line-height: 1.6;
+        position: relative;
+        z-index: 1;
     }
-
-    /* User Flow */
-    .flow-steps {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 30px;
-        margin-top: 40px;
+    
+    .feature-card ul {
+        padding-left: 1.5rem;
     }
-
-    .flow-step {
+    
+    .feature-card li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .tech-stack {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin: 2rem 0;
+    }
+    
+    .tech-badge {
         background: linear-gradient(135deg, #667eea, #764ba2);
         color: white;
-        padding: 30px;
-        border-radius: 15px;
-        text-align: center;
-        position: relative;
+        padding: 0.5rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 500;
+        font-size: 0.9rem;
         transition: all 0.3s ease;
     }
-
-    .flow-step:hover {
+    
+    .tech-badge:hover {
         transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
     }
-
-    .flow-step-number {
-        background: rgba(255, 255, 255, 0.2);
-        width: 50px;
-        height: 50px;
+    
+    .flow-diagram {
+        background: linear-gradient(135deg, #ffecd2, #fcb69f);
+        padding: 2rem;
+        border-radius: 15px;
+        margin: 2rem 0;
+    }
+    
+    .flow-step {
+        display: flex;
+        align-items: center;
+        margin: 1rem 0;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .flow-step:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: translateX(10px);
+    }
+    
+    .step-number {
+        background: #667eea;
+        color: white;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 20px;
-        font-size: 1.5rem;
-        font-weight: bold;
+        font-weight: 600;
+        margin-right: 1rem;
+        flex-shrink: 0;
     }
-
-    .flow-step h3 {
-        font-size: 1.3rem;
-        margin-bottom: 15px;
-    }
-
-    /* Tech Stack */
-    .tech-stack {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        justify-content: center;
-        margin-top: 40px;
-    }
-
-    .tech-badge {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        padding: 15px 25px;
-        border-radius: 50px;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        transition: all 0.3s ease;
-    }
-
-    .tech-badge:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-    }
-
-    /* Future Enhancements */
-    .enhancement-grid {
+    
+    .requirements-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 25px;
-        margin-top: 40px;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
     }
-
-    .enhancement-item {
-        background: linear-gradient(135deg, #ffeaa7, #fab1a0);
-        padding: 25px;
+    
+    .requirement-item {
+        background: rgba(255, 255, 255, 0.8);
+        padding: 1.5rem;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+    }
+    
+    .enhancement-list {
+        background: linear-gradient(135deg, #a8edea, #fed6e3);
+        padding: 2rem;
         border-radius: 15px;
-        text-align: center;
+        margin: 2rem 0;
+    }
+    
+    .enhancement-item {
+        background: rgba(255, 255, 255, 0.6);
+        margin: 1rem 0;
+        padding: 1rem;
+        border-radius: 8px;
         transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
     }
-
+    
     .enhancement-item:hover {
-        transform: rotate(2deg) scale(1.05);
+        background: rgba(255, 255, 255, 0.8);
+        transform: translateX(5px);
     }
-
-    .enhancement-item::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transform: rotate(45deg);
-        transition: all 0.6s ease;
-        opacity: 0;
-    }
-
-    .enhancement-item:hover::before {
-        animation: shimmer 0.6s ease;
-    }
-
-    /* Footer */
-    .footer {
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        text-align: center;
-        padding: 40px 0;
-        margin-top: 80px;
-    }
-
-    .footer-content {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 20px;
-        flex-wrap: wrap;
-    }
-
-    /* Animations */
+    
     @keyframes fadeInUp {
         from {
             opacity: 0;
@@ -384,70 +312,42 @@ font-weight: 600;
             transform: translateY(0);
         }
     }
-
-    @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% {
-            transform: translateY(0);
-        }
-        40% {
-            transform: translateY(-10px);
-        }
-        60% {
-            transform: translateY(-5px);
-        }
+    
+    .scroll-indicator {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 100;
     }
-
-    @keyframes float {
-        0% {
-            transform: translateY(0px);
-        }
-        50% {
-            transform: translateY(-20px);
-        }
-        100% {
-            transform: translateY(0px);
-        }
+    
+    .scroll-indicator:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
     }
-
-    @keyframes pulse {
-        0% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(1.1);
-        }
-        100% {
-            transform: scale(1);
-        }
-    }
-
-    @keyframes shimmer {
-        0% {
-            opacity: 0;
-            transform: translateX(-100%) translateY(-100%) rotate(45deg);
-        }
-        50% {
-            opacity: 1;
-        }
-        100% {
-            opacity: 0;
-            transform: translateX(100%) translateY(100%) rotate(45deg);
-        }
-    }
-
-    /* Responsive */
+    
     @media (max-width: 768px) {
-        .hero h1 {
-            font-size: 2.5rem;
+        .container {
+            padding: 2rem 1rem;
         }
         
         .section {
-            padding: 30px 20px;
-            margin: 20px 10px;
+            padding: 2rem 1.5rem;
         }
         
-        .section h2 {
-            font-size: 2rem;
+        .feature-grid {
+            grid-template-columns: 1fr;
         }
     }
 </style>
@@ -455,360 +355,221 @@ font-weight: 600;
 
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">Order Review App</div>
-                <a href="https://shaha108.github.io/food_zone_app/" class="github-link">📁 Food Zone</a>
-            </div>
+    <div class="hero">
+        <div class="floating-elements"></div>
+        <div class="hero-content">
+            <h1>FOODZONE</h1>
+            <p>Order Review Web Application</p>
+            <a href="https://shaha108.github.io/food_zone_app/" class="cta-button" target="_blank">🚀 View Live Project</a>
         </div>
-    </header>
+    </div>
 
 ```
-<!-- Hero Section -->
-<section class="hero">
-    <div class="container">
-        <h1>Product Requirements Document</h1>
-        <p>A comprehensive guide for building a modern, responsive order review web application with local storage persistence and intuitive user experience.</p>
-        
-        <!-- Project Link -->
-        <div style="margin: 30px 0; padding: 25px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.2);">
-            <h3 style="color: white; font-size: 1.3rem; margin-bottom: 15px; font-weight: 600;">🚀 Live Project</h3>
-            <a href="https://shaha108.github.io/food_zone_app/" 
-               target="_blank"
-               style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px 30px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 1.1rem; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);"
-               onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 40px rgba(0, 0, 0, 0.3)'"
-               onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 30px rgba(0, 0, 0, 0.2)'">
-                <span style="font-size: 1.3rem;">🍕</span>
-                Food Zone App
-                <span style="font-size: 1rem;">→</span>
-            </a>
-            <p style="color: rgba(255, 255, 255, 0.8); margin-top: 15px; font-size: 0.95rem;">
-                View the complete source code and live implementation
-            </p>
+<div class="container">
+    <section class="section">
+        <h2>📋 Product Requirements Document</h2>
+        <div class="feature-card">
+            <h4>Product Name</h4>
+            <p><strong>Order Review Web App</strong></p>
         </div>
-        
-        <div class="hero-icons">
-            <div class="hero-icon">🛒</div>
-            <div class="hero-icon">📱</div>
-            <div class="hero-icon">✨</div>
+        <div class="feature-card">
+            <h4>Purpose</h4>
+            <p>Enable users to view, modify, and finalize their order stored in the browser's localStorage with an intuitive and responsive interface.</p>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Purpose Section -->
-<section class="section">
-    <div class="container">
-        <h2><span class="section-icon">🎯</span>Purpose</h2>
-        <p style="font-size: 1.2rem; line-height: 1.8; color: #555;">
-            Enable users to view, modify, and finalize their order stored in the browser's localStorage with a seamless, intuitive interface that works across all devices.
-        </p>
-    </div>
-</section>
-
-<!-- Features Section -->
-<section class="section">
-    <div class="container">
-        <h2><span class="section-icon">⚡</span>Core Features</h2>
-        <div class="features-grid">
+    <section class="section">
+        <h2>✨ Core Features</h2>
+        <div class="feature-grid">
             <div class="feature-card">
-                <h3>📋 Display Order Items</h3>
-                <p>Comprehensive order visualization with smart layout adaptation.</p>
-                <ul class="feature-list">
+                <h4>🍽️ Display Order Items</h4>
+                <ul>
                     <li>Fetch cart items from localStorage under key "cart"</li>
-                    <li>Show each item with emoji, name, price, and ingredients</li>
+                    <li>Show each item with emoji, name, price, and optional ingredients</li>
                     <li>Responsive grid layout (1 to 3 columns)</li>
-                    <li>Interactive hover effects with additional info</li>
+                    <li>Hover effects reveal additional information</li>
                 </ul>
             </div>
-
             <div class="feature-card">
-                <h3>🗑️ Clear Order Button</h3>
-                <p>Quick and safe order clearing functionality.</p>
-                <ul class="feature-list">
-                    <li>Prominent "Clear Order" button placement</li>
-                    <li>Clears localStorage "cart" on click</li>
-                    <li>Automatic page reload to update UI</li>
-                    <li>Smart empty cart message display</li>
+                <h4>🗑️ Clear Order Button</h4>
+                <ul>
+                    <li>Button labeled "Clear Order"</li>
+                    <li>Clears localStorage "cart" and reloads page</li>
+                    <li>Shows message if cart is empty</li>
+                    <li>Instant UI update</li>
                 </ul>
             </div>
-
             <div class="feature-card">
-                <h3>✅ Finish Order Button</h3>
-                <p>Complete order processing with price calculation.</p>
-                <ul class="feature-list">
-                    <li>"Finish Order" button next to Clear Order</li>
-                    <li>Automatic total price calculation</li>
-                    <li>Success message with order summary</li>
-                    <li>Convenient "Back to Menu" navigation</li>
+                <h4>✅ Finish Order Button</h4>
+                <ul>
+                    <li>Calculate total price from cart items</li>
+                    <li>Replace container with success message</li>
+                    <li>Clear the cart in localStorage</li>
+                    <li>Provide "Back to Menu" link</li>
                 </ul>
             </div>
-
             <div class="feature-card">
-                <h3>📱 Responsive Design</h3>
-                <p>Modern, accessible design that works everywhere.</p>
-                <ul class="feature-list">
-                    <li>Tailwind CSS for rapid UI development</li>
-                    <li>Fully responsive across all screen sizes</li>
-                    <li>High contrast, readable text</li>
-                    <li>Custom cursor effects for engagement</li>
+                <h4>📱 Responsive Design</h4>
+                <ul>
+                    <li>Tailwind CSS for responsive UI</li>
+                    <li>Readable text and clickable buttons</li>
+                    <li>Custom cursor for unique UX</li>
+                    <li>Cross-device compatibility</li>
                 </ul>
             </div>
-
             <div class="feature-card">
-                <h3>💬 User Feedback</h3>
-                <p>Clear communication and helpful user guidance.</p>
-                <ul class="feature-list">
-                    <li>Empty cart state messaging</li>
-                    <li>Interactive hover overlays</li>
-                    <li>Real-time UI updates</li>
-                    <li>Intuitive navigation breadcrumbs</li>
+                <h4>💬 User Feedback</h4>
+                <ul>
+                    <li>"Your cart is empty" message</li>
+                    <li>Hover overlays with item details</li>
+                    <li>Success confirmations</li>
+                    <li>Clear visual indicators</li>
                 </ul>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- User Flow Section -->
-<section class="section">
-    <div class="container">
-        <h2><span class="section-icon">🔄</span>User Flow</h2>
-        <div class="flow-steps">
+    <section class="section">
+        <h2>🔄 User Flow</h2>
+        <div class="flow-diagram">
             <div class="flow-step">
-                <div class="flow-step-number">1</div>
-                <h3>Landing</h3>
-                <p>User opens the order review page and sees their cart items loaded from localStorage</p>
+                <div class="step-number">1</div>
+                <div>User opens the order review page</div>
             </div>
             <div class="flow-step">
-                <div class="flow-step-number">2</div>
-                <h3>Review</h3>
-                <p>User reviews their order items with detailed information on hover</p>
+                <div class="step-number">2</div>
+                <div>App loads and displays cart items or empty message</div>
             </div>
             <div class="flow-step">
-                <div class="flow-step-number">3</div>
-                <h3>Action</h3>
-                <p>User can clear the order, go back to menu, or proceed to finish the order</p>
+                <div class="step-number">3</div>
+                <div>User can navigate back to menu, clear order, or finish order</div>
             </div>
             <div class="flow-step">
-                <div class="flow-step-number">4</div>
-                <h3>Completion</h3>
-                <p>Order is finalized with total calculation and success confirmation</p>
+                <div class="step-number">4</div>
+                <div>After finishing order, user sees total price and confirmation</div>
+            </div>
+            <div class="flow-step">
+                <div class="step-number">5</div>
+                <div>User can return to menu to place new orders</div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Technical Requirements -->
-<section class="section">
-    <div class="container">
-        <h2><span class="section-icon">⚙️</span>Technical Stack</h2>
+    <section class="section">
+        <h2>⚡ Non-Functional Requirements</h2>
+        <div class="requirements-grid">
+            <div class="requirement-item">
+                <h4>Performance</h4>
+                <p>Fast load time with minimal dependencies</p>
+            </div>
+            <div class="requirement-item">
+                <h4>Offline Support</h4>
+                <p>Works offline with localStorage persistence</p>
+            </div>
+            <div class="requirement-item">
+                <h4>User Experience</h4>
+                <p>Clean UI with smooth hover and button effects</p>
+            </div>
+            <div class="requirement-item">
+                <h4>Compatibility</h4>
+                <p>Cross-browser support (Chrome, Firefox, Edge, Safari)</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>🛠️ Technology Stack</h2>
         <div class="tech-stack">
-            <div class="tech-badge">🌐 HTML5</div>
-            <div class="tech-badge">🎨 Tailwind CSS</div>
-            <div class="tech-badge">⚡ Vanilla JavaScript</div>
-            <div class="tech-badge">💾 localStorage API</div>
-            <div class="tech-badge">📱 Responsive Design</div>
-            <div class="tech-badge">♿ Accessibility</div>
+            <span class="tech-badge">HTML5</span>
+            <span class="tech-badge">CSS3</span>
+            <span class="tech-badge">JavaScript</span>
+            <span class="tech-badge">Tailwind CSS</span>
+            <span class="tech-badge">LocalStorage API</span>
+            <span class="tech-badge">Responsive Design</span>
         </div>
-        
-        <div style="margin-top: 40px; padding: 30px; background: linear-gradient(135deg, #f8f9ff, #e8f0ff); border-radius: 15px;">
-            <h3 style="font-size: 1.5rem; margin-bottom: 20px; color: #2d3748;">Non-Functional Requirements</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                <div>
-                    <h4 style="color: #667eea; margin-bottom: 10px;">⚡ Performance</h4>
-                    <p style="color: #4a5568;">Fast load time with minimal dependencies</p>
-                </div>
-                <div>
-                    <h4 style="color: #667eea; margin-bottom: 10px;">📱 Offline Support</h4>
-                    <p style="color: #4a5568;">Works offline with localStorage persistence</p>
-                </div>
-                <div>
-                    <h4 style="color: #667eea; margin-bottom: 10px;">🎯 UX Excellence</h4>
-                    <p style="color: #4a5568;">Clean UI with smooth animations</p>
-                </div>
-                <div>
-                    <h4 style="color: #667eea; margin-bottom: 10px;">🌍 Browser Support</h4>
-                    <p style="color: #4a5568;">Chrome, Firefox, Edge, Safari</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
 
-<!-- Tailwind CSS Features Section -->
-<section class="section">
-    <div class="container">
-        <h2><span class="section-icon">🎨</span>Tailwind CSS Implementation</h2>
-        <p style="font-size: 1.1rem; color: #4a5568; margin-bottom: 40px; text-align: center;">
-            Comprehensive utilization of Tailwind CSS utility classes for rapid, maintainable styling
-        </p>
-        
-        <div class="features-grid">
+    <section class="section">
+        <h2>🎯 Tailwind CSS Implementation</h2>
+        <div class="feature-grid">
             <div class="feature-card">
-                <h3>📐 Layout & Positioning</h3>
-                <p>Flexible and responsive layout structures</p>
-                <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-top: 15px;">
-                    <code style="color: #334155; font-size: 0.9rem;">flex, grid, sm:, md:</code>
-                </div>
-                <p style="margin-top: 10px; font-size: 0.9rem; color: #64748b;">Clean and responsive layout structure without custom CSS</p>
+                <h4>Layout & Positioning</h4>
+                <p>Flex, grid, and responsive columns (sm:, md:) for clean structure</p>
             </div>
-
             <div class="feature-card">
-                <h3>📏 Spacing System</h3>
-                <p>Consistent spacing using utility classes</p>
-                <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-top: 15px;">
-                    <code style="color: #334155; font-size: 0.9rem;">p-6, mt-4, gap-6</code>
-                </div>
-                <p style="margin-top: 10px; font-size: 0.9rem; color: #64748b;">Control padding and margins without writing custom CSS</p>
+                <h4>Spacing System</h4>
+                <p>Consistent padding and margins with p-6, mt-4, gap-6</p>
             </div>
-
             <div class="feature-card">
-                <h3>🎨 Color Utilities</h3>
-                <p>Consistent theming and interactive states</p>
-                <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-top: 15px;">
-                    <code style="color: #334155; font-size: 0.9rem;">bg-blue-400, text-gray-700, hover:bg-blue-300</code>
-                </div>
-                <p style="margin-top: 10px; font-size: 0.9rem; color: #64748b;">Professional color palette with hover state management</p>
+                <h4>Color Utilities</h4>
+                <p>Theming with bg-blue-400, text-gray-700, hover states</p>
             </div>
-
             <div class="feature-card">
-                <h3>✍️ Typography</h3>
-                <p>Beautiful and readable text styling</p>
-                <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-top: 15px;">
-                    <code style="color: #334155; font-size: 0.9rem;">text-2xl, font-semibold, text-center</code>
-                </div>
-                <p style="margin-top: 10px; font-size: 0.9rem; color: #64748b;">Style headings and body text with perfect hierarchy</p>
+                <h4>Typography</h4>
+                <p>Clear text hierarchy with text-2xl, font-semibold</p>
             </div>
-
             <div class="feature-card">
-                <h3>✨ Hover Effects & Transitions</h3>
-                <p>Smooth interactive experiences</p>
-                <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-top: 15px;">
-                    <code style="color: #334155; font-size: 0.9rem;">hover:scale-105, opacity-0, transition</code>
-                </div>
-                <p style="margin-top: 10px; font-size: 0.9rem; color: #64748b;">Add smooth interactions and reveal animations</p>
+                <h4>Interactive Effects</h4>
+                <p>Smooth transitions with hover:scale-105, opacity changes</p>
             </div>
-
             <div class="feature-card">
-                <h3>🔮 Design Elements</h3>
-                <p>Modern visual styling components</p>
-                <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-top: 15px;">
-                    <code style="color: #334155; font-size: 0.9rem;">rounded-xl, shadow-md</code>
-                </div>
-                <p style="margin-top: 10px; font-size: 0.9rem; color: #64748b;">Create soft, modern card-based UI elements</p>
-            </div>
-
-            <div class="feature-card">
-                <h3>📱 Responsive Design</h3>
-                <p>Mobile-first responsive breakpoints</p>
-                <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-top: 15px;">
-                    <code style="color: #334155; font-size: 0.9rem;">sm:grid-cols-2, md:grid-cols-3</code>
-                </div>
-                <p style="margin-top: 10px; font-size: 0.9rem; color: #64748b;">Ensure perfect display across all screen sizes</p>
-            </div>
-
-            <div class="feature-card">
-                <h3>⚡ Utility-First Approach</h3>
-                <p>Direct HTML styling methodology</p>
-                <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-top: 15px;">
-                    <code style="color: #334155; font-size: 0.9rem;">class="flex items-center justify-between"</code>
-                </div>
-                <p style="margin-top: 10px; font-size: 0.9rem; color: #64748b;">Fast to build, easy to maintain, no external CSS needed</p>
+                <h4>Modern Design</h4>
+                <p>Rounded corners and shadows for card-based UI</p>
             </div>
         </div>
+    </section>
 
-        <!-- Tailwind Benefits -->
-        <div style="margin-top: 50px; padding: 40px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 20px; color: white; text-align: center;">
-            <h3 style="font-size: 2rem; margin-bottom: 20px; font-weight: 700;">🚀 Why Tailwind CSS?</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-top: 30px;">
-                <div>
-                    <div style="font-size: 2.5rem; margin-bottom: 10px;">⚡</div>
-                    <h4 style="font-size: 1.2rem; margin-bottom: 10px;">Rapid Development</h4>
-                    <p style="opacity: 0.9; font-size: 0.9rem;">Build faster with utility-first approach</p>
-                </div>
-                <div>
-                    <div style="font-size: 2.5rem; margin-bottom: 10px;">🎯</div>
-                    <h4 style="font-size: 1.2rem; margin-bottom: 10px;">Consistent Design</h4>
-                    <p style="opacity: 0.9; font-size: 0.9rem;">Maintain design system effortlessly</p>
-                </div>
-                <div>
-                    <div style="font-size: 2.5rem; margin-bottom: 10px;">📦</div>
-                    <h4 style="font-size: 1.2rem; margin-bottom: 10px;">Small Bundle Size</h4>
-                    <p style="opacity: 0.9; font-size: 0.9rem;">Only includes used CSS classes</p>
-                </div>
-                <div>
-                    <div style="font-size: 2.5rem; margin-bottom: 10px;">🔧</div>
-                    <h4 style="font-size: 1.2rem; margin-bottom: 10px;">Easy Maintenance</h4>
-                    <p style="opacity: 0.9; font-size: 0.9rem;">No complex CSS files to manage</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Future Enhancements -->
-<section class="section">
-    <div class="container">
-        <h2><span class="section-icon">🚀</span>Future Enhancements</h2>
-        <div class="enhancement-grid">
+    <section class="section">
+        <h2>🚀 Future Enhancements</h2>
+        <div class="enhancement-list">
             <div class="enhancement-item">
-                <h3 style="margin-bottom: 15px;">🗄️ Backend Integration</h3>
-                <p style="color: #333;">Database storage and server-side order processing</p>
+                <strong>Backend Integration:</strong> Save orders to database with persistent storage
             </div>
             <div class="enhancement-item">
-                <h3 style="margin-bottom: 15px;">👤 User Authentication</h3>
-                <p style="color: #333;">Personal accounts and order history tracking</p>
+                <strong>User Authentication:</strong> Personal accounts and order history tracking
             </div>
             <div class="enhancement-item">
-                <h3 style="margin-bottom: 15px;">💳 Payment Integration</h3>
-                <p style="color: #333;">Secure payment processing and status tracking</p>
+                <strong>Payment Integration:</strong> Real payment processing and order status
             </div>
             <div class="enhancement-item">
-                <h3 style="margin-bottom: 15px;">🎬 Enhanced Animations</h3>
-                <p style="color: #333;">Progress indicators and micro-interactions</p>
+                <strong>Enhanced Animations:</strong> Progress indicators and smooth transitions
             </div>
             <div class="enhancement-item">
-                <h3 style="margin-bottom: 15px;">📱 Mobile App</h3>
-                <p style="color: #333;">PWA support and native mobile experience</p>
+                <strong>Mobile App:</strong> PWA support and native mobile experience
             </div>
         </div>
-    </div>
-</section>
+    </section>
+</div>
 
-<!-- Footer -->
-<footer class="footer">
-    <div class="container">
-        <div class="footer-content">
-            <p>© 2025 Order Review Web App - Product Requirements Document</p>
-            <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
-                <div style="display: flex; gap: 15px; align-items: center;">
-                    <span>🔧 Built with</span>
-                    <span>💜 Modern Web Technologies</span>
-                </div>
-                <a href="https://shaha108.github.io/food_zone_app/" 
-                   target="_blank"
-                   style="color: #667eea; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.1); padding: 8px 16px; border-radius: 20px; transition: all 0.3s ease;"
-                   onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(-2px)'"
-                   onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
-                    🍕 Food Zone Project
-                </a>
-            </div>
-        </div>
-    </div>
-</footer>
+<div class="scroll-indicator" onclick="scrollToTop()">↑</div>
 
 <script>
-    // Add scroll animations
+    // Floating elements animation
+    function createFloatingElements() {
+        const container = document.querySelector('.floating-elements');
+        for (let i = 0; i < 20; i++) {
+            const element = document.createElement('div');
+            element.classList.add('floating-element');
+            element.style.left = Math.random() * 100 + '%';
+            element.style.top = Math.random() * 100 + '%';
+            element.style.width = Math.random() * 60 + 20 + 'px';
+            element.style.height = element.style.width;
+            element.style.animationDelay = Math.random() * 6 + 's';
+            element.style.animationDuration = (Math.random() * 4 + 4) + 's';
+            container.appendChild(element);
+        }
+    }
+
+    // Intersection Observer for section animations
     const observerOptions = {
         threshold: 0.1,
-        rootMargin: '0px 0px -100px 0px'
+        rootMargin: '0px 0px -50px 0px'
     };
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.style.animation = 'fadeInUp 0.8s ease forwards';
+                entry.target.classList.add('visible');
             }
         });
     }, observerOptions);
@@ -818,46 +579,26 @@ font-weight: 600;
         observer.observe(section);
     });
 
-    // Add dynamic background particles
-    function createParticle() {
-        const particle = document.createElement('div');
-        particle.style.cssText = `
-            position: fixed;
-            width: 4px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: -1;
-            animation: float 6s ease-in-out infinite;
-        `;
-        
-        particle.style.left = Math.random() * 100 + 'vw';
-        particle.style.top = Math.random() * 100 + 'vh';
-        particle.style.animationDelay = Math.random() * 6 + 's';
-        
-        document.body.appendChild(particle);
-        
-        setTimeout(() => {
-            particle.remove();
-        }, 6000);
+    // Smooth scroll to top
+    function scrollToTop() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     }
 
-    // Create particles periodically
-    setInterval(createParticle, 300);
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        createFloatingElements();
+    });
 
-    // Smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
+    // Parallax effect on scroll
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const hero = document.querySelector('.hero');
+        if (hero) {
+            hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+        }
     });
 </script>
 ```
