@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    header {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    h1 {
+        color: white;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+    }
+
+    .blog-post {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .blog-post:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .post-header {
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    .post-title {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+    }
+
+    .post-meta {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+
+    .post-content {
+        color: #34495e;
+        font-size: 1.1rem;
+        line-height: 1.8;
+        margin-bottom: 30px;
+    }
+
+    .post-content p {
+        margin-bottom: 15px;
+    }
+
+    .comments-section {
+        border-top: 2px solid #ecf0f1;
+        padding-top: 25px;
+    }
+
+    .comments-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .comments-count {
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+
+    .comment-form {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        border: 2px solid #e9ecef;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #2c3e50;
+        font-weight: 500;
+    }
+
+    input, textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    input:focus, textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .comments-list {
+        space-y: 15px;
+    }
+
+    .comment {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+        margin-bottom: 15px;
+        transition: background-color 0.3s ease;
+    }
+
+    .comment:hover {
+        background: #e9ecef;
+    }
+
+    .comment-author {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .comment-date {
+        color: #7f8c8d;
+        font-size: 0.85rem;
+        margin-bottom: 10px;
+    }
+
+    .comment-text {
+        color: #34495e;
+        line-height: 1.6;
+    }
+
+    .nav-link {
+        display: inline-block;
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        margin-top: 15px;
+    }
+
+    .nav-link:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .tag {
+        display: inline-block;
+        background: #667eea;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        margin-right: 8px;
+        margin-bottom: 5px;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 15px;
+        }
+        
+        h1 {
+            font-size: 2rem;
+        }
+        
+        .blog-post {
+            padding: 20px;
+        }
+        
+        .post-meta {
+            flex-direction: column;
+            gap: 5px;
+            align-items: flex-start;
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>My Blog</h1>
+            <p class="subtitle">Weekly reflections, tutorials, and thoughts on development</p>
+            <a href="#" class="nav-link">← Back to Portfolio</a>
+        </header>
+
+```
+    <article class="blog-post">
+        <div class="post-header">
+            <h2 class="post-title">Welcome to My Development Journey</h2>
+            <div class="post-meta">
+                <span>📅 June 11, 2025</span>
+                <span>✍️ by Developer</span>
+                <span>⏱️ 3 min read</span>
+            </div>
+            <div style="margin-top: 10px;">
+                <span class="tag">Web Development</span>
+                <span class="tag">Learning</span>
+                <span class="tag">Portfolio</span>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <p>Welcome to my blog! This is my inaugural post, marking the beginning of what I hope will be a consistent journey of sharing my experiences, learnings, and insights as I navigate the ever-evolving world of web development.</p>
+            
+            <p>Starting this blog feels like opening a new chapter. Over the past months, I've been diving deep into various technologies, frameworks, and methodologies. From mastering the fundamentals of HTML, CSS, and JavaScript to exploring modern frameworks like React and Vue, each day brings new challenges and discoveries.</p>
+            
+            <p>What excites me most about this journey is the constant learning opportunity. The tech industry moves at lightning speed, and staying curious is essential. Whether it's understanding new CSS features, exploring serverless architectures, or diving into accessibility best practices, there's always something fascinating to explore.</p>
+            
+            <p>Through this blog, I plan to share weekly reflections on projects I'm working on, tutorials that might help fellow developers, and honest thoughts about the challenges and victories in this field. I believe that documenting our learning process not only helps others but also reinforces our own understanding.</p>
+            
+            <p>I'm particularly interested in frontend development, user experience design, and the intersection of technology with creativity. Expect posts about responsive design techniques, JavaScript tips and tricks, project showcases, and perhaps some philosophical musings about code craftsmanship.</p>
+            
+            <p>Thank you for joining me on this journey. I look forward to sharing more content and hopefully creating something valuable for the developer community!</p>
+        </div>
+        
+        <div class="comments-section">
+            <div class="comments-header">
+                <h3 class="comments-count">Comments (<span id="comment-count">0</span>)</h3>
+            </div>
+            
+            <form class="comment-form" id="comment-form">
+                <div class="form-group">
+                    <label for="name">Name *</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email (optional)</label>
+                    <input type="email" id="email" name="email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="comment">Comment *</label>
+                    <textarea id="comment" name="comment" placeholder="Share your thoughts..." required></textarea>
+                </div>
+                
+                <button type="submit" class="btn">Post Comment</button>
+            </form>
+            
+            <div class="comments-list" id="comments-list">
+                <!-- Comments will be dynamically added here -->
+            </div>
+        </div>
+    </article>
+</div>
+
+<script>
+    // Comments functionality
+    let comments = [];
+    let commentIdCounter = 1;
+
+    function formatDate(date) {
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    function renderComments() {
+        const commentsList = document.getElementById('comments-list');
+        const commentCount = document.getElementById('comment-count');
+        
+        commentsList.innerHTML = '';
+        commentCount.textContent = comments.length;
+        
+        if (comments.length === 0) {
+            commentsList.innerHTML = '<p style="color: #7f8c8d; font-style: italic; text-align: center; padding: 20px;">No comments yet. Be the first to share your thoughts!</p>';
+            return;
+        }
+        
+        comments.forEach(comment => {
+            const commentElement = document.createElement('div');
+            commentElement.className = 'comment';
+            commentElement.innerHTML = `
+                <div class="comment-author">${escapeHtml(comment.name)}</div>
+                <div class="comment-date">${formatDate(comment.date)}</div>
+                <div class="comment-text">${escapeHtml(comment.text).replace(/\n/g, '<br>')}</div>
+            `;
+            commentsList.appendChild(commentElement);
+        });
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function addComment(name, email, text) {
+        const comment = {
+            id: commentIdCounter++,
+            name: name,
+            email: email,
+            text: text,
+            date: new Date()
+        };
+        
+        comments.unshift(comment); // Add to beginning of array
+        renderComments();
+    }
+
+    // Form submission handler
+    document.getElementById('comment-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const commentText = document.getElementById('comment').value.trim();
+        
+        if (!name || !commentText) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+        
+        if (commentText.length < 3) {
+            alert('Comment must be at least 3 characters long.');
+            return;
+        }
+        
+        addComment(name, email, commentText);
+        
+        // Reset form
+        this.reset();
+        
+        // Show success message
+        const btn = this.querySelector('.btn');
+        const originalText = btn.textContent;
+        btn.textContent = 'Comment Posted!';
+        btn.style.background = '#27ae60';
+        
+        setTimeout(() => {
+            btn.textContent = originalText;
+            btn.style.background = '';
+        }, 2000);
+    });
+
+    // Add some sample comments for demonstration
+    setTimeout(() => {
+        addComment('Sarah Chen', 'sarah@example.com', 'Great inaugural post! Looking forward to reading more about your development journey. The design of this blog is really clean and modern.');
+        addComment('Alex Rodriguez', '', 'Welcome to the blogging world! Your perspective on continuous learning really resonates with me. The tech industry definitely keeps us on our toes.');
+    }, 1000);
+
+    // Initialize comments display
+    renderComments();
+
+    // Add smooth scrolling for comment form focus
+    document.getElementById('name').addEventListener('focus', function() {
+        this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+</script>
+```
+
+</body>
+</html>
