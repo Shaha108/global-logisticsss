@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced TSP Game</title>
+    <title>Galactic Pathfinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* --- General Styles --- */
         * {
             margin: 0;
             padding: 0;
@@ -12,801 +14,1231 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Space Mono', monospace;
+            background: #0a0a1a;
+            color: #e0e0ff;
+            overflow-x: hidden;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
-            color: white;
+            justify-content: center;
+            position: relative;
         }
 
-        .game-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            max-width: 900px;
+        /* --- Dynamic Space Background --- */
+        .background-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a2a, #1a0a3a, #0a1a3a);
+            background-size: 400% 400%;
+            animation: gradientShift 30s ease infinite;
+            z-index: 0;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
+        }
+
+        #stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #a0a0ff;
+            border-radius: 50%;
+            animation: twinkle linear infinite;
+            box-shadow: 0 0 5px #a0a0ff;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.3); }
+        }
+
+        /* --- Main Container --- */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
             width: 100%;
         }
 
-        h1 {
+        /* --- Header --- */
+        .header {
             text-align: center;
-            margin-bottom: 10px;
-            font-size: 2.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            animation: titleGlow 2s ease-in-out infinite alternate;
+            background: rgba(30, 30, 60, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            box-shadow: 0 0 30px rgba(100, 150, 255, 0.2);
+            animation: fadeInHeader 1s ease-out;
         }
 
-        @keyframes titleGlow {
-            from { text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
-            to { text-shadow: 2px 2px 20px rgba(255,255,255,0.5); }
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 12px;
+            color: #7db8ff;
+            text-shadow: 0 0 20px rgba(125, 184, 255, 0.6);
+            letter-spacing: 1px;
         }
 
-        .subtitle {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 1.1rem;
-            opacity: 0.9;
+        .header p {
+            font-size: 1.1em;
+            color: #b0b0ff;
         }
 
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
+        /* --- Game Area Layout --- */
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+
+        /* --- Canvas Container --- */
+        .canvas-container {
+            background: rgba(20, 20, 50, 0.5);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid rgba(100, 150, 255, 0.2);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 0 20px rgba(100, 150, 255, 0.15);
+        }
+
+        #gameCanvas {
+            width: 100%;
+            height: 500px;
+            background: rgba(0, 0, 30, 0.5);
+            border-radius: 12px;
+            cursor: crosshair;
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- Control Panel --- */
+        .control-panel {
+            background: rgba(30, 30, 60, 0.7);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            backdrop-filter: blur(10px);
+            height: fit-content;
+            box-shadow: 0 0 20px rgba(100, 150, 255, 0.15);
+        }
+
+        .control-section {
             margin-bottom: 20px;
-            flex-wrap: wrap;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed rgba(100, 150, 255, 0.3);
         }
 
-        button {
-            padding: 12px 24px;
+        .control-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .control-section h3 {
+            margin-bottom: 15px;
+            color: #7db8ff;
+            text-shadow: 0 0 10px rgba(125, 184, 255, 0.5);
+            font-size: 1.2em;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
             border: none;
-            border-radius: 25px;
-            background: linear-gradient(45deg, #ff6b6b, #feca57);
-            color: white;
+            border-radius: 8px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            font-size: 16px;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            text-shadow: 0 0 5px rgba(0,0,0,0.3);
         }
 
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-            background: linear-gradient(45deg, #ff5252, #ffb74d);
+        .btn-primary {
+            background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+            color: white;
         }
 
-        button:active {
-            transform: translateY(-1px);
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #2a6bc4, #00c2ef);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(58, 123, 213, 0.4);
         }
 
-        .level-buttons {
+        .btn-secondary {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(45deg, #ee315b, #ee3b1b);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 65, 108, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #1d976c, #38ef7d);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(45deg, #0d875c, #28df6d);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(29, 151, 108, 0.4);
+        }
+
+        /* --- Info Display --- */
+        .info-display {
+            background: rgba(0, 0, 30, 0.6);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            border-left: 4px solid #7db8ff;
+            box-shadow: inset 0 0 8px rgba(125, 184, 255, 0.2);
+        }
+
+        .info-item {
             display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .level-btn {
-            background: linear-gradient(45deg, #48cae4, #023e8a);
-            padding: 8px 16px;
+            justify-content: space-between;
+            margin: 8px 0;
             font-size: 14px;
+            border-bottom: 1px dotted rgba(100, 150, 255, 0.2);
+            padding-bottom: 4px;
+        }
+        .info-item:last-child { border-bottom: none; }
+
+        .info-label {
+            color: #7db8ff;
+            font-weight: normal;
         }
 
-        .level-btn.active {
-            background: linear-gradient(45deg, #06ffa5, #00b4d8);
-            box-shadow: 0 0 20px rgba(6, 255, 165, 0.5);
-        }
-
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .stat-item {
-            text-align: center;
-            animation: statPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes statPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            margin-bottom: 5px;
-        }
-
-        .stat-value {
-            font-size: 1.4rem;
+        .info-value {
             font-weight: bold;
-            color: #06ffa5;
+            color: #7db8ff;
+            text-shadow: 0 0 5px rgba(125, 184, 255, 0.5);
         }
 
-        .game-canvas {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            margin: 0 auto;
-            display: block;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-            cursor: crosshair;
-            transition: all 0.3s ease;
-        }
-
-        .game-canvas:hover {
-            box-shadow: 0 12px 35px rgba(0,0,0,0.3);
-        }
-
-        .message {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 1.1rem;
-            padding: 15px;
+        /* --- Fuel Gauge --- */
+        .fuel-gauge-container {
+            width: 100%;
+            height: 20px;
+            background-color: rgba(0,0,30,0.6);
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(125, 184, 255, 0.5);
+            overflow: hidden;
+            margin-top: 8px;
+            position: relative;
+            box-shadow: inset 0 0 4px rgba(125, 184, 255, 0.3);
+        }
+
+        #fuelGauge {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #ff416c, #ff8a00, #38ef7d);
+            border-radius: 10px;
+            transition: width 0.3s ease-out;
+            transform-origin: left;
+        }
+        #fuelGauge.empty {
+            background: #ff416c;
+        }
+        #fuelLabel {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            line-height: 20px;
+            font-size: 11px;
+            color: white;
+            text-shadow: 0 0 2px black;
+        }
+
+        /* --- Animations --- */
+        .phase {
             opacity: 0;
             transform: translateY(20px);
-            transition: all 0.5s ease;
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
         }
 
-        .message.show {
+        .phase.visible {
             opacity: 1;
             transform: translateY(0);
         }
 
-        .message.success {
-            background: linear-gradient(45deg, #06ffa5, #48cae4);
-            animation: successGlow 1s ease-in-out;
+        @keyframes fadeInHeader {
+            from { opacity: 0; transform: translateY(-40px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .message.fail {
-            background: linear-gradient(45deg, #ff6b6b, #feca57);
+        /* --- Instructions --- */
+        .instructions {
+            background: rgba(30, 30, 60, 0.7);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(100, 150, 255, 0.15);
         }
 
-        @keyframes successGlow {
-            0%, 100% { box-shadow: 0 0 10px rgba(6, 255, 165, 0.3); }
-            50% { box-shadow: 0 0 30px rgba(6, 255, 165, 0.8); }
+        .instructions h3 {
+            color: #7db8ff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(125, 184, 255, 0.5);
+            font-size: 1.2em;
+            letter-spacing: 0.5px;
         }
 
-        .credit {
-            margin-top: 30px;
-            text-align: center;
-            opacity: 0.7;
-            font-size: 0.9rem;
+        .instructions ul {
+            list-style: none;
+            padding-left: 0;
         }
 
-        @media (max-width: 768px) {
-            .game-container {
-                padding: 20px;
-                margin: 10px;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .controls {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            button {
-                width: 200px;
-            }
-            
-            .stats {
-                flex-direction: column;
-                text-align: center;
-            }
+        .instructions li {
+            margin: 8px 0;
+            padding-left: 22px;
+            position: relative;
+            font-size: 0.9em;
+            color: #b0b0ff;
         }
 
-        .particle {
+        .instructions li:before {
+            content: "•";
             position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #06ffa5;
-            border-radius: 50%;
-            pointer-events: none;
-            animation: particle 1s ease-out forwards;
+            left: 0;
+            color: #7db8ff;
+            font-size: 1.5em;
+            line-height: 0.8;
         }
 
-        @keyframes particle {
-            0% {
-                opacity: 1;
-                transform: scale(1);
+        /* --- Scoreboard/Game Feedback --- */
+        #gameFeedback {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #38ef7d;
+            text-shadow: 0 0 10px rgba(56, 239, 125, 0.5);
+            min-height: 26px;
+        }
+
+        #starRating {
+            margin-top: 8px;
+            font-size: 2em;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            display: none;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 992px) {
+            .game-area {
+                grid-template-columns: 1fr;
             }
-            100% {
-                opacity: 0;
-                transform: scale(0) translate(var(--dx), var(--dy));
+        }
+
+        @media (max-width: 576px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            .container {
+                padding: 12px;
+            }
+            .control-panel, .canvas-container, .header, .instructions {
+                padding: 14px;
+            }
+            .btn {
+                padding: 10px;
+                font-size: 12px;
+            }
+            .info-item {
+                font-size: 12px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <h1>🚚 Logistics Challenge</h1>
-        <p class="subtitle">Plan the shortest route to visit all warehouses and return to start</p>
-        
-        <div class="level-buttons">
-            <button class="level-btn active" onclick="setLevel('easy')">Easy (5 points)</button>
-            <button class="level-btn" onclick="setLevel('medium')">Medium (8 points)</button>
-            <button class="level-btn" onclick="setLevel('hard')">Hard (12 points)</button>
+    <div class="background-gradient"></div>
+    <div id="stars"></div>
+    
+    <div class="container">
+        <div class="header phase">
+            <h1>🪐 Galactic Pathfinder 🪐</h1>
+            <p>Chart the most efficient course between celestial waypoints!</p>
         </div>
 
-        <div class="stats">
-            <div class="stat-item">
-                <div class="stat-label">Current Distance</div>
-                <div class="stat-value" id="currentDistance">0</div>
+        <div class="game-area phase">
+            <div class="canvas-container">
+                <canvas id="gameCanvas"></canvas>
             </div>
-            <div class="stat-item">
-                <div class="stat-label">Optimal Distance</div>
-                <div class="stat-value" id="optimalDistance">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">Efficiency</div>
-                <div class="stat-value" id="efficiency">0%</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">Points Visited</div>
-                <div class="stat-value" id="pointsVisited">0</div>
+            
+            <div class="control-panel">
+                <div class="control-section">
+                    <h3>🛰️ Navigation</h3>
+                    <button class="btn btn-primary" id="resetRouteBtn">Clear Current Path</button>
+                    <button class="btn btn-success" id="submitRouteBtn">Evaluate Solution</button>
+                    <button class="btn btn-secondary" id="showOptimalBtn">Display Optimal Path</button>
+                </div>
+
+                <div class="control-section">
+                    <h3>🌠 Waypoints</h3>
+                    <button class="btn btn-primary" id="clearCitiesBtn">Remove All</button>
+                    <button class="btn btn-secondary" id="randomCitiesBtn">Generate Random</button>
+                    <div style="display: flex; gap: 4px; margin-top: 8px;">
+                        <button class="btn btn-primary" id="random5CitiesBtn">5 Points</button>
+                        <button class="btn btn-primary" id="random8CitiesBtn">8 Points</button>
+                        <button class="btn btn-primary" id="random12CitiesBtn">12 Points</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>📡 Mission Data</h3>
+                    <div class="info-display">
+                        <div class="info-item">
+                            <span class="info-label">Waypoints:</span>
+                            <span class="info-value" id="cityCount">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Your Path:</span>
+                            <span class="info-value" id="playerDistance">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Optimal Path:</span>
+                            <span class="info-value" id="bestDistance">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Status:</span>
+                            <span class="info-value" id="goalMessage">Begin plotting!</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Energy Reserves:</span>
+                            <div class="fuel-gauge-container">
+                                <div id="fuelGauge"></div>
+                                <span id="fuelLabel"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="controls">
-            <button onclick="restartGame()">🔄 Restart</button>
-            <button onclick="undoLastMove()">↶ Undo</button>
-            <button onclick="clearPath()">🗑️ Clear Path</button>
-            <button onclick="showHint()">💡 Hint</button>
-        </div>
+        <div id="gameFeedback"></div>
+        <div id="starRating"></div>
 
-        <canvas id="gameCanvas" class="game-canvas" width="800" height="500"></canvas>
-
-        <div id="gameMessage" class="message"></div>
-
-        <div class="credit">
-            Created by Enhanced TSP Game Developer | Powered by Advanced Algorithms
+        <div class="instructions phase">
+            <h3>🛸 Mission Protocol</h3>
+            <ul>
+                <li>Click anywhere on the starfield to establish navigation waypoints.</li>
+                <li>Select waypoints in sequence to plot your course. Return to the starting point to complete the circuit.</li>
+                <li>Monitor your energy reserves! Each segment consumes power based on distance traveled.</li>
+                <li>Press "Evaluate Solution" to compare your path against the optimal route.</li>
+                <li>Use "Display Optimal Path" to reveal the most efficient course (exact for ≤8 waypoints, estimated for more).</li>
+                <li>Select "Clear Current Path" to reset your navigation attempt.</li>
+                <li>Your performance will be rated based on path efficiency.</li>
+            </ul>
         </div>
     </div>
 
     <script>
-        class TSPGame {
+        // --- Animated Stars Background ---
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const numStars = 180;
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = star.style.height = (Math.random() * 2 + 1) + 'px';
+                star.style.animationDelay = Math.random() * 4 + 's';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // --- Pathfinding Game Logic ---
+        class PathfinderGame {
             constructor() {
                 this.canvas = document.getElementById('gameCanvas');
                 this.ctx = this.canvas.getContext('2d');
-                this.points = [];
-                this.path = [];
-                this.level = 'easy';
-                this.gameComplete = false;
-                this.animationFrame = null;
-                this.particles = [];
-                
+                this.waypoints = [];
+                this.playerPath = [];
+                this.optimalPath = [];
+                this.optimalDistance = Infinity;
+                this.playerDistance = 0;
+                this.currentHoverWaypoint = null;
+                this.animationFrameId = null;
+                this.waypointAnimationIds = new Map();
+
+                // Energy System
+                this.maxEnergy = 1000;
+                this.currentEnergy = this.maxEnergy;
+                this.energyConsumptionRate = 0.5;
+
                 this.setupCanvas();
-                this.initGame();
-                this.setupEventListeners();
-                this.animate();
+                this.bindEvents();
+                this.updateStats();
+                this.draw();
             }
 
             setupCanvas() {
                 const rect = this.canvas.getBoundingClientRect();
-                const devicePixelRatio = window.devicePixelRatio || 1;
+                this.canvas.width = rect.width;
+                this.canvas.height = rect.height;
+                const dpr = window.devicePixelRatio || 1;
+                this.canvas.width *= dpr;
+                this.canvas.height *= dpr;
+                this.ctx.scale(dpr, dpr);
+                this.canvas.style.width = rect.width + 'px';
+                this.canvas.style.height = rect.height + 'px';
+            }
+
+            bindEvents() {
+                this.canvas.addEventListener('click', this.handleCanvasClick.bind(this));
+                this.canvas.addEventListener('mousemove', this.handleCanvasMouseMove.bind(this));
+                window.addEventListener('resize', this.handleResize.bind(this));
+
+                document.getElementById('resetRouteBtn').addEventListener('click', this.resetPlayerPath.bind(this));
+                document.getElementById('submitRouteBtn').addEventListener('click', this.evaluateSolution.bind(this));
+                document.getElementById('showOptimalBtn').addEventListener('click', this.findOptimalPath.bind(this));
+                document.getElementById('clearCitiesBtn').addEventListener('click', this.clearWaypoints.bind(this));
+                document.getElementById('randomCitiesBtn').addEventListener('click', () => this.generateRandomWaypoints());
+                document.getElementById('random5CitiesBtn').addEventListener('click', () => this.generateRandomWaypoints(5));
+                document.getElementById('random8CitiesBtn').addEventListener('click', () => this.generateRandomWaypoints(8));
+                document.getElementById('random12CitiesBtn').addEventListener('click', () => this.generateRandomWaypoints(12));
+            }
+
+            drawWaypointIcon(ctx, waypoint, radius, alpha = 1) {
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = waypoint.color || '#a0a0ff';
                 
-                this.canvas.width = 800 * devicePixelRatio;
-                this.canvas.height = 500 * devicePixelRatio;
-                this.canvas.style.width = '800px';
-                this.canvas.style.height = '500px';
-                
-                this.ctx.scale(devicePixelRatio, devicePixelRatio);
-                
-                // Mobile responsiveness
-                if (window.innerWidth < 850) {
-                    this.canvas.style.width = '100%';
-                    this.canvas.style.height = 'auto';
+                if (this.playerPath.includes(waypoint.id) && waypoint.animationProgress >= 1) {
+                    const glowPulse = Math.sin(performance.now() / 250) * 1.5 + 2.5;
+                    ctx.shadowColor = waypoint.color || '#7db8ff';
+                    ctx.shadowBlur = glowPulse;
+                } else {
+                    ctx.shadowBlur = 0;
                 }
+
+                switch (waypoint.type) {
+                    case 'planet':
+                        ctx.beginPath();
+                        ctx.arc(waypoint.x, waypoint.y, radius, 0, Math.PI * 2);
+                        ctx.fill();
+                        if (waypoint.id % 3 === 0 && radius > 8) {
+                            ctx.strokeStyle = `rgba(200, 200, 255, ${alpha * 0.4})`;
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.ellipse(waypoint.x, waypoint.y, radius * 1.3, radius * 0.4, Math.PI / 4, 0, Math.PI * 2);
+                            ctx.stroke();
+                        }
+                        break;
+                    case 'star':
+                        ctx.beginPath();
+                        ctx.moveTo(waypoint.x, waypoint.y - radius);
+                        ctx.lineTo(waypoint.x + radius * 0.5, waypoint.y);
+                        ctx.lineTo(waypoint.x, waypoint.y + radius);
+                        ctx.lineTo(waypoint.x - radius * 0.5, waypoint.y);
+                        ctx.closePath();
+                        ctx.fill();
+                        break;
+                    case 'nebula':
+                        ctx.beginPath();
+                        ctx.arc(waypoint.x, waypoint.y, radius * 0.7, 0, Math.PI * 2);
+                        ctx.arc(waypoint.x + radius * 0.4, waypoint.y - radius * 0.2, radius * 0.5, 0, Math.PI * 2);
+                        ctx.arc(waypoint.x - radius * 0.4, waypoint.y + radius * 0.2, radius * 0.6, 0, Math.PI * 2);
+                        ctx.fill();
+                        break;
+                    default:
+                        ctx.beginPath();
+                        ctx.arc(waypoint.x, waypoint.y, radius, 0, Math.PI * 2);
+                        ctx.fill();
+                        break;
+                }
+                ctx.restore();
             }
 
-            setupEventListeners() {
-                this.canvas.addEventListener('click', (e) => this.handleClick(e));
-                this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
-                window.addEventListener('resize', () => this.setupCanvas());
-            }
-
-            initGame() {
-                this.gameComplete = false;
-                this.path = [];
-                this.generatePoints();
-                this.calculateOptimalDistance();
-                this.updateStats();
-                this.hideMessage();
-            }
-
-            generatePoints() {
-                this.points = [];
-                const levels = {
-                    easy: 5,
-                    medium: 8,
-                    hard: 12
+            addWaypoint(x, y) {
+                const waypointTypes = ['planet', 'star', 'nebula'];
+                const waypointColors = ['#7db8ff', '#FFD700', '#FF7F50', '#9370DB', '#7CFC00'];
+                const newWaypoint = { 
+                    x, y, 
+                    id: this.waypoints.length,
+                    type: waypointTypes[Math.floor(Math.random() * waypointTypes.length)],
+                    color: waypointColors[Math.floor(Math.random() * waypointColors.length)],
+                    animationProgress: 0
                 };
-                
-                const numPoints = levels[this.level];
-                const margin = 60;
-                const width = 800 - 2 * margin;
-                const height = 500 - 2 * margin;
+                this.waypoints.push(newWaypoint);
+                this.resetGameState();
+                this.animateWaypointIn(newWaypoint);
+                this.updateStats();
+            }
 
-                // Generate points with minimum distance constraints
-                for (let i = 0; i < numPoints; i++) {
-                    let point;
-                    let attempts = 0;
-                    
-                    do {
-                        point = {
-                            x: margin + Math.random() * width,
-                            y: margin + Math.random() * height,
-                            id: i,
-                            visited: false,
-                            pulse: Math.random() * Math.PI * 2
-                        };
-                        attempts++;
-                    } while (attempts < 100 && this.tooCloseToOthers(point));
-                    
-                    this.points.push(point);
+            animateWaypointIn(waypoint) {
+                const duration = 450;
+                const startTime = performance.now();
+                
+                const animate = (currentTime) => {
+                    const elapsed = currentTime - startTime;
+                    waypoint.animationProgress = Math.min(1, elapsed / duration);
+                    this.draw();
+                    if (waypoint.animationProgress < 1) {
+                        this.waypointAnimationIds.set(waypoint.id, requestAnimationFrame(animate));
+                    } else {
+                        this.waypointAnimationIds.delete(waypoint.id);
+                    }
+                };
+                if (this.waypointAnimationIds.has(waypoint.id)) {
+                    cancelAnimationFrame(this.waypointAnimationIds.get(waypoint.id));
+                }
+                this.waypointAnimationIds.set(waypoint.id, requestAnimationFrame(animate));
+            }
+
+            addWaypointToPath(waypointIndex) {
+                if (this.currentEnergy <= 0) {
+                    document.getElementById('gameFeedback').textContent = 'Critical: Energy Depleted!';
+                    document.getElementById('gameFeedback').style.color = '#ff416c';
+                    return;
+                }
+                
+                const uniqueWaypointsVisited = new Set(this.playerPath).size;
+
+                if (this.playerPath.length === 0) {
+                    this.playerPath.push(waypointIndex);
+                    this.updateStats();
+                    this.draw();
+                    document.getElementById('gameFeedback').textContent = '';
+                    document.getElementById('starRating').style.display = 'none';
+                    return;
                 }
 
-                // First point is the start point
-                this.points[0].isStart = true;
+                if (this.playerPath[this.playerPath.length - 1] === waypointIndex) {
+                    if (uniqueWaypointsVisited === this.waypoints.length && this.playerPath[0] === waypointIndex) {
+                        this.evaluateSolution();
+                    }
+                    return;
+                }
+
+                const prevWaypointIndex = this.playerPath[this.playerPath.length - 1];
+                const distanceSegment = this.calculateDistance(this.waypoints[prevWaypointIndex], this.waypoints[waypointIndex]);
+                const energyCost = distanceSegment * this.energyConsumptionRate;
+
+                if (this.currentEnergy - energyCost < 0) {
+                    document.getElementById('gameFeedback').textContent = 'Insufficient energy for this jump!';
+                    document.getElementById('gameFeedback').style.color = '#ff8a00';
+                    return;
+                }
+
+                this.currentEnergy -= energyCost;
+                this.playerPath.push(waypointIndex);
+                this.playerDistance += distanceSegment;
+
+                this.updateStats();
+                this.animateConnection(prevWaypointIndex, waypointIndex);
+                document.getElementById('gameFeedback').textContent = '';
+                document.getElementById('starRating').style.display = 'none';
             }
 
-            tooCloseToOthers(newPoint) {
-                const minDistance = 50;
-                return this.points.some(point => 
-                    this.distance(newPoint, point) < minDistance
-                );
+            animateConnection(fromWaypointIndex, toWaypointIndex) {
+                const waypoint1 = this.waypoints[fromWaypointIndex];
+                const waypoint2 = this.waypoints[toWaypointIndex];
+                const duration = 250;
+                const startTime = performance.now();
+
+                const animate = (currentTime) => {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(1, elapsed / duration);
+
+                    this.draw();
+
+                    this.ctx.strokeStyle = '#7db8ff';
+                    this.ctx.lineWidth = 2.5;
+                    this.ctx.setLineDash([]);
+                    this.ctx.beginPath();
+
+                    for (let i = 0; i < this.playerPath.length - 1; i++) {
+                        const p1 = this.waypoints[this.playerPath[i]];
+                        const p2 = this.waypoints[this.playerPath[i+1]];
+                        this.ctx.moveTo(p1.x, p1.y);
+                        this.ctx.lineTo(p2.x, p2.y);
+                    }
+                    this.ctx.stroke();
+
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(waypoint1.x, waypoint1.y);
+                    const currentX = waypoint1.x + (waypoint2.x - waypoint1.x) * progress;
+                    const currentY = waypoint1.y + (waypoint2.y - waypoint1.y) * progress;
+                    this.ctx.lineTo(currentX, currentY);
+                    this.ctx.stroke();
+
+                    if (progress < 1) {
+                        this.animationFrameId = requestAnimationFrame(animate);
+                    } else {
+                        this.animationFrameId = null;
+                    }
+                };
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                }
+                this.animationFrameId = requestAnimationFrame(animate);
             }
 
-            distance(p1, p2) {
-                return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+            resetGameState() {
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                    this.animationFrameId = null;
+                }
+                this.waypointAnimationIds.forEach(id => cancelAnimationFrame(id));
+                this.waypointAnimationIds.clear();
+
+                this.playerPath = [];
+                this.playerDistance = 0;
+                this.currentEnergy = this.maxEnergy;
+                this.optimalPath = [];
+                this.optimalDistance = Infinity;
+                document.getElementById('gameFeedback').textContent = '';
+                document.getElementById('starRating').style.display = 'none';
+                document.getElementById('gameFeedback').style.color = '#38ef7d';
             }
 
-            calculateOptimalDistance() {
-                // Simplified optimal calculation (for display purposes)
-                // In reality, TSP optimal solution requires complex algorithms
-                if (this.points.length < 2) return 0;
+            resetPlayerPath() {
+                this.resetGameState();
+                this.draw();
+                this.updateStats();
+            }
+
+            evaluateSolution() {
+                if (this.waypoints.length < 2) {
+                    document.getElementById('gameFeedback').textContent = 'Minimum 2 waypoints required!';
+                    document.getElementById('gameFeedback').style.color = '#ff8a00';
+                    return;
+                }
+                const uniqueWaypointsVisited = new Set(this.playerPath).size;
+                if (uniqueWaypointsVisited !== this.waypoints.length) {
+                    document.getElementById('gameFeedback').textContent = 'Visit all waypoints first!';
+                    document.getElementById('gameFeedback').style.color = '#ff8a00';
+                    return;
+                }
                 
-                let totalDistance = 0;
-                const visited = new Array(this.points.length).fill(false);
-                let current = 0;
-                visited[0] = true;
-                
-                for (let i = 1; i < this.points.length; i++) {
-                    let nearest = -1;
-                    let nearestDistance = Infinity;
-                    
-                    for (let j = 0; j < this.points.length; j++) {
-                        if (!visited[j]) {
-                            const dist = this.distance(this.points[current], this.points[j]);
-                            if (dist < nearestDistance) {
-                                nearestDistance = dist;
-                                nearest = j;
+                if (this.playerPath[0] !== this.playerPath[this.playerPath.length - 1]) {
+                     this.playerPath.push(this.playerPath[0]);
+                     this.playerDistance = this.calculatePathDistance(this.playerPath, false);
+                     
+                     this.animateConnection(this.playerPath[this.playerPath.length - 2], this.playerPath[this.playerPath.length - 1]);
+                     
+                     setTimeout(() => {
+                        this.findOptimalPath(false);
+                        this.updateStats();
+                        this.provideFeedback();
+                        this.draw();
+                     }, 300);
+                } else {
+                    this.playerDistance = this.calculatePathDistance(this.playerPath, false);
+                    this.findOptimalPath(false);
+                    this.updateStats();
+                    this.draw();
+                    this.provideFeedback();
+                }
+            }
+
+            provideFeedback() {
+                const feedbackDiv = document.getElementById('gameFeedback');
+                const starRatingDiv = document.getElementById('starRating');
+                starRatingDiv.style.display = 'block';
+
+                if (this.optimalDistance === Infinity || this.optimalDistance === 0) {
+                    feedbackDiv.textContent = 'Calculate optimal path for comparison!';
+                    feedbackDiv.style.color = '#ff8a00';
+                    starRatingDiv.textContent = '';
+                    return;
+                }
+                if (this.currentEnergy <= 0 && new Set(this.playerPath).size < this.waypoints.length) {
+                    feedbackDiv.textContent = 'Mission Failure: Energy Depleted!';
+                    starRatingDiv.textContent = '⚠️';
+                    feedbackDiv.style.color = '#ff416c';
+                    return;
+                }
+                if (this.currentEnergy <= 0 && new Set(this.playerPath).size === this.waypoints.length && this.playerPath[0] === this.playerPath[this.playerPath.length-1]) {
+                    feedbackDiv.textContent = 'Mission Complete! Energy reserves critical!';
+                    starRatingDiv.textContent = '✅';
+                    feedbackDiv.style.color = '#ff8a00';
+                }
+
+                const efficiencyRatio = this.playerDistance / this.optimalDistance;
+
+                if (efficiencyRatio <= 1.0001) {
+                    feedbackDiv.textContent = 'Perfect Efficiency! Optimal path achieved!';
+                    starRatingDiv.textContent = '⭐⭐⭐';
+                    feedbackDiv.style.color = '#38ef7d';
+                } else if (efficiencyRatio <= 1.15) {
+                    feedbackDiv.textContent = 'Excellent Navigation! Near-optimal path!';
+                    starRatingDiv.textContent = '⭐⭐';
+                    feedbackDiv.style.color = '#38ef7d';
+                } else if (efficiencyRatio <= 1.30) {
+                    feedbackDiv.textContent = 'Good Attempt! Room for improvement!';
+                    starRatingDiv.textContent = '⭐';
+                    feedbackDiv.style.color = '#38ef7d';
+                } else {
+                    feedbackDiv.textContent = 'Continue Optimizing! Try for a shorter path.';
+                    starRatingDiv.textContent = '↻';
+                    feedbackDiv.style.color = '#ff8a00';
+                }
+            }
+
+            clearWaypoints() {
+                this.resetGameState();
+                this.waypoints = [];
+                this.updateStats();
+                this.draw();
+            }
+
+            generateRandomWaypoints(count = 8) {
+                this.clearWaypoints();
+                const margin = 50;
+                const width = this.canvas.offsetWidth - 2 * margin;
+                const height = this.canvas.offsetHeight - 2 * margin;
+
+                const waypointTypes = ['planet', 'star', 'nebula'];
+                const waypointColors = ['#7db8ff', '#FFD700', '#FF7F50', '#9370DB', '#7CFC00'];
+
+                let newWaypoints = [];
+                for (let i = 0; i < count; i++) {
+                    let x, y, tooClose;
+                    let attempts = 0;
+                    do {
+                        x = margin + Math.random() * width;
+                        y = margin + Math.random() * height;
+                        tooClose = false;
+                        for (let j = 0; j < newWaypoints.length; j++) {
+                            const existingWaypoint = newWaypoints[j];
+                            const distance = Math.sqrt(Math.pow(x - existingWaypoint.x, 2) + Math.pow(y - existingWaypoint.y, 2));
+                            if (distance < 50) {
+                                tooClose = true;
+                                break;
                             }
                         }
-                    }
+                        attempts++;
+                    } while (tooClose && attempts < 100);
                     
-                    if (nearest !== -1) {
-                        totalDistance += nearestDistance;
-                        visited[nearest] = true;
-                        current = nearest;
-                    }
+                    newWaypoints.push({ 
+                        x, y, 
+                        id: i,
+                        type: waypointTypes[Math.floor(Math.random() * waypointTypes.length)],
+                        color: waypointColors[Math.floor(Math.random() * waypointColors.length)],
+                        animationProgress: 0
+                    });
                 }
-                
-                // Return to start
-                totalDistance += this.distance(this.points[current], this.points[0]);
-                
-                this.optimalDistance = Math.round(totalDistance);
-            }
-
-            handleClick(e) {
-                if (this.gameComplete) return;
-                
-                const rect = this.canvas.getBoundingClientRect();
-                const x = (e.clientX - rect.left) * (800 / rect.width);
-                const y = (e.clientY - rect.top) * (500 / rect.height);
-                
-                const clickedPoint = this.getPointAt(x, y);
-                
-                if (clickedPoint && this.canVisitPoint(clickedPoint)) {
-                    this.visitPoint(clickedPoint);
-                    this.createParticles(x, y);
-                }
-            }
-
-            handleMouseMove(e) {
-                const rect = this.canvas.getBoundingClientRect();
-                const x = (e.clientX - rect.left) * (800 / rect.width);
-                const y = (e.clientY - rect.top) * (500 / rect.height);
-                
-                this.mouseX = x;
-                this.mouseY = y;
-            }
-
-            getPointAt(x, y) {
-                const clickRadius = 25;
-                return this.points.find(point => 
-                    this.distance(point, {x, y}) <= clickRadius
-                );
-            }
-
-            canVisitPoint(point) {
-                if (this.path.length === 0) {
-                    return point.isStart;
-                }
-                
-                if (point.visited && !point.isStart) {
-                    return false;
-                }
-                
-                // Can return to start only if all points visited
-                if (point.isStart && this.path.length > 1) {
-                    return this.points.filter(p => !p.visited).length === 1; // Only start remains
-                }
-                
-                return !point.visited;
-            }
-
-            visitPoint(point) {
-                point.visited = true;
-                this.path.push(point);
-                
-                if (this.checkGameComplete()) {
-                    this.gameComplete = true;
-                    this.showCompletionMessage();
-                }
-                
+                this.waypoints = newWaypoints;
+                this.waypoints.forEach(waypoint => this.animateWaypointIn(waypoint));
                 this.updateStats();
             }
 
-            checkGameComplete() {
-                return this.path.length > 1 && 
-                       this.path[this.path.length - 1].isStart && 
-                       this.points.every(p => p.visited);
+            calculateDistance(waypoint1, waypoint2) {
+                const dx = waypoint1.x - waypoint2.x;
+                const dy = waypoint1.y - waypoint2.y;
+                return Math.sqrt(dx * dx + dy * dy);
             }
 
-            createParticles(x, y) {
-                const colors = ['#06ffa5', '#48cae4', '#feca57', '#ff6b6b'];
+            calculatePathDistance(pathIndices, loop = true) {
+                if (pathIndices.length < 2) return 0;
                 
-                for (let i = 0; i < 8; i++) {
-                    const particle = document.createElement('div');
-                    particle.className = 'particle';
-                    particle.style.left = x + 'px';
-                    particle.style.top = y + 'px';
-                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    
-                    const dx = (Math.random() - 0.5) * 100 + 'px';
-                    const dy = (Math.random() - 0.5) * 100 + 'px';
-                    particle.style.setProperty('--dx', dx);
-                    particle.style.setProperty('--dy', dy);
-                    
-                    document.body.appendChild(particle);
-                    
-                    setTimeout(() => particle.remove(), 1000);
+                let distance = 0;
+                for (let i = 0; i < pathIndices.length - 1; i++) {
+                    distance += this.calculateDistance(this.waypoints[pathIndices[i]], this.waypoints[pathIndices[i + 1]]);
                 }
-            }
-
-            getCurrentDistance() {
-                if (this.path.length < 2) return 0;
-                
-                let total = 0;
-                for (let i = 1; i < this.path.length; i++) {
-                    total += this.distance(this.path[i-1], this.path[i]);
+                if (loop && pathIndices.length > 0) {
+                    distance += this.calculateDistance(this.waypoints[pathIndices[pathIndices.length - 1]], this.waypoints[pathIndices[0]]);
                 }
-                return Math.round(total);
+                return distance;
             }
 
-            updateStats() {
-                const currentDist = this.getCurrentDistance();
-                const efficiency = this.optimalDistance > 0 ? 
-                    Math.round((this.optimalDistance / Math.max(currentDist, 1)) * 100) : 0;
-                
-                document.getElementById('currentDistance').textContent = currentDist;
-                document.getElementById('optimalDistance').textContent = this.optimalDistance;
-                document.getElementById('efficiency').textContent = efficiency + '%';
-                document.getElementById('pointsVisited').textContent = 
-                    `${this.path.length}/${this.points.length}`;
-            }
+            nearestNeighborPath() {
+                if (this.waypoints.length < 2) return [];
 
-            showCompletionMessage() {
-                const currentDist = this.getCurrentDistance();
-                const efficiency = Math.round((this.optimalDistance / currentDist) * 100);
-                
-                let message = '';
-                let messageClass = '';
-                
-                if (efficiency >= 90) {
-                    message = `🎉 Excellent! ${efficiency}% efficiency - You're a logistics master!`;
-                    messageClass = 'success';
-                } else if (efficiency >= 75) {
-                    message = `👍 Good job! ${efficiency}% efficiency - Well planned route!`;
-                    messageClass = 'success';
-                } else {
-                    message = `✅ Complete! ${efficiency}% efficiency - Try to optimize further!`;
-                    messageClass = 'fail';
+                const unvisited = new Set(Array.from({ length: this.waypoints.length }, (_, i) => i));
+                const path = [];
+                let currentWaypointIndex = 0;
+
+                path.push(currentWaypointIndex);
+                unvisited.delete(currentWaypointIndex);
+
+                while (unvisited.size > 0) {
+                    let nearest = -1;
+                    let nearestDistance = Infinity;
+
+                    for (const waypointIndex of unvisited) {
+                        const distance = this.calculateDistance(this.waypoints[currentWaypointIndex], this.waypoints[waypointIndex]);
+                        if (distance < nearestDistance) {
+                            nearestDistance = distance;
+                            nearest = waypointIndex;
+                        }
+                    }
+                    path.push(nearest);
+                    unvisited.delete(nearest);
+                    currentWaypointIndex = nearest;
                 }
+                return path;
+            }
+            
+            bruteForcePath() {
+                const numWaypoints = this.waypoints.length;
+                if (numWaypoints < 2) return [];
+                if (numWaypoints > 8) { 
+                    console.warn(`Brute force inefficient for ${numWaypoints} waypoints. Using approximation.`);
+                    return this.nearestNeighborPath();
+                }
+
+                let smallestDistance = Infinity;
+                let bestPermutation = [];
+
+                const swap = (arr, i, j) => {
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                };
+
+                const permute = (arr, l, r) => {
+                    if (l === r) {
+                        const currentDistance = this.calculatePathDistance(arr, true);
+                        if (currentDistance < smallestDistance) {
+                            smallestDistance = currentDistance;
+                            bestPermutation = [...arr];
+                        }
+                    } else {
+                        for (let i = l; i <= r; i++) {
+                            swap(arr, l, i);
+                            permute(arr, l + 1, r);
+                            swap(arr, l, i);
+                        }
+                    }
+                };
+
+                const initialPermutation = Array.from({ length: numWaypoints }, (_, i) => i);
+                permute(initialPermutation, 0, numWaypoints - 1);
                 
-                this.showMessage(message, messageClass);
+                return bestPermutation;
             }
 
-            showMessage(text, className = '') {
-                const messageEl = document.getElementById('gameMessage');
-                messageEl.textContent = text;
-                messageEl.className = `message show ${className}`;
-            }
+            findOptimalPath(showPathImmediately = true) {
+                if (this.waypoints.length < 2) {
+                    document.getElementById('gameFeedback').textContent = 'Add more waypoints to calculate!';
+                    document.getElementById('gameFeedback').style.color = '#ff8a00';
+                    return;
+                }
+                document.getElementById('gameFeedback').textContent = 'Calculating optimal path...';
+                document.getElementById('gameFeedback').style.color = '#7db8ff';
 
-            hideMessage() {
-                const messageEl = document.getElementById('gameMessage');
-                messageEl.className = 'message';
-            }
+                const path = this.waypoints.length <= 8 ? this.bruteForcePath() : this.nearestNeighborPath();
+                
+                this.optimalDistance = this.calculatePathDistance(path, true);
+                this.optimalPath = path;
 
-            animate() {
-                this.ctx.clearRect(0, 0, 800, 500);
-                
-                // Update point pulses
-                this.points.forEach(point => {
-                    point.pulse += 0.1;
-                });
-                
-                this.draw();
-                
-                this.animationFrame = requestAnimationFrame(() => this.animate());
+                this.updateStats();
+                if(showPathImmediately) {
+                    this.draw();
+                    document.getElementById('gameFeedback').textContent = 'Optimal path displayed!';
+                    document.getElementById('gameFeedback').style.color = '#38ef7d';
+                }
             }
 
             draw() {
-                // Draw grid background
-                this.drawGrid();
-                
-                // Draw path lines with animation
-                this.drawPath();
-                
-                // Draw preview line to mouse
-                this.drawPreviewLine();
-                
-                // Draw points with pulse animation
-                this.drawPoints();
-                
-                // Draw labels and UI elements
-                this.drawLabels();
-            }
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-            drawGrid() {
-                this.ctx.strokeStyle = 'rgba(150, 150, 150, 0.2)';
-                this.ctx.lineWidth = 1;
-                
-                for (let x = 0; x <= 800; x += 40) {
+                if (this.optimalPath.length > 1 && this.optimalDistance < Infinity) {
+                    this.ctx.strokeStyle = '#FFD700';
+                    this.ctx.lineWidth = 3.5;
+                    this.ctx.setLineDash([6, 6]);
                     this.ctx.beginPath();
-                    this.ctx.moveTo(x, 0);
-                    this.ctx.lineTo(x, 500);
+                    for (let i = 0; i < this.optimalPath.length; i++) {
+                        const waypoint = this.waypoints[this.optimalPath[i]];
+                        if (i === 0) {
+                            this.ctx.moveTo(waypoint.x, waypoint.y);
+                        } else {
+                            this.ctx.lineTo(waypoint.x, waypoint.y);
+                        }
+                    }
+                    if (this.optimalPath.length > 0) {
+                        const firstWaypoint = this.waypoints[this.optimalPath[0]];
+                        this.ctx.lineTo(firstWaypoint.x, firstWaypoint.y);
+                    }
                     this.ctx.stroke();
                 }
                 
-                for (let y = 0; y <= 500; y += 40) {
+                if (this.playerPath.length > 1) {
+                    this.ctx.strokeStyle = '#7db8ff';
+                    this.ctx.lineWidth = 2.5;
+                    this.ctx.setLineDash([]);
                     this.ctx.beginPath();
-                    this.ctx.moveTo(0, y);
-                    this.ctx.lineTo(800, y);
+                    for (let i = 0; i < this.playerPath.length; i++) {
+                        const waypoint = this.waypoints[this.playerPath[i]];
+                        if (i === 0) {
+                            this.ctx.moveTo(waypoint.x, waypoint.y);
+                        } else {
+                            this.ctx.lineTo(waypoint.x, waypoint.y);
+                        }
+                    }
+                    const uniqueWaypointsVisited = new Set(this.playerPath).size;
+                    if (uniqueWaypointsVisited === this.waypoints.length && this.playerPath[0] !== this.playerPath[this.playerPath.length - 1]) {
+                         const firstWaypoint = this.waypoints[this.playerPath[0]];
+                         this.ctx.lineTo(firstWaypoint.x, firstWaypoint.y);
+                    }
                     this.ctx.stroke();
+
+                    this.drawDirectionIndicators(this.playerPath, '#7db8ff');
                 }
-            }
 
-            drawPath() {
-                if (this.path.length < 2) return;
-                
-                this.ctx.strokeStyle = '#ff6b6b';
-                this.ctx.lineWidth = 4;
-                this.ctx.lineCap = 'round';
-                this.ctx.lineJoin = 'round';
-                
-                // Draw path with gradient
-                for (let i = 1; i < this.path.length; i++) {
-                    const gradient = this.ctx.createLinearGradient(
-                        this.path[i-1].x, this.path[i-1].y,
-                        this.path[i].x, this.path[i].y
-                    );
-                    gradient.addColorStop(0, '#ff6b6b');
-                    gradient.addColorStop(1, '#feca57');
+                this.waypoints.forEach((waypoint, index) => {
+                    const baseRadius = 13;
+                    const animatedRadius = baseRadius * waypoint.animationProgress;
+                    const animatedAlpha = waypoint.animationProgress;
+
+                    const radius = (this.currentHoverWaypoint === index) ? (animatedRadius * 1.15) : animatedRadius;
                     
-                    this.ctx.strokeStyle = gradient;
+                    const glowGradient = this.ctx.createRadialGradient(waypoint.x, waypoint.y, 0, waypoint.x, waypoint.y, radius + 4);
+                    glowGradient.addColorStop(0, `rgba(255, 255, 255, ${animatedAlpha * 0.8})`);
+                    glowGradient.addColorStop(0.7, (this.currentHoverWaypoint === index) ? `rgba(125, 184, 255, ${animatedAlpha})` : `rgba(125, 184, 255, ${animatedAlpha})`);
+                    glowGradient.addColorStop(1, 'transparent');
+                    
+                    this.ctx.fillStyle = glowGradient;
                     this.ctx.beginPath();
-                    this.ctx.moveTo(this.path[i-1].x, this.path[i-1].y);
-                    this.ctx.lineTo(this.path[i].x, this.path[i].y);
-                    this.ctx.stroke();
-                    
-                    // Draw arrow
-                    this.drawArrow(this.path[i-1], this.path[i]);
-                }
-            }
-
-            drawArrow(from, to) {
-                const angle = Math.atan2(to.y - from.y, to.x - from.x);
-                const arrowLength = 15;
-                const arrowAngle = Math.PI / 6;
-                
-                const midX = (from.x + to.x) / 2;
-                const midY = (from.y + to.y) / 2;
-                
-                this.ctx.fillStyle = '#ff6b6b';
-                this.ctx.beginPath();
-                this.ctx.moveTo(midX, midY);
-                this.ctx.lineTo(
-                    midX - arrowLength * Math.cos(angle - arrowAngle),
-                    midY - arrowLength * Math.sin(angle - arrowAngle)
-                );
-                this.ctx.lineTo(
-                    midX - arrowLength * Math.cos(angle + arrowAngle),
-                    midY - arrowLength * Math.sin(angle + arrowAngle)
-                );
-                this.ctx.closePath();
-                this.ctx.fill();
-            }
-
-            drawPreviewLine() {
-                if (!this.mouseX || !this.mouseY || this.path.length === 0 || this.gameComplete) return;
-                
-                const lastPoint = this.path[this.path.length - 1];
-                
-                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-                this.ctx.lineWidth = 2;
-                this.ctx.setLineDash([5, 5]);
-                
-                this.ctx.beginPath();
-                this.ctx.moveTo(lastPoint.x, lastPoint.y);
-                this.ctx.lineTo(this.mouseX, this.mouseY);
-                this.ctx.stroke();
-                
-                this.ctx.setLineDash([]);
-            }
-
-            drawPoints() {
-                this.points.forEach((point, index) => {
-                    const pulseSize = Math.sin(point.pulse) * 3;
-                    const baseRadius = point.isStart ? 20 : 15;
-                    const radius = baseRadius + pulseSize;
-                    
-                    // Point shadow
-                    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-                    this.ctx.beginPath();
-                    this.ctx.arc(point.x + 2, point.y + 2, radius, 0, Math.PI * 2);
+                    this.ctx.arc(waypoint.x, waypoint.y, radius + 4, 0, 2 * Math.PI);
                     this.ctx.fill();
+
+                    this.drawWaypointIcon(this.ctx, waypoint, radius, animatedAlpha);
                     
-                    // Point fill
-                    if (point.isStart) {
-                        const gradient = this.ctx.createRadialGradient(
-                            point.x, point.y, 0, point.x, point.y, radius
+                    if (waypoint.animationProgress > 0.8) {
+                        this.ctx.fillStyle = '#000';
+                        this.ctx.font = 'bold 12px Space Mono';
+                        this.ctx.textAlign = 'center';
+                        this.ctx.textBaseline = 'middle';
+                        this.ctx.fillText((index + 1).toString(), waypoint.x, waypoint.y);
+                    }
+                });
+
+                if (this.currentHoverWaypoint !== null || this.playerPath.some(id => this.waypoints[id].animationProgress >= 1)) {
+                    requestAnimationFrame(this.draw.bind(this));
+                }
+            }
+
+            drawDirectionIndicators(pathIndices, color) {
+                if (pathIndices.length < 2) return;
+
+                this.ctx.fillStyle = color;
+                this.ctx.strokeStyle = color;
+                this.ctx.lineWidth = 1.5;
+
+                const segmentsToDraw = pathIndices.length - 1;
+
+                for (let i = 0; i < segmentsToDraw; i++) {
+                    const currentWaypoint = this.waypoints[pathIndices[i]];
+                    const nextWaypoint = this.waypoints[pathIndices[i + 1]];
+                    
+                    const dx = nextWaypoint.x - currentWaypoint.x;
+                    const dy = nextWaypoint.y - currentWaypoint.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance > 25) {
+                        const midX = currentWaypoint.x + dx * 0.5;
+                        const midY = currentWaypoint.y + dy * 0.5;
+
+                        const angle = Math.atan2(dy, dx);
+                        const arrowLength = 8;
+                        const arrowAngle = 0.4;
+
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(midX, midY);
+                        this.ctx.lineTo(
+                            midX - arrowLength * Math.cos(angle - arrowAngle),
+                            midY - arrowLength * Math.sin(angle - arrowAngle)
                         );
-                        gradient.addColorStop(0, '#06ffa5');
-                        gradient.addColorStop(1, '#48cae4');
-                        this.ctx.fillStyle = gradient;
-                    } else if (point.visited) {
-                        this.ctx.fillStyle = '#feca57';
-                    } else {
-                        this.ctx.fillStyle = '#667eea';
+                        this.ctx.moveTo(midX, midY);
+                        this.ctx.lineTo(
+                            midX - arrowLength * Math.cos(angle + arrowAngle),
+                            midY - arrowLength * Math.sin(angle + arrowAngle)
+                        );
+                        this.ctx.stroke();
                     }
-                    
-                    this.ctx.beginPath();
-                    this.ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
-                    this.ctx.fill();
-                    
-                    // Point border
-                    this.ctx.strokeStyle = 'white';
-                    this.ctx.lineWidth = 3;
-                    this.ctx.stroke();
-                    
-                    // Point number
-                    this.ctx.fillStyle = 'white';
-                    this.ctx.font = 'bold 14px Arial';
-                    this.ctx.textAlign = 'center';
-                    this.ctx.textBaseline = 'middle';
-                    this.ctx.fillText(point.isStart ? 'S' : index.toString(), point.x, point.y);
-                });
-            }
-
-            drawLabels() {
-                // Draw title for start point
-                if (this.points.length > 0) {
-                    const startPoint = this.points[0];
-                    this.ctx.fillStyle = '#333';
-                    this.ctx.font = 'bold 12px Arial';
-                    this.ctx.textAlign = 'center';
-                    this.ctx.fillText('START/END', startPoint.x, startPoint.y - 35);
                 }
-            }
+                const uniqueWaypointsVisited = new Set(pathIndices).size;
+                if (uniqueWaypointsVisited === this.waypoints.length && pathIndices[0] === pathIndices[pathIndices.length - 1] && pathIndices.length > this.waypoints.length) {
+                    const currentWaypoint = this.waypoints[pathIndices[pathIndices.length - 2]];
+                    const nextWaypoint = this.waypoints[pathIndices[pathIndices.length - 1]];
 
-            undoLastMove() {
-                if (this.path.length > 0) {
-                    const lastPoint = this.path.pop();
-                    if (!lastPoint.isStart || this.path.length === 0) {
-                        lastPoint.visited = false;
+                    const dx = nextWaypoint.x - currentWaypoint.x;
+                    const dy = nextWaypoint.y - currentWaypoint.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance > 25) {
+                        const midX = currentWaypoint.x + dx * 0.5;
+                        const midY = currentWaypoint.y + dy * 0.5;
+
+                        const angle = Math.atan2(dy, dx);
+                        const arrowLength = 8;
+                        const arrowAngle = 0.4;
+
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(midX, midY);
+                        this.ctx.lineTo(
+                            midX - arrowLength * Math.cos(angle - arrowAngle),
+                            midY - arrowLength * Math.sin(angle - arrowAngle)
+                        );
+                        this.ctx.moveTo(midX, midY);
+                        this.ctx.lineTo(
+                            midX - arrowLength * Math.cos(angle + arrowAngle),
+                            midY - arrowLength * Math.sin(angle + arrowAngle)
+                        );
+                        this.ctx.stroke();
                     }
-                    this.gameComplete = false;
-                    this.updateStats();
-                    this.hideMessage();
                 }
             }
 
-            clearPath() {
-                this.path = [];
-                this.points.forEach(point => {
-                    point.visited = false;
-                });
-                this.gameComplete = false;
-                this.updateStats();
-                this.hideMessage();
-            }
-
-            showHint() {
-                if (this.path.length === 0) {
-                    this.showMessage('💡 Start by clicking the green START point!');
-                } else if (this.gameComplete) {
-                    this.showMessage('🎯 Game complete! Try a different difficulty level.');
-                } else {
-                    this.showMessage('💡 Visit the closest unvisited point to optimize your route!');
-                }
-            }
-
-            setLevel(level) {
-                this.level = level;
-                this.initGame();
+            updateStats() {
+                document.getElementById('cityCount').textContent = this.waypoints.length;
+                document.getElementById('playerDistance').textContent =
+                    this.playerDistance > 0 ? Math.round(this.playerDistance) : '0';
+                document.getElementById('bestDistance').textContent =
+                    this.optimalDistance < Infinity ? Math.round(this.optimalDistance) : '-';
                 
-                // Update button states
-                document.querySelectorAll('.level-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                event.target.classList.add('active');
+                const goalMessageElement = document.getElementById('goalMessage');
+                const uniqueWaypointsVisited = new Set(this.playerPath).size;
+
+                if (this.waypoints.length === 0) {
+                    goalMessageElement.textContent = 'Add waypoints!';
+                    goalMessageElement.style.color = '#7db8ff';
+                } else if (this.currentEnergy <= 0 && uniqueWaypointsVisited < this.waypoints.length) {
+                    goalMessageElement.textContent = 'Energy depleted!';
+                    goalMessageElement.style.color = '#ff416c';
+                } else if (this.playerPath.length === 0) {
+                    goalMessageElement.textContent = 'Start plotting!';
+                    goalMessageElement.style.color = '#7db8ff';
+                } else if (uniqueWaypointsVisited < this.waypoints.length) {
+                    goalMessageElement.textContent = `Visit ${this.waypoints.length - uniqueWaypointsVisited} more`;
+                    goalMessageElement.style.color = '#7db8ff';
+                } else if (this.playerPath[0] !== this.playerPath[this.playerPath.length - 1] && uniqueWaypointsVisited === this.waypoints.length) {
+                    goalMessageElement.textContent = 'Complete the circuit!';
+                    goalMessageElement.style.color = '#7db8ff';
+                } else {
+                    goalMessageElement.textContent = 'Evaluate solution!';
+                    goalMessageElement.style.color = '#7db8ff';
+                }
+
+                const fuelGauge = document.getElementById('fuelGauge');
+                const fuelLabel = document.getElementById('fuelLabel');
+                const energyPercentage = (this.currentEnergy / this.maxEnergy) * 100;
+                fuelGauge.style.width = `${Math.max(0, energyPercentage)}%`;
+                fuelLabel.textContent = `${Math.round(this.currentEnergy)} / ${this.maxEnergy} units`;
+
+                if (energyPercentage <= 20) {
+                    fuelGauge.classList.add('empty');
+                } else {
+                    fuelGauge.classList.remove('empty');
+                }
+            }
+
+            handleCanvasClick(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                let clickedWaypointIndex = -1;
+                for (let i = 0; i < this.waypoints.length; i++) {
+                    const waypoint = this.waypoints[i];
+                    const distance = Math.sqrt(Math.pow(mouseX - waypoint.x, 2) + Math.pow(mouseY - waypoint.y, 2));
+                    if (distance <= 13) {
+                        clickedWaypointIndex = i;
+                        break;
+                    }
+                }
+
+                if (clickedWaypointIndex !== -1) {
+                    this.addWaypointToPath(clickedWaypointIndex);
+                } else {
+                    this.addWaypoint(mouseX, mouseY);
+                }
+            }
+
+            handleCanvasMouseMove(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                let hoverWaypointFound = false;
+
+                for (let i = 0; i < this.waypoints.length; i++) {
+                    const waypoint = this.waypoints[i];
+                    const distance = Math.sqrt(Math.pow(mouseX - waypoint.x, 2) + Math.pow(mouseY - waypoint.y, 2));
+                    if (distance <= 13) {
+                        if (this.currentHoverWaypoint !== i) {
+                            this.currentHoverWaypoint = i;
+                            this.draw();
+                        }
+                        hoverWaypointFound = true;
+                        break;
+                    }
+                }
+                if (!hoverWaypointFound && this.currentHoverWaypoint !== null) {
+                    this.currentHoverWaypoint = null;
+                    this.draw();
+                }
+            }
+
+            handleResize() {
+                this.setupCanvas();
+                this.draw();
             }
         }
 
-        // Global game instance
-        let game;
-
-        // Initialize game when page loads
-        window.addEventListener('DOMContentLoaded', () => {
-            game = new TSPGame();
-        });
-
-        // Global functions for buttons
-        function setLevel(level) {
-            game.setLevel(level);
+        // --- Initialize everything when page loads ---
+        document.addEventListener('DOMContentLoaded', function () {
+            createStars();
+            window.pathfinderGame = new PathfinderGame();
             
-            // Update button states
-            document.querySelectorAll('.level-btn').forEach(btn => {
-                btn.classList.remove('active');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.phase').forEach(phase => {
+                observer.observe(phase);
             });
-            document.querySelector(`[onclick="setLevel('${level}')"]`).classList.add('active');
-        }
 
-        function restartGame() {
-            game.initGame();
-        }
-
-        function undoLastMove() {
-            game.undoLastMove();
-        }
-
-        function clearPath() {
-            game.clearPath();
-        }
-
-        function showHint() {
-            game.showHint();
-        }
+            function animateCanvas() {
+                if (window.pathfinderGame) {
+                    window.pathfinderGame.draw();
+                }
+                requestAnimationFrame(animateCanvas);
+            }
+            animateCanvas();
+        });
     </script>
 </body>
 </html>
