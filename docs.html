@@ -1,456 +1,503 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FoodZone Restaurant App Documentation</title>
+    <title>FoodZone App Documentation</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-```
-    * {
-        font-family: 'Inter', sans-serif;
-    }
-    
-    .gradient-bg {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -2;
-    }
-    
-    .floating-shapes {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
-        overflow: hidden;
-    }
-    
-    .shape {
-        position: absolute;
-        opacity: 0.1;
-        animation: float 20s infinite linear;
-    }
-    
-    .shape:nth-child(1) {
-        top: 10%;
-        left: 10%;
-        animation-delay: 0s;
-    }
-    
-    .shape:nth-child(2) {
-        top: 20%;
-        right: 10%;
-        animation-delay: -5s;
-    }
-    
-    .shape:nth-child(3) {
-        bottom: 10%;
-        left: 20%;
-        animation-delay: -10s;
-    }
-    
-    .shape:nth-child(4) {
-        bottom: 20%;
-        right: 20%;
-        animation-delay: -15s;
-    }
-    
-    @keyframes float {
-        0% { transform: translateY(0px) rotate(0deg); }
-        33% { transform: translateY(-20px) rotate(120deg); }
-        66% { transform: translateY(20px) rotate(240deg); }
-        100% { transform: translateY(0px) rotate(360deg); }
-    }
-    
-    .slide {
-        min-height: 100vh;
-        display: none;
-        animation: slideIn 0.5s ease-out;
-    }
-    
-    .slide.active {
-        display: flex;
-    }
-    
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateX(50px);
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            height: 100vh;
+            overflow-x: hidden;
         }
-        to {
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .slide {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: scale(0.95);
+            transition: all 0.5s ease;
+        }
+        .slide.active {
+            transform: scale(1);
+        }
+        .bullet-item {
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.3s ease;
+        }
+        .bullet-item.show {
             opacity: 1;
             transform: translateX(0);
         }
-    }
-    
-    .card {
-        backdrop-filter: blur(20px);
-        background: rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        transition: all 0.3s ease;
-    }
-    
-    .card:hover {
-        transform: translateY(-5px);
-        background: rgba(255, 255, 255, 0.25);
-    }
-    
-    .navigation-dot {
-        transition: all 0.3s ease;
-    }
-    
-    .navigation-dot.active {
-        background: #fff;
-        transform: scale(1.2);
-    }
-    
-    .progress-bar {
-        height: 4px;
-        background: rgba(255, 255, 255, 0.3);
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 1000;
-    }
-    
-    .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #ff6b6b, #ee5a24);
-        transition: width 0.3s ease;
-    }
-</style>
-```
-
+        .progress-bar {
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+        .progress {
+            height: 100%;
+            background: white;
+            transition: width 0.3s ease;
+        }
+        .resource-card {
+            transition: all 0.3s ease;
+        }
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
-<body class="overflow-hidden">
-    <div class="gradient-bg"></div>
-
-```
-<div class="floating-shapes">
-    <div class="shape w-20 h-20 bg-white rounded-full"></div>
-    <div class="shape w-16 h-16 bg-yellow-300 rounded-lg"></div>
-    <div class="shape w-12 h-12 bg-pink-300 rounded-full"></div>
-    <div class="shape w-24 h-24 bg-blue-300 rounded-lg"></div>
-</div>
-
-<div class="progress-bar">
-    <div class="progress-fill" id="progressBar" style="width: 12.5%"></div>
-</div>
-
-<!-- Slide 1: Title -->
-<div class="slide active flex items-center justify-center p-8" id="slide1">
-    <div class="text-center text-white">
-        <div class="text-8xl mb-6">📘</div>
-        <h1 class="text-6xl font-bold mb-4 bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
-            FoodZone Restaurant Ordering App Documentation
-        </h1>
-        <button onclick="nextSlide()" class="bg-white text-purple-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-all transform hover:scale-105 mt-8">
-            Start →
-        </button>
-    </div>
-</div>
-
-<!-- Slide 2: Project Overview -->
-<div class="slide flex items-center justify-center p-8" id="slide2">
-    <div class="max-w-6xl w-full">
-        <div class="text-center mb-12">
-            <h2 class="text-5xl font-bold text-white mb-4">📝 Project Overview</h2>
+<body class="text-gray-800">
+    <div class="container mx-auto px-4 py-12">
+        <!-- Progress bar -->
+        <div class="progress-bar mb-8 rounded-full">
+            <div class="progress rounded-full" style="width: 0%"></div>
         </div>
-        
-        <div class="card rounded-2xl p-8">
-            <p class="text-gray-200 mb-6 text-lg">
-                The FoodZone app is a client-side restaurant ordering interface built with plain HTML, JavaScript, 
-                and styled using Tailwind CSS. It allows users to browse a curated menu of food items, add them to 
-                a cart, and view a summary of their selections. The project emphasizes simplicity, focusing on 
-                dynamic interactivity and data persistence entirely within the browser.
-            </p>
-            
-            <h3 class="text-2xl font-bold text-white mb-4">Key parts of the code include:</h3>
-            <ul class="text-gray-200 space-y-3">
-                <li><strong class="text-yellow-300">Dynamic Menu Rendering:</strong> The menu items are rendered dynamically by JavaScript manipulating the DOM based on a predefined list of products.</li>
-                <li><strong class="text-yellow-300">Cart Management:</strong> Users can add items to a cart with quantities. The cart is stored and managed using the browser's localStorage to maintain data persistence between page reloads.</li>
-                <li><strong class="text-yellow-300">Order Summary & Controls:</strong> The app provides real-time updates on the cart contents, with controls to increment, decrement, or remove items.</li>
-                <li><strong class="text-yellow-300">UI Components:</strong> Tailwind CSS is used extensively to style components, including buttons, modals, cards, and interactive elements.</li>
-            </ul>
-        </div>
-    </div>
-</div>
 
-<!-- Slide 3: Tools & Technologies -->
-<div class="slide flex items-center justify-center p-8" id="slide3">
-    <div class="max-w-6xl w-full">
-        <div class="text-center mb-12">
-            <h2 class="text-5xl font-bold text-white mb-4">🛠 Tools & Technologies Used</h2>
-        </div>
-        
-        <div class="grid md:grid-cols-3 gap-8">
-            <div class="card rounded-2xl p-8">
-                <h3 class="text-2xl font-bold text-white mb-4">Tailwind CSS</h3>
-                <p class="text-gray-200">A utility-first CSS framework for rapid UI development.</p>
+        <!-- Slides container -->
+        <div class="relative h-[70vh] overflow-hidden">
+            <!-- Slide 1: Title -->
+            <div class="slide absolute w-full p-12 active animate__animated animate__fadeIn">
+                <div class="flex flex-col items-center justify-center h-full">
+                    <h1 class="text-5xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-orange-500">
+                        FoodZone Restaurant Ordering App
+                    </h1>
+                    <p class="text-xl text-gray-600 mb-8">Client-side ordering interface documentation</p>
+                    <div class="animate__animated animate__bounce animate__infinite animate__slow mt-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                        </svg>
+                    </div>
+                </div>
             </div>
-            
-            <div class="card rounded-2xl p-8">
-                <h3 class="text-2xl font-bold text-white mb-4">localStorage API</h3>
-                <p class="text-gray-200">A web storage solution for persisting user data across sessions.</p>
-            </div>
-            
-            <div class="card rounded-2xl p-8">
-                <h3 class="text-2xl font-bold text-white mb-4">HTML5 & JavaScript</h3>
-                <p class="text-gray-200">Core technologies for structuring and scripting the application.</p>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Slide 4: Learning Journey - Tailwind CSS -->
-<div class="slide flex items-center justify-center p-8" id="slide4">
-    <div class="max-w-6xl w-full">
-        <div class="text-center mb-12">
-            <h2 class="text-5xl font-bold text-white mb-4">📚 Learning Journey</h2>
-        </div>
-        
-        <div class="card rounded-2xl p-8 mb-8">
-            <h3 class="text-3xl font-bold text-white mb-6">1. Tailwind CSS</h3>
-            <h4 class="text-xl font-semibold text-yellow-300 mb-4">What I Learned:</h4>
-            <ul class="text-gray-200 space-y-3 mb-6">
-                <li><strong>Utility-First Approach:</strong> Tailwind promotes using utility classes directly in HTML, reducing the need for custom CSS.</li>
-                <li><strong>Responsive Design:</strong> Utilized Tailwind's responsive utilities like sm:, md:, and lg: to create a mobile-first design.</li>
-                <li><strong>Hover & Transition Effects:</strong> Implemented interactive elements using classes like hover:scale-105 and transition.</li>
-            </ul>
-            <h4 class="text-xl font-semibold text-yellow-300 mb-4">Resources:</h4>
-            <ul class="text-gray-200 space-y-2">
-                <li>• Tailwind CSS Documentation</li>
-                <li>• How to add Tailwind CSS to HTML? - Themesberg</li>
-            </ul>
-        </div>
-    </div>
-</div>
-
-<!-- Slide 5: Learning Journey - localStorage -->
-<div class="slide flex items-center justify-center p-8" id="slide5">
-    <div class="max-w-6xl w-full">
-        <div class="card rounded-2xl p-8">
-            <h3 class="text-3xl font-bold text-white mb-6">2. localStorage API</h3>
-            <h4 class="text-xl font-semibold text-yellow-300 mb-4">What I Learned:</h4>
-            <ul class="text-gray-200 space-y-3 mb-6">
-                <li><strong>Persistent Data Storage:</strong> localStorage allows storing data with no expiration date, making it ideal for saving cart items.</li>
-                <li><strong>Data Retrieval & Manipulation:</strong> Used localStorage.setItem() to save data and localStorage.getItem() to retrieve it.</li>
-                <li><strong>Data Removal:</strong> Implemented localStorage.removeItem() and localStorage.clear() to manage stored data.</li>
-            </ul>
-            <h4 class="text-xl font-semibold text-yellow-300 mb-4">Resources:</h4>
-            <ul class="text-gray-200 space-y-2">
-                <li>• Window: localStorage property - MDN</li>
-                <li>• localStorage in JavaScript: A complete guide - LogRocket Blog</li>
-            </ul>
-        </div>
-    </div>
-</div>
-
-<!-- Slide 6: Challenges & Solutions -->
-<div class="slide flex items-center justify-center p-8" id="slide6">
-    <div class="max-w-6xl w-full">
-        <div class="text-center mb-12">
-            <h2 class="text-5xl font-bold text-white mb-4">⚠️ Challenges & Solutions</h2>
-        </div>
-        
-        <div class="space-y-8">
-            <div class="card rounded-2xl p-8">
-                <h3 class="text-2xl font-bold text-red-300 mb-3">1. Persistent Cart Functionality</h3>
-                <p class="text-gray-300 mb-4"><strong>Challenge:</strong> Maintaining cart data across page reloads.</p>
-                <p class="text-gray-200"><strong class="text-green-300">Solution:</strong> Utilized the localStorage API to store and retrieve cart items, ensuring data persistence without server-side storage.</p>
-            </div>
-            
-            <div class="card rounded-2xl p-8">
-                <h3 class="text-2xl font-bold text-red-300 mb-3">2. Dynamic UI Updates</h3>
-                <p class="text-gray-300 mb-4"><strong>Challenge:</strong> Updating the UI in real-time based on user interactions.</p>
-                <p class="text-gray-200"><strong class="text-green-300">Solution:</strong> Implemented JavaScript functions to dynamically update the cart count and display order details upon user actions.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Slide 7: Testing Process -->
-<div class="slide flex items-center justify-center p-8" id="slide7">
-    <div class="max-w-6xl w-full">
-        <div class="text-center mb-12">
-            <h2 class="text-5xl font-bold text-white mb-4">🧪 Testing Process & Final Feature Set</h2>
-        </div>
-        
-        <div class="grid md:grid-cols-2 gap-8">
-            <div class="card rounded-2xl p-8">
-                <h3 class="text-2xl font-bold text-white mb-6">Testing Process</h3>
-                <ul class="text-gray-200 space-y-3">
-                    <li><strong>Manual UI Testing:</strong> Tested adding and removing items, verifying cart updates correctly on the page and in localStorage.</li>
-                    <li><strong>Persistence Verification:</strong> Reloaded pages multiple times to confirm that cart data remains consistent via localStorage.</li>
-                    <li><strong>Edge Cases:</strong> Checked behavior when cart is empty, or when quantities reach zero.</li>
-                    <li><strong>Cross-Browser Checks:</strong> Basic compatibility checks were done in modern browsers to ensure consistent styling and functionality.</li>
+            <!-- Slide 2: Project Overview -->
+            <div class="slide absolute w-full p-12">
+                <h2 class="text-3xl font-bold mb-8 text-orange-600">Project Overview</h2>
+                <ul class="space-y-4 text-lg">
+                    <li class="bullet-item">📱 <span class="font-semibold">Client-side</span> restaurant ordering interface</li>
+                    <li class="bullet-item">🛠 Built with <span class="font-semibold">HTML, JavaScript, Tailwind CSS</span></li>
+                    <li class="bullet-item">✨ Features <span class="font-semibold">dynamic menu rendering</span> and cart management</li>
+                    <li class="bullet-item">💾 Uses <span class="font-semibold">localStorage</span> for data persistence</li>
+                    <li class="bullet-item">🎨 Styled with <span class="font-semibold">Tailwind CSS utilities</span></li>
                 </ul>
             </div>
-            
-            <div class="card rounded-2xl p-8">
-                <h3 class="text-2xl font-bold text-white mb-6">Final Features</h3>
-                <ul class="text-gray-200 space-y-3">
-                    <li>Dynamic Menu Display with food images, prices, and descriptions</li>
-                    <li>Add to Cart Button for each menu item</li>
-                    <li>Cart Sidebar/Modal showing items with quantity controls</li>
-                    <li>Persistent Cart Data using localStorage</li>
-                    <li>Total Price Calculation updated in real-time</li>
-                    <li>Order Summary View with itemized details</li>
-                    <li>Clear Cart Option to reset the order</li>
-                    <li>Interactive UI Effects like hover states and transitions implemented via Tailwind utilities</li>
-                </ul>
+
+            <!-- Slide 3: Key Parts -->
+            <div class="slide absolute w-full p-12">
+                <h2 class="text-3xl font-bold mb-8 text-orange-600">Key Parts of the Code</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-md transform transition hover:scale-105">
+                        <h3 class="text-xl font-semibold mb-3 text-pink-600">Dynamic Menu Rendering</h3>
+                        <p>JavaScript manipulates DOM based on predefined products list</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md transform transition hover:scale-105">
+                        <h3 class="text-xl font-semibold mb-3 text-pink-600">Cart Management</h3>
+                        <p>Add items with quantities, stored in localStorage</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md transform transition hover:scale-105">
+                        <h3 class="text-xl font-semibold mb-3 text-pink-600">Order Summary</h3>
+                        <p>Real-time updates with quantity controls</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md transform transition hover:scale-105">
+                        <h3 class="text-xl font-semibold mb-3 text-pink-600">UI Components</h3>
+                        <p>Styled with Tailwind (buttons, modals, cards)</p>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
 
-<!-- Slide 8: Stretch Goal -->
-<div class="slide flex items-center justify-center p-8" id="slide8">
-    <div class="max-w-6xl w-full">
-        <div class="text-center mb-12">
-            <h2 class="text-5xl font-bold text-white mb-4">🎯 Stretch Goal: Deep Tailwind CSS Learning During the Project</h2>
-        </div>
-        
-        <div class="card rounded-2xl p-8 mb-8">
-            <p class="text-gray-200 mb-6 text-lg">
-                Initially, Tailwind CSS was unfamiliar, so a stretch goal was set to master the framework 
-                through hands-on use within this project.
-            </p>
-            
-            <h3 class="text-2xl font-bold text-white mb-6">How We Did a Deep Dive</h3>
-            
-            <ul class="text-gray-200 space-y-4">
-                <li><strong class="text-yellow-300">Exploring the Utility Classes:</strong> Instead of writing custom CSS, every style was applied using Tailwind's utility classes, from spacing (p-4, m-2) to typography (font-semibold, text-gray-700).</li>
-                <li><strong class="text-yellow-300">Reading Official Docs:</strong> Regularly referred to Tailwind's official docs to understand the wide range of classes for layout, typography, colors, and effects.</li>
-                <li><strong class="text-yellow-300">Experimentation:</strong> Tweaked classes directly in the HTML, observing instant changes, which accelerated learning and reinforced concepts.</li>
-                <li><strong class="text-yellow-300">Layering Effects:</strong> Combined utilities for hover effects, transitions, flexbox/grid layouts, and shadows to create visually engaging UI components.</li>
-                <li><strong class="text-yellow-300">Responsive Utilities Avoided:</strong> For this project, responsive design classes were intentionally not a focus to keep the layout consistent across devices.</li>
-            </ul>
-            
-            <p class="text-gray-200 mt-6 text-lg italic">
-                This hands-on, project-based approach helped turn theoretical Tailwind knowledge into practical skills, 
-                improving both speed and efficiency in UI development.
-            </p>
-        </div>
-    </div>
-</div>
+            <!-- Slide 4: Tools & Technologies -->
+            <div class="slide absolute w-full p-12">
+                <h2 class="text-3xl font-bold mb-8 text-orange-600">Tools & Technologies Used</h2>
+                <div class="flex flex-wrap justify-center gap-6 mt-8">
+                    <div class="tech-card animate__animated">
+                        <div class="bg-white p-6 rounded-full h-40 w-40 flex flex-col items-center justify-center shadow-lg border-4 border-blue-200">
+                            <img src="https://cdn.worldvectorlogo.com/logos/tailwindcss.svg" alt="Tailwind CSS" class="h-16 mb-2">
+                            <span class="font-semibold">Tailwind CSS</span>
+                        </div>
+                    </div>
+                    <div class="tech-card animate__animated">
+                        <div class="bg-white p-6 rounded-full h-40 w-40 flex flex-col items-center justify-center shadow-lg border-4 border-yellow-200">
+                            <img src="https://cdn.worldvectorlogo.com/logos/javascript-1.svg" alt="JavaScript" class="h-16 mb-2">
+                            <span class="font-semibold">JavaScript</span>
+                        </div>
+                    </div>
+                    <div class="tech-card animate__animated">
+                        <div class="bg-white p-6 rounded-full h-40 w-40 flex flex-col items-center justify-center shadow-lg border-4 border-green-200">
+                            <img src="https://cdn.worldvectorlogo.com/logos/html-1.svg" alt="HTML5" class="h-16 mb-2">
+                            <span class="font-semibold">HTML5</span>
+                        </div>
+                    </div>
+                    <div class="tech-card animate__animated">
+                        <div class="bg-white p-6 rounded-full h-40 w-40 flex flex-col items-center justify-center shadow-lg border-4 border-red-200">
+                            <img src="https://cdn.worldvectorlogo.com/logos/localstorage.svg" alt="localStorage" class="h-16 mb-2">
+                            <span class="font-semibold">localStorage API</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-<!-- Slide 9: Summary -->
-<div class="slide flex items-center justify-center p-8" id="slide9">
-    <div class="max-w-6xl w-full">
-        <div class="text-center mb-12">
-            <h2 class="text-5xl font-bold text-white mb-4">📑 Summary</h2>
-        </div>
-        
-        <div class="card rounded-2xl p-8 mb-8">
-            <p class="text-xl text-gray-200 mb-6 leading-relaxed">
-                The FoodZone app is a functional, user-friendly client-side restaurant ordering system with 
-                persistent cart storage and a clean UI powered by Tailwind CSS utilities. The project offered 
-                valuable experience in manipulating the DOM with JavaScript, managing localStorage, and mastering 
-                Tailwind CSS by applying it intensively across the project.
-            </p>
-            
-            <h3 class="text-2xl font-bold text-white mb-6">Resources:</h3>
-            <div class="grid md:grid-cols-2 gap-4">
-                <div>
-                    <ul class="text-gray-200 space-y-2">
-                        <li>• https://tailwindcss.com/docs/installation/using-vite</li>
-                        <li>• https://themesberg.com/knowledge-center/tailwind-css/html</li>
-                        <li>• https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage</li>
-                        <li>• https://blog.logrocket.com/localstorage-javascript-complete-guide/</li>
+            <!-- Slide 5: Learning Journey -->
+            <div class="slide absolute w-full p-12">
+                <h2 class="text-3xl font-bold mb-8 text-orange-600">Learning Journey</h2>
+                <div class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-pink-600">Tailwind CSS</h3>
+                    <ul class="space-y-3 ml-6">
+                        <li class="bullet-item flex items-start">
+                            <span class="mr-2">✔️</span>
+                            <span><span class="font-semibold">Utility-First Approach:</span> Using classes directly in HTML reduces custom CSS</span>
+                        </li>
+                        <li class="bullet-item flex items-start">
+                            <span class="mr-2">✔️</span>
+                            <span><span class="font-semibold">Responsive Design:</span> Utilized sm:, md:, lg: for mobile-first design</span>
+                        </li>
+                        <li class="bullet-item flex items-start">
+                            <span class="mr-2">✔️</span>
+                            <span><span class="font-semibold">Effects:</span> Implemented hover:scale-105 and transition classes</span>
+                        </li>
                     </ul>
                 </div>
                 <div>
-                    <p class="text-gray-200">
-                        <strong class="text-yellow-300">Chat with ai:</strong><br>
-                        https://chatgpt.com/share/6844011d-4678-8013-9e66-1bf5627f36da
-                    </p>
+                    <h3 class="text-2xl font-semibold mb-4 text-pink-600">localStorage API</h3>
+                    <ul class="space-y-3 ml-6">
+                        <li class="bullet-item flex items-start">
+                            <span class="mr-2">✔️</span>
+                            <span><span class="font-semibold">Persistent Storage:</span> No expiration date for cart items</span>
+                        </li>
+                        <li class="bullet-item flex items-start">
+                            <span class="mr-2">✔️</span>
+                            <span><span class="font-semibold">Data Handling:</span> Used setItem(), getItem() for data management</span>
+                        </li>
+                        <li class="bullet-item flex items-start">
+                            <span class="mr-2">✔️</span>
+                            <span><span class="font-semibold">Removal:</span> Implemented removeItem() and clear()</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Slide 6: Resources -->
+            <div class="slide absolute w-full p-12">
+                <h2 class="text-3xl font-bold mb-8 text-orange-600">Key Resources</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <a href="https://tailwindcss.com/docs/installation/using-vite" target="_blank" class="resource-card bg-white p-6 rounded-xl shadow-md border-l-4 border-blue-500">
+                        <h3 class="text-xl font-semibold mb-2 text-blue-600">Tailwind CSS with Vite</h3>
+                        <p class="text-gray-600 mb-3">Official documentation for installing Tailwind CSS with Vite</p>
+                        <span class="text-blue-500 hover:underline">tailwindcss.com/docs/installation/using-vite</span>
+                    </a>
+                    <a href="https://themesberg.com/knowledge-center/tailwind-css/html" target="_blank" class="resource-card bg-white p-6 rounded-xl shadow-md border-l-4 border-green-500">
+                        <h3 class="text-xl font-semibold mb-2 text-green-600">Tailwind CSS in HTML</h3>
+                        <p class="text-gray-600 mb-3">Themesberg guide for using Tailwind CSS with plain HTML</p>
+                        <span class="text-green-500 hover:underline">themesberg.com/knowledge-center/tailwind-css/html</span>
+                    </a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage" target="_blank" class="resource-card bg-white p-6 rounded-xl shadow-md border-l-4 border-purple-500">
+                        <h3 class="text-xl font-semibold mb-2 text-purple-600">MDN localStorage Docs</h3>
+                        <p class="text-gray-600 mb-3">Mozilla Developer Network documentation for localStorage API</p>
+                        <span class="text-purple-500 hover:underline">developer.mozilla.org/en-US/docs/Web/API/Window/localStorage</span>
+                    </a>
+                    <a href="https://blog.logrocket.com/localstorage-javascript-complete-guide/" target="_blank" class="resource-card bg-white p-6 rounded-xl shadow-md border-l-4 border-red-500">
+                        <h3 class="text-xl font-semibold mb-2 text-red-600">localStorage Guide</h3>
+                        <p class="text-gray-600 mb-3">LogRocket's complete guide to localStorage in JavaScript</p>
+                        <span class="text-red-500 hover:underline">blog.logrocket.com/localstorage-javascript-complete-guide</span>
+                    </a>
+                </div>
+                <div class="mt-8 bg-white p-6 rounded-xl shadow-md border-l-4 border-orange-500">
+                    <h3 class="text-xl font-semibold mb-2 text-orange-600">AI Chat Session</h3>
+                    <p class="text-gray-600 mb-3">Conversation with ChatGPT about the project development</p>
+                    <a href="https://chatgpt.com/share/6844011d-4678-8013-9e66-1bf5627f36da" target="_blank" class="text-orange-500 hover:underline">chatgpt.com/share/6844011d-4678-8013-9e66-1bf5627f36da</a>
+                </div>
+            </div>
+
+            <!-- Slide 7: Challenges & Solutions -->
+            <div class="slide absolute w-full p-12">
+                <h2 class="text-3xl font-bold mb-8 text-orange-600">Challenges & Solutions</h2>
+                <div class="space-y-8">
+                    <div class="challenge-card p-6 bg-white rounded-xl shadow-md transform transition hover:scale-[1.02]">
+                        <h3 class="text-xl font-semibold mb-3 text-pink-600">Persistent Cart Functionality</h3>
+                        <p class="mb-2"><span class="font-semibold text-orange-600">Challenge:</span> Maintaining cart data across page reloads</p>
+                        <p><span class="font-semibold text-green-600">Solution:</span> Utilized localStorage API to store/retrieve cart items</p>
+                    </div>
+                    <div class="challenge-card p-6 bg-white rounded-xl shadow-md transform transition hover:scale-[1.02]">
+                        <h3 class="text-xl font-semibold mb-3 text-pink-600">Dynamic UI Updates</h3>
+                        <p class="mb-2"><span class="font-semibold text-orange-600">Challenge:</span> Real-time UI updates based on interactions</p>
+                        <p><span class="font-semibold text-green-600">Solution:</span> JavaScript functions to dynamically update cart count and details</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 8: Testing Process -->
+            <div class="slide absolute w-full p-12">
+                <h2 class="text-3xl font-bold mb-8 text-orange-600">Testing Process</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-semibold mb-3 text-pink-600">Manual UI Testing</h3>
+                        <p>Verified cart updates on page and in localStorage</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-semibold mb-3 text-pink-600">Persistence Verification</h3>
+                        <p>Reloaded pages to confirm data consistency</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-semibold mb-3 text-pink-600">Edge Cases</h3>
+                        <p>Checked empty cart and zero quantity behavior</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 9: Final Features -->
+            <div class="slide absolute w-full p-12">
+                <h2 class="text-3xl font-bold mb-8 text-orange-600">Final Features</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="feature-item bg-white p-4 rounded-lg shadow flex items-start">
+                        <span class="mr-3 text-green-500">✓</span>
+                        <span>Dynamic Menu Display</span>
+                    </div>
+                    <div class="feature-item bg-white p-4 rounded-lg shadow flex items-start">
+                        <span class="mr-3 text-green-500">✓</span>
+                        <span>Add to Cart Button</span>
+                    </div>
+                    <div class="feature-item bg-white p-4 rounded-lg shadow flex items-start">
+                        <span class="mr-3 text-green-500">✓</span>
+                        <span>Cart Sidebar/Modal</span>
+                    </div>
+                    <div class="feature-item bg-white p-4 rounded-lg shadow flex items-start">
+                        <span class="mr-3 text-green-500">✓</span>
+                        <span>Persistent Cart Data</span>
+                    </div>
+                    <div class="feature-item bg-white p-4 rounded-lg shadow flex items-start">
+                        <span class="mr-3 text-green-500">✓</span>
+                        <span>Total Price Calculation</span>
+                    </div>
+                    <div class="feature-item bg-white p-4 rounded-lg shadow flex items-start">
+                        <span class="mr-3 text-green-500">✓</span>
+                        <span>Order Summary View</span>
+                    </div>
+                    <div class="feature-item bg-white p-4 rounded-lg shadow flex items-start">
+                        <span class="mr-3 text-green-500">✓</span>
+                        <span>Clear Cart Option</span>
+                    </div>
+                    <div class="feature-item bg-white p-4 rounded-lg shadow flex items-start">
+                        <span class="mr-3 text-green-500">✓</span>
+                        <span>Interactive UI Effects</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 10: Stretch Goal -->
+            <div class="slide absolute w-full p-12">
+                <h2 class="text-3xl font-bold mb-8 text-orange-600">Stretch Goal: Deep Tailwind CSS Learning</h2>
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-4 text-pink-600">How We Did a Deep Dive</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <span class="bg-orange-100 text-orange-600 rounded-full p-2 mr-3">1</span>
+                            <span><span class="font-semibold">Exploring Utility Classes:</span> Applied styles using Tailwind's utilities instead of custom CSS</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-orange-100 text-orange-600 rounded-full p-2 mr-3">2</span>
+                            <span><span class="font-semibold">Official Documentation:</span> Regularly referred to Tailwind's docs</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-orange-100 text-orange-600 rounded-full p-2 mr-3">3</span>
+                            <span><span class="font-semibold">Experimentation:</span> Tweaked classes directly in HTML for instant feedback</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-orange-100 text-orange-600 rounded-full p-2 mr-3">4</span>
+                            <span><span class="font-semibold">Layering Effects:</span> Combined utilities for hover, transitions, layouts</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Slide 11: Summary -->
+            <div class="slide absolute w-full p-12">
+                <div class="flex flex-col items-center justify-center h-full text-center">
+                    <h2 class="text-4xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-orange-500">
+                        Project Summary
+                    </h2>
+                    <div class="max-w-2xl bg-white p-8 rounded-xl shadow-lg">
+                        <p class="text-lg mb-6">
+                            The FoodZone app is a functional, user-friendly client-side restaurant ordering system with persistent cart storage and a clean UI powered by Tailwind CSS utilities.
+                        </p>
+                        <p class="text-lg">
+                            The project offered valuable experience in manipulating the DOM with JavaScript, managing localStorage, and mastering Tailwind CSS.
+                        </p>
+                    </div>
+                    <div class="mt-12 animate__animated animate__pulse animate__infinite">
+                        <span class="text-xl font-semibold text-white">Thank You!</span>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Navigation buttons -->
+        <div class="flex justify-between mt-8">
+            <button id="prevBtn" class="px-6 py-3 bg-white rounded-full shadow-md hover:bg-gray-100 transition flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Previous
+            </button>
+            <button id="nextBtn" class="px-6 py-3 bg-orange-500 text-white rounded-full shadow-md hover:bg-orange-600 transition flex items-center">
+                Next
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
     </div>
-</div>
 
-<!-- Navigation -->
-<div class="fixed bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3 z-50">
-    <div class="navigation-dot w-3 h-3 rounded-full bg-white bg-opacity-50 cursor-pointer active" onclick="goToSlide(1)"></div>
-    <div class="navigation-dot w-3 h-3 rounded-full bg-white bg-opacity-50 cursor-pointer" onclick="goToSlide(2)"></div>
-    <div class="navigation-dot w-3 h-3 rounded-full bg-white bg-opacity-50 cursor-pointer" onclick="goToSlide(3)"></div>
-    <div class="navigation-dot w-3 h-3 rounded-full bg-white bg-opacity-50 cursor-pointer" onclick="goToSlide(4)"></div>
-    <div class="navigation-dot w-3 h-3 rounded-full bg-white bg-opacity-50 cursor-pointer" onclick="goToSlide(5)"></div>
-    <div class="navigation-dot w-3 h-3 rounded-full bg-white bg-opacity-50 cursor-pointer" onclick="goToSlide(6)"></div>
-    <div class="navigation-dot w-3 h-3 rounded-full bg-white bg-opacity-50 cursor-pointer" onclick="goToSlide(7)"></div>
-    <div class="navigation-dot w-3 h-3 rounded-full bg-white bg-opacity-50 cursor-pointer" onclick="goToSlide(8)"></div>
-    <div class="navigation-dot w-3 h-3 rounded-full bg-white bg-opacity-50 cursor-pointer" onclick="goToSlide(9)"></div>
-</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const progressBar = document.querySelector('.progress');
+            let currentSlide = 0;
+            const totalSlides = slides.length;
 
-<!-- Navigation Arrows -->
-<button onclick="prevSlide()" class="fixed left-8 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-4 rounded-full transition-all z-50">
-    ←
-</button>
-<button onclick="nextSlide()" class="fixed right-8 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-4 rounded-full transition-all z-50">
-    →
-</button>
-
-<script>
-    let currentSlide = 1;
-    const totalSlides = 9;
-    
-    function showSlide(n) {
-        const slides = document.querySelectorAll('.slide');
-        const dots = document.querySelectorAll('.navigation-dot');
-        const progressBar = document.getElementById('progressBar');
-        
-        if (n > totalSlides) currentSlide = totalSlides;
-        if (n < 1) currentSlide = 1;
-        
-        slides.forEach(slide => slide.classList.remove('active'));
-        dots.forEach(dot => dot.classList.remove('active'));
-        
-        document.getElementById(`slide${currentSlide}`).classList.add('active');
-        dots[currentSlide - 1].classList.add('active');
-        
-        const progress = (currentSlide / totalSlides) * 100;
-        progressBar.style.width = progress + '%';
-    }
-    
-    function nextSlide() {
-        if (currentSlide < totalSlides) {
-            currentSlide++;
+            // Initialize
             showSlide(currentSlide);
-        }
-    }
-    
-    function prevSlide() {
-        if (currentSlide > 1) {
-            currentSlide--;
-            showSlide(currentSlide);
-        }
-    }
-    
-    function goToSlide(n) {
-        currentSlide = n;
-        showSlide(currentSlide);
-    }
-    
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'ArrowRight' || e.key === ' ') {
-            nextSlide();
-        } else if (e.key === 'ArrowLeft') {
-            prevSlide();
-        }
-    });
-</script>
-```
+            updateBullets();
 
+            // Next button click
+            nextBtn.addEventListener('click', function() {
+                if (currentSlide < totalSlides - 1) {
+                    currentSlide++;
+                    showSlide(currentSlide);
+                    updateProgress();
+                    updateBullets();
+                }
+            });
+
+            // Previous button click
+            prevBtn.addEventListener('click', function() {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    showSlide(currentSlide);
+                    updateProgress();
+                    updateBullets();
+                }
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight') {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft') {
+                    prevBtn.click();
+                }
+            });
+
+            // Show slide
+            function showSlide(index) {
+                slides.forEach((slide, i) => {
+                    slide.classList.remove('active');
+                    if (i === index) {
+                        slide.classList.add('active');
+                        slide.classList.add('animate__fadeIn');
+                    }
+                });
+
+                // Update button states
+                prevBtn.disabled = index === 0;
+                nextBtn.disabled = index === totalSlides - 1;
+            }
+
+            // Update progress bar
+            function updateProgress() {
+                const progress = ((currentSlide + 1) / totalSlides) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+
+            // Animate bullet points
+            function updateBullets() {
+                const activeSlide = slides[currentSlide];
+                const bullets = activeSlide.querySelectorAll('.bullet-item');
+                
+                bullets.forEach((bullet, i) => {
+                    setTimeout(() => {
+                        bullet.classList.add('show');
+                    }, i * 200);
+                });
+            }
+
+            // Animate tech cards
+            function animateTechCards() {
+                const techCards = document.querySelectorAll('.tech-card');
+                techCards.forEach((card, i) => {
+                    setTimeout(() => {
+                        card.classList.add('animate__fadeInUp');
+                    }, i * 150);
+                });
+            }
+
+            // Animate challenge cards
+            function animateChallengeCards() {
+                const cards = document.querySelectorAll('.challenge-card');
+                cards.forEach((card, i) => {
+                    setTimeout(() => {
+                        card.classList.add('animate__fadeInRight');
+                    }, i * 200);
+                });
+            }
+
+            // Animate feature items
+            function animateFeatureItems() {
+                const features = document.querySelectorAll('.feature-item');
+                features.forEach((feature, i) => {
+                    setTimeout(() => {
+                        feature.classList.add('animate__fadeIn');
+                    }, i * 100);
+                });
+            }
+
+            // Animate resource cards
+            function animateResourceCards() {
+                const resources = document.querySelectorAll('.resource-card');
+                resources.forEach((resource, i) => {
+                    setTimeout(() => {
+                        resource.classList.add('animate__zoomIn');
+                    }, i * 150);
+                });
+            }
+
+            // Observe when slides come into view to trigger animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        if (entry.target.querySelector('.tech-card')) {
+                            animateTechCards();
+                        }
+                        if (entry.target.querySelector('.challenge-card')) {
+                            animateChallengeCards();
+                        }
+                        if (entry.target.querySelector('.feature-item')) {
+                            animateFeatureItems();
+                        }
+                        if (entry.target.querySelector('.resource-card')) {
+                            animateResourceCards();
+                        }
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            slides.forEach(slide => {
+                observer.observe(slide);
+            });
+        });
+    </script>
 </body>
 </html>
