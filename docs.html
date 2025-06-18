@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FoodZone Project Documentation</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <title>FoodZone Project Presentation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
-      background: linear-gradient(to right, #ffecd2, #fcb69f);
+      background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     .fade-in {
       animation: fadeIn 1s ease-in-out;
@@ -16,72 +17,94 @@
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .slide-up {
-      animation: slideUp 1s ease-in-out;
-    }
-    @keyframes slideUp {
-      0% { transform: translateY(100px); opacity: 0; }
-      100% { transform: translateY(0); opacity: 1; }
-    }
   </style>
 </head>
-<body class="text-gray-800 font-sans">
-  <div class="max-w-5xl mx-auto p-8">
-    <h1 class="text-4xl font-bold mb-6 text-center text-orange-600 fade-in">📘 FoodZone Project Documentation</h1>
+<body class="text-gray-800 p-6">
+  <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-2xl fade-in">
+    <h1 class="text-4xl font-bold text-center mb-6 text-blue-600">📘 FoodZone Restaurant Ordering App Documentation</h1>
 
-    <section class="bg-white p-6 rounded-xl shadow-lg mb-6 slide-up">
-      <h2 class="text-2xl font-semibold text-orange-500 mb-3">📝 Project Overview</h2>
-      <p>The FoodZone app is a client-side restaurant ordering interface built with plain HTML, JavaScript, and Tailwind CSS. Users can browse a menu, add items to a cart, and view a live order summary, all within the browser using localStorage.</p>
+    <section class="mb-6">
+      <h2 class="text-2xl font-semibold mb-2">📝 Project Overview</h2>
+      <p>The FoodZone app is a client-side restaurant ordering interface built with plain HTML, JavaScript, and styled using Tailwind CSS. It allows users to browse a curated menu of food items, add them to a cart, and view a summary of their selections. The project emphasizes simplicity, focusing on dynamic interactivity and data persistence entirely within the browser.</p>
+      <ul class="list-disc ml-5 mt-2">
+        <li><strong>Dynamic Menu Rendering:</strong> The menu items are rendered dynamically by JavaScript manipulating the DOM based on a predefined list of products.</li>
+        <li><strong>Cart Management:</strong> Users can add items to a cart with quantities. The cart is stored and managed using the browser’s localStorage.</li>
+        <li><strong>Order Summary & Controls:</strong> Real-time updates with increment, decrement, or remove options.</li>
+        <li><strong>UI Components:</strong> Tailwind CSS used for buttons, modals, and other elements.</li>
+      </ul>
     </section>
 
-    <section class="bg-white p-6 rounded-xl shadow-lg mb-6 slide-up">
-      <h2 class="text-2xl font-semibold text-orange-500 mb-3">🛠 Tools & Technologies Used</h2>
-      <ul class="list-disc pl-5">
+    <section class="mb-6">
+      <h2 class="text-2xl font-semibold mb-2">🛠 Tools & Technologies Used</h2>
+      <ul class="list-disc ml-5">
         <li>Tailwind CSS</li>
         <li>localStorage API</li>
         <li>HTML5 & JavaScript</li>
       </ul>
     </section>
 
-    <section class="bg-white p-6 rounded-xl shadow-lg mb-6 slide-up">
-      <h2 class="text-2xl font-semibold text-orange-500 mb-3">📚 Learning Journey</h2>
-      <p>Learned how to use Tailwind utilities for layout and effects, implemented persistent data storage with localStorage, and manipulated DOM dynamically with JavaScript.</p>
-    </section>
-
-    <section class="bg-white p-6 rounded-xl shadow-lg mb-6 slide-up">
-      <h2 class="text-2xl font-semibold text-orange-500 mb-3">⚠️ Challenges & Solutions</h2>
-      <ul class="list-disc pl-5">
-        <li><strong>Persistent Cart:</strong> Solved using localStorage API.</li>
-        <li><strong>Dynamic UI:</strong> Used JavaScript functions for real-time UI updates.</li>
+    <section class="mb-6">
+      <h2 class="text-2xl font-semibold mb-2">📚 Learning Journey</h2>
+      <ul class="list-disc ml-5">
+        <li>Utility-First Approach</li>
+        <li>Responsive Design</li>
+        <li>Hover & Transition Effects</li>
+      </ul>
+      <p class="mt-2">Resources:</p>
+      <ul class="list-disc ml-5 text-blue-600">
+        <li><a href="https://tailwindcss.com/docs/installation/using-vite" target="_blank">Tailwind CSS Documentation</a></li>
+        <li><a href="https://themesberg.com/knowledge-center/tailwind-css/html" target="_blank">Themesberg</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage" target="_blank">MDN: localStorage</a></li>
+        <li><a href="https://blog.logrocket.com/localstorage-javascript-complete-guide/" target="_blank">LogRocket Blog</a></li>
       </ul>
     </section>
 
-    <section class="bg-white p-6 rounded-xl shadow-lg mb-6 slide-up">
-      <h2 class="text-2xl font-semibold text-orange-500 mb-3">🧪 Testing Process & Features</h2>
-      <p>Performed manual UI tests, ensured persistence, handled edge cases, and confirmed cross-browser compatibility.</p>
-      <ul class="list-disc pl-5 mt-2">
-        <li>Dynamic menu display with images and prices</li>
-        <li>Add to Cart, Order Summary, Clear Cart</li>
-        <li>localStorage persistence</li>
-        <li>Hover effects and transitions with Tailwind</li>
+    <section class="mb-6">
+      <h2 class="text-2xl font-semibold mb-2">⚠️ Challenges & Solutions</h2>
+      <ol class="list-decimal ml-5">
+        <li><strong>Persistent Cart Functionality:</strong> Used localStorage API to maintain cart data between sessions.</li>
+        <li><strong>Dynamic UI Updates:</strong> Used JavaScript functions to update the DOM in real-time based on cart changes.</li>
+      </ol>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-2xl font-semibold mb-2">🧪 Testing Process & Final Feature Set</h2>
+      <ul class="list-disc ml-5">
+        <li>Manual UI Testing</li>
+        <li>Persistence Verification</li>
+        <li>Edge Case Testing</li>
+        <li>Cross-Browser Compatibility</li>
+      </ul>
+      <p class="mt-2">Final Features:</p>
+      <ul class="list-disc ml-5">
+        <li>Dynamic Menu Display</li>
+        <li>Add to Cart Button</li>
+        <li>Cart Modal/Sidebar</li>
+        <li>Persistent Cart with localStorage</li>
+        <li>Total Price Calculation</li>
+        <li>Order Summary</li>
+        <li>Clear Cart Option</li>
+        <li>Interactive UI with Tailwind</li>
       </ul>
     </section>
 
-    <section class="bg-white p-6 rounded-xl shadow-lg mb-6 slide-up">
-      <h2 class="text-2xl font-semibold text-orange-500 mb-3">🎯 Stretch Goal: Deep Dive into Tailwind</h2>
-      <p>Explored utility classes deeply, used Tailwind documentation, practiced hover effects and layout utilities. No custom CSS was written, promoting skill development with Tailwind.</p>
+    <section class="mb-6">
+      <h2 class="text-2xl font-semibold mb-2">🎯 Stretch Goal: Deep Tailwind CSS Learning</h2>
+      <p class="mb-2">Initially unfamiliar with Tailwind, I set a goal to master it through hands-on practice. Here's how:</p>
+      <ul class="list-disc ml-5">
+        <li>Explored Utility Classes instead of writing custom CSS.</li>
+        <li>Studied Official Docs for layout, spacing, and effects.</li>
+        <li>Live Tweaking and Observing Changes.</li>
+        <li>Used Flex/Grid, Shadows, and Transitions.</li>
+        <li><strong>Note:</strong> Responsive classes were skipped to keep layout consistent.</li>
+      </ul>
     </section>
 
-    <section class="bg-white p-6 rounded-xl shadow-lg mb-6 slide-up">
-      <h2 class="text-2xl font-semibold text-orange-500 mb-3">📑 Summary</h2>
-      <p>The FoodZone app is a fully browser-based ordering tool with clean UI and strong use of Tailwind CSS. Learned DOM manipulation, localStorage, and utility-first CSS methodology through practical implementation.</p>
+    <section>
+      <h2 class="text-2xl font-semibold mb-2">📑 Summary</h2>
+      <p>The FoodZone app is a functional, user-friendly client-side restaurant ordering system with persistent cart storage and a clean UI powered by Tailwind CSS utilities. The project offered valuable experience in manipulating the DOM with JavaScript, managing localStorage, and mastering Tailwind CSS by applying it intensively across the project.</p>
+      <p class="mt-4 text-blue-600">Chat with AI: <a href="https://chatgpt.com/share/6844011d-4678-8013-9e66-1bf5627f36da" target="_blank">AI Chat Link</a></p>
     </section>
-
-    <footer class="text-center mt-10 text-sm text-gray-600">
-      <p>Resources:</p>
-      <p><a href="https://tailwindcss.com/docs" class="text-blue-600 underline">Tailwind CSS Docs</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage" class="text-blue-600 underline">MDN localStorage</a></p>
-      <p>AI Chat: <a href="https://chatgpt.com/share/6844011d-4678-8013-9e66-1bf5627f36da" class="text-blue-600 underline">ChatGPT Conversation</a></p>
-    </footer>
   </div>
 </body>
 </html>
