@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Restaurant Ordering App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .filter-btn {
+        @apply bg-gradient-to-r from-blue-400 to-cyan-400 text-white font-medium px-5 py-2 rounded-full shadow-md transition-transform transform hover:scale-105 hover:shadow-lg;
+      }
+
+```
+  .filter-btn.active {
+    @apply ring-4 ring-cyan-300;
+  }
+</style>
+```
+
+  </head>
+  <body class="bg-gradient-to-br from-blue-100 to-blue-50 font-sans">
+    <!-- Main Menu Page -->
+    <div id="menu-page">
+      <!-- Navbar -->
+      <nav
+        class="fixed top-0 left-0 right-0 flex justify-between items-center bg-[#2e3b55] text-white p-4 z-50"
+      >
+        <div class="text-xl font-bold">🍽️ FoodZone</div>
+        <div class="italic font-semibold">"Savor the Taste of Excellence"</div>
+        <button
+          onclick="showOrderPage()"
+          class="bg-gradient-to-r from-blue-400 to-cyan-400 px-4 py-2 rounded text-white shadow hover:scale-105 transition"
+        >
+          🛒 Cart (<span id="cart-count">0</span>)
+        </button>
+      </nav>
+
+```
+  <!-- Hero -->
+  <header id="home" class="pt-28 text-center bg-gray-50 px-4">
+    <h1 class="text-4xl font-bold mb-2">Welcome to FoodZone</h1>
+    <p class="text-lg text-gray-700">Select your delicious meals below</p>
+  </header>
+
+  <!-- Filter Buttons -->
+  <section class="flex justify-center gap-4 py-6 flex-wrap">
+    <button
+      onclick="filterMenu('all')"
+      class="filter-btn px-5 py-2 rounded-full text-white bg-gradient-to-r from-blue-400 to-cyan-400 shadow-md hover:scale-105 transition"
+    >
+      All
+    </button>
+    <button
+      onclick="filterMenu('dessert')"
+      class="filter-btn px-5 py-2 rounded-full text-white bg-gradient-to-r from-blue-400 to-cyan-400 shadow-md hover:scale-105 transition"
+    >
+      Desserts
+    </button>
+    <button
+      onclick="filterMenu('drink')"
+      class="filter-btn px-5 py-2 rounded-full text-white bg-gradient-to-r from-blue-400 to-cyan-400 shadow-md hover:scale-105 transition"
+    >
+      Drinks
+    </button>
+    <button
+      onclick="filterMenu('salad')"
+      class="filter-btn px-5 py-2 rounded-full text-white bg-gradient-to-r from-blue-400 to-cyan-400 shadow-md hover:scale-105 transition"
+    >
+      Salads
+    </button>
+  </section>
+
+  <!-- Menu Grid -->
+  <section
+    class="flex flex-wrap justify-center gap-6 px-4 py-8 max-h-[700px] overflow-y-auto"
+    id="menu"
+  ></section>
+
+  <!-- About Section -->
+  <section class="bg-gray-50 text-center py-8 px-4">
+    <h2 class="text-2xl font-bold mb-2">About Us</h2>
+    <p class="mb-2">
+      Welcome to FoodZone! We are a passionate team of culinary experts
+      dedicated to bringing you the finest gourmet experiences.
+    </p>
+    <p>
+      At FoodZone, quality ingredients, fast service, and customer
+      satisfaction are our top priorities. Taste the difference!
+    </p>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="text-center py-8 bg-white px-4">
+    <h2 class="text-2xl font-bold mb-4">Contact Us</h2>
+    <p>📍 Address: 123 Food Street, Gourmet City, FL 45678</p>
+    <p>📞 Phone: +1 (555) 123-4567</p>
+    <p>📧 Email: contact@foodzone.com</p>
+  </section>
+</div>
+
+<!-- Order Page -->
+<div id="order-page" class="hidden min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-blue-200 p-6" style="cursor: url('https://cdn.jsdelivr.net/gh/uzair-ashraf/cursor-fun/cursors/cursor6.cur'), auto;">
+  <div
+    id="order-container"
+    class="bg-white rounded-2xl shadow-xl p-8 max-w-3xl w-full"
+  >
+    <h2 class="text-2xl font-semibold text-center text-gray-800">
+      🧾 Your Order
+    </h2>
+    <div
+      id="order-list"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8"
+    ></div>
+    <p class="text-center mt-4 text-gray-700">
+      Estimated Delivery: <strong>30–45 minutes</strong>
+    </p>
+    <div class="flex flex-wrap justify-center gap-4 mt-6">
+      <button
+        onclick="showMenuPage()"
+        class="bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-lg text-center"
+      >← Back to Menu</button>
+      <button
+        class="bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-lg"
+        onclick="clearCart()"
+      >
+        🗑️ Clear Order
+      </button>
+      <button
+        class="bg-green-500 hover:bg-green-400 text-white px-4 py-2 rounded-lg"
+        onclick="finishOrder()"
+      >
+        ✅ Finish Order
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- JS -->
+<script>
+  const menuItems = [
+    {
+      id: 1,
+      name: "Chocolate Lava Cake",
+      type: "dessert",
+      emoji: "🍫",
+      price: "$6.99",
+      ingredients: "Molten chocolate, flour, eggs, butter",
+    },
+    {
+      id: 2,
+      name: "Strawberry Cheesecake",
+      type: "dessert",
+      emoji: "🍓",
+      price: "$7.49",
+      ingredients: "Cream cheese, strawberries, sugar, crust",
+    },
+    {
+      id: 3,
+      name: "Tiramisu",
+      type: "dessert",
+      emoji: "🍰",
+      price: "$6.50",
+      ingredients: "Mascarpone, espresso, ladyfingers, cocoa",
+    },
+    {
+      id: 4,
+      name: "Macarons",
+      type: "dessert",
+      emoji: "🌈",
+      price: "$5.25",
+      ingredients: "Almond flour, egg whites, sugar, filling",
+    },
+    {
+      id: 5,
+      name: "Mojito",
+      type: "drink",
+      emoji: "🍹",
+      price: "$4.99",
+      ingredients: "Mint, lime, soda water, sugar",
+    },
+    {
+      id: 6,
+      name: "Strawberry Smoothie",
+      type: "drink",
+      emoji: "🍓",
+      price: "$5.50",
+      ingredients: "Strawberries, yogurt, honey",
+    },
+    {
+      id: 7,
+      name: "Cappuccino",
+      type: "drink",
+      emoji: "☕",
+      price: "$3.99",
+      ingredients: "Espresso, milk, foam",
+    },
+    {
+      id: 8,
+      name: "Lemonade",
+      type: "drink",
+      emoji: "🍋",
+      price: "$2.99",
+      ingredients: "Lemon juice, water, sugar",
+    },
+    {
+      id: 9,
+      name: "Caesar Salad",
+      type: "salad",
+      emoji: "🥗",
+      price: "$7.99",
+      ingredients: "Romaine, croutons, parmesan, dressing",
+    },
+    {
+      id: 10,
+      name: "Greek Salad",
+      type: "salad",
+      emoji: "🇬🇷",
+      price: "$7.49",
+      ingredients: "Tomatoes, cucumber, olives, feta",
+    },
+    {
+      id: 11,
+      name: "Caprese Salad",
+      type: "salad",
+      emoji: "🍅",
+      price: "$6.95",
+      ingredients: "Tomato, mozzarella, basil, olive oil",
+    },
+    {
+      id: 12,
+      name: "Quinoa Salad",
+      type: "salad",
+      emoji: "🌾",
+      price: "$8.25",
+      ingredients: "Quinoa, veggies, lemon, herbs",
+    },
+  ];
+
+  let cart = [];
+  const menuContainer = document.getElementById("menu");
+  const cartCount = document.getElementById("cart-count");
+  const orderList = document.getElementById("order-list");
+  const orderContainer = document.getElementById("order-container");
+
+  function displayMenu(items) {
+    menuContainer.innerHTML = "";
+    items.forEach((item) => {
+      const div = document.createElement("div");
+      div.className =
+        "bg-white border border-gray-200 rounded-lg p-4 w-52 text-center shadow hover:scale-105 transition";
+      div.innerHTML = `
+        <div class="text-4xl mb-2">${item.emoji}</div>
+        <h4 class="font-semibold">${item.name}</h4>
+        <p class="text-sm text-gray-700"><strong>Price:</strong> ${item.price}</p>
+        <p class="text-sm text-gray-500"><strong>Ingredients:</strong> ${item.ingredients}</p>
+        <button class="mt-2 bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 transition" onclick="addToCart(${item.id})">Order</button>
+      `;
+      menuContainer.appendChild(div);
+    });
+  }
+
+  function filterMenu(type) {
+    document.querySelectorAll(".filter-btn").forEach((btn) => {
+      btn.classList.remove("bg-blue-500", "text-white", "shadow-md");
+      btn.classList.add(
+        "bg-gradient-to-r",
+        "from-blue-400",
+        "to-cyan-400",
+        "text-white"
+      );
+    });
+
+    const buttons = document.querySelectorAll(".filter-btn");
+    buttons.forEach((btn) => {
+      if (type === "all" && btn.textContent.toLowerCase() === "all") {
+        btn.classList.add("bg-blue-500", "text-white", "shadow-md");
+      } else if (btn.textContent.toLowerCase().includes(type)) {
+        btn.classList.add("bg-blue-500", "text-white", "shadow-md");
+      }
+    });
+
+    if (type === "all") {
+      displayMenu(menuItems);
+    } else {
+      const filtered = menuItems.filter((item) => item.type === type);
+      displayMenu(filtered);
+    }
+  }
+
+  function addToCart(id) {
+    const product = menuItems.find((item) => item.id === id);
+    cart.push(product);
+    cartCount.textContent = cart.length;
+  }
+
+  function showOrderPage() {
+    document.getElementById("menu-page").classList.add("hidden");
+    document.getElementById("order-page").classList.remove("hidden");
+    displayOrder();
+  }
+
+  function showMenuPage() {
+    document.getElementById("order-page").classList.add("hidden");
+    document.getElementById("menu-page").classList.remove("hidden");
+  }
+
+  function displayOrder() {
+    if (cart.length === 0) {
+      orderList.innerHTML =
+        '<p class="col-span-full text-center text-gray-600">Your cart is empty.</p>';
+    } else {
+      orderList.innerHTML = "";
+      cart.forEach((item) => {
+        const div = document.createElement("div");
+        div.className =
+          "relative bg-gray-100 rounded-xl shadow-md p-4 text-center transition transform hover:scale-105 hover:bg-gray-200";
+        div.innerHTML = `
+          <div class="text-5xl mb-2">${item.emoji}</div>
+          <h4 class="font-semibold text-lg">${item.name}</h4>
+          <p class="text-gray-600">${item.price}</p>
+          <div class="absolute inset-0 bg-white bg-opacity-90 flex flex-col justify-center items-center opacity-0 hover:opacity-100 transition-opacity p-4 rounded-xl">
+            <h4 class="text-lg font-bold">${item.name}</h4>
+            <p class="text-gray-700 text-sm mt-2">${
+              item.ingredients || "Delicious item from our kitchen."
+            }</p>
+          </div>
+        `;
+        orderList.appendChild(div);
+      });
+    }
+  }
+
+  function clearCart() {
+    cart = [];
+    cartCount.textContent = cart.length;
+    displayOrder();
+  }
+
+  function finishOrder() {
+    if (cart.length === 0) return;
+
+    const total = cart.reduce((sum, item) => {
+      const price = parseFloat(item.price.replace(/[^0-9.]/g, ""));
+      return sum + (isNaN(price) ? 0 : price);
+    }, 0);
+
+    orderContainer.innerHTML = `
+      <div class="text-center">
+        <h2 class="text-3xl font-bold text-green-600 mb-4">🎉 Successfully Ordered!</h2>
+        <p class="text-gray-700 text-lg mb-2">Your total is <strong>$${total.toFixed(
+          2
+        )}</strong>.</p>
+        <p class="text-gray-600 mb-6">Thank you for your order. It will be delivered shortly!</p>
+        <button
+          onclick="resetApp()"
+          class="inline-block bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-lg"
+        >← Back to Menu</button>
+      </div>
+    `;
+
+    cart = [];
+    cartCount.textContent = cart.length;
+  }
+
+  function resetApp() {
+    cart = [];
+    cartCount.textContent = cart.length;
+    orderContainer.innerHTML = `
+      <h2 class="text-2xl font-semibold text-center text-gray-800">
+        🧾 Your Order
+      </h2>
+      <div
+        id="order-list"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8"
+      ></div>
+      <p class="text-center mt-4 text-gray-700">
+        Estimated Delivery: <strong>30–45 minutes</strong>
+      </p>
+      <div class="flex flex-wrap justify-center gap-4 mt-6">
+        <button
+          onclick="showMenuPage()"
+          class="bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-lg text-center"
+        >← Back to Menu</button>
+        <button
+          class="bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-lg"
+          onclick="clearCart()"
+        >
+          🗑️ Clear Order
+        </button>
+        <button
+          class="bg-green-500 hover:bg-green-400 text-white px-4 py-2 rounded-lg"
+          onclick="finishOrder()"
+        >
+          ✅ Finish Order
+        </button>
+      </div>
+    `;
+    showMenuPage();
+  }
+
+  // Initial render
+  displayMenu(menuItems);
+  window.onload = () => {
+    document
+      .querySelector(".filter-btn")
+      .classList.add("bg-blue-500", "text-white", "shadow-md");
+  };
+</script>
+
+<style>
+  .filter-btn {
+    @apply px-4 py-2 rounded bg-gradient-to-r from-blue-400 to-cyan-400 text-white transition hover:scale-105;
+  }
+</style>
+```
+
+  </body>
+</html>
