@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TSP Game: Design Thinking Journey</title>
+    <title>TSP Game: Design Thinking Process</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -71,7 +71,7 @@
             font-weight: 300;
         }
 
-        .process-step {
+        .design-phase {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(10px);
             border-radius: 1rem;
@@ -84,19 +84,19 @@
             transform: translateY(20px);
         }
 
-        .process-step:hover {
+        .design-phase:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
             border-color: var(--accent-blue);
         }
 
-        .step-header {
+        .phase-header {
             display: flex;
             align-items: center;
             margin-bottom: 1.5rem;
         }
 
-        .step-number {
+        .phase-number {
             width: 40px;
             height: 40px;
             background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
@@ -110,28 +110,30 @@
             box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
         }
 
-        .step-title {
+        .phase-title {
             font-size: 1.5rem;
             font-weight: 600;
             color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .step-content {
+        .phase-content {
             color: var(--text-light);
             line-height: 1.7;
         }
 
-        .step-content ul {
+        .phase-content ul {
             margin-top: 1rem;
             padding-left: 1.5rem;
         }
 
-        .step-content li {
+        .phase-content li {
             margin-bottom: 0.5rem;
             position: relative;
         }
 
-        .step-content li::before {
+        .phase-content li::before {
             content: "→";
             color: var(--accent-purple);
             position: absolute;
@@ -150,6 +152,12 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
@@ -159,7 +167,7 @@
                 font-size: 2rem;
             }
             
-            .process-step {
+            .design-phase {
                 padding: 1.5rem;
             }
         }
@@ -170,75 +178,75 @@
 
     <div class="container">
         <header>
-            <h1>🚀 TSP Game: Design Thinking Journey</h1>
-            <p class="subtitle">Crafting an engaging learning experience for the Traveling Salesperson Problem</p>
+            <h1>🌌 TSP Game: Design Thinking Process</h1>
+            <p class="subtitle">Applying User-Centered Design to the Traveling Salesperson Problem Game</p>
         </header>
 
-        <section class="process-step" data-step="1">
-            <div class="step-header">
-                <div class="step-number">1</div>
-                <h2 class="step-title">Understanding User Needs</h2>
+        <section class="design-phase">
+            <div class="phase-header">
+                <div class="phase-number">1</div>
+                <h2 class="phase-title">EMPATHIZE</h2>
             </div>
-            <div class="step-content">
-                <p>To create an effective educational tool, I examined popular puzzle games that successfully balance learning with enjoyment (like Portal and Sudoku apps). Key observations included how instant visual responses and achievement recognition drive player motivation. For TSP specifically, I noted students often find abstract algorithms challenging without concrete, interactive representations. This revealed the necessity for a game that makes complex mathematical concepts approachable and engaging.</p>
-            </div>
-        </section>
-
-        <section class="process-step" data-step="2">
-            <div class="step-header">
-                <div class="step-number">2</div>
-                <h2 class="step-title">Establishing Core Objectives</h2>
-            </div>
-            <div class="step-content">
-                <p>The fundamental concept transforms the Traveling Salesperson Problem into an interactive experience where users optimize delivery routes. Our target audience consists of computer science and logistics students who benefit from an intuitive approach to understanding optimization methods. We aim to create an experience of exploration and reward, where users actively test different paths, receive immediate feedback on their efficiency, and feel accomplished when discovering superior solutions.</p>
+            <div class="phase-content">
+                <p>To grasp what makes an educational game truly effective and fun, I observed popular puzzle and strategy games known for their clear objectives and satisfying progression (e.g., <em>Portal</em>, <em>Sudoku apps</em>). I specifically noted how immediate visual feedback and a sense of accomplishment motivated players. For the context of TSP, I identified that students often struggle with abstract algorithms without a tangible, interactive representation. This highlighted the need for a game that transforms a complex math problem into an accessible, engaging challenge.</p>
             </div>
         </section>
 
-        <section class="process-step" data-step="3">
-            <div class="step-header">
-                <div class="step-number">3</div>
-                <h2 class="step-title">Generating Creative Solutions</h2>
+        <section class="design-phase">
+            <div class="phase-header">
+                <div class="phase-number">2</div>
+                <h2 class="phase-title">DEFINE</h2>
             </div>
-            <div class="step-content">
-                <p>During brainstorming, we explored multiple concepts. The 'space delivery' theme emerged as particularly compelling for its visual appeal and natural alignment with 'traveling between points'. Potential mechanics we considered included:</p>
+            <div class="phase-content">
+                <p>The core idea for this game is to gamify the Traveling Salesperson Problem, making it an interactive challenge where players optimize delivery routes. Our primary audience is computer science and logistics students who need a more intuitive and engaging way to understand optimization algorithms. The experience we aim to create is one of discovery and satisfaction, where players actively explore different paths, immediately see the impact of their choices on efficiency, and feel a sense of achievement when they find better solutions.</p>
+            </div>
+        </section>
+
+        <section class="design-phase">
+            <div class="phase-header">
+                <div class="phase-number">3</div>
+                <h2 class="phase-title">IDEATE</h2>
+            </div>
+            <div class="phase-content">
+                <p>During ideation, we explored several concepts. For the theme, a 'space delivery' or 'interstellar cargo' scenario immediately stood out for its visual appeal and natural fit with 'traveling between points.' Mechanics considered included:</p>
                 <ul>
-                    <li>Selecting nodes by clicking to create paths</li>
-                    <li>Rearranging stops through drag-and-drop functionality</li>
-                    <li>Displaying real-time distance calculations with visual indicators</li>
+                    <li>Point-and-click node selection for path creation</li>
+                    <li>Drag-and-drop to reorder stops</li>
+                    <li>Real-time distance calculation and visual feedback for the current route</li>
                 </ul>
-                <p>Interface designs focused on a central 'galaxy map' with distinct planetary nodes and luminous route connections, prioritizing intuitive controls and clear performance metrics.</p>
+                <p>Layouts revolved around a central 'galaxy map' with distinct 'planets' (nodes) and glowing lines representing routes. Interactions focused on intuitive user input for path drawing and clear displays of optimization metrics.</p>
             </div>
         </section>
 
-        <section class="process-step" data-step="4">
-            <div class="step-header">
-                <div class="step-number">4</div>
-                <h2 class="step-title">Building Initial Versions</h2>
+        <section class="design-phase">
+            <div class="phase-header">
+                <div class="phase-number">4</div>
+                <h2 class="phase-title">PROTOTYPE</h2>
             </div>
-            <div class="step-content">
-                <p>The first prototype utilized HTML5 Canvas with JavaScript, featuring randomly positioned planetary nodes (represented as circles). Core functionality enabled users to click these nodes to draw paths, with the total distance displayed dynamically. This minimal version focused exclusively on testing the basic interaction of path creation and instant quantitative feedback, deliberately omitting complex graphics or scoring systems at this stage.</p>
+            <div class="phase-content">
+                <p>The initial prototype was built using a simple HTML5 Canvas and JavaScript. It featured a static background with randomly placed 'planets' (circles). The core functionality allowed users to click on these circles to draw a path, and the total distance of the drawn path was calculated and displayed. This 'rough version' focused purely on testing the fundamental interaction of path creation and immediate quantitative feedback, without elaborate graphics or complex scoring systems.</p>
             </div>
         </section>
 
-        <section class="process-step" data-step="5">
-            <div class="step-header">
-                <div class="step-number">5</div>
-                <h2 class="step-title">Gathering User Feedback</h2>
+        <section class="design-phase">
+            <div class="phase-header">
+                <div class="phase-number">5</div>
+                <h2 class="phase-title">TEST</h2>
             </div>
-            <div class="step-content">
-                <p>We conducted informal testing with peers familiar with algorithmic concepts. Key insights focused on:</p>
+            <div class="phase-content">
+                <p>We conducted informal playtesting with a few peers who were familiar with algorithmic concepts. Key feedback focused on:</p>
                 <ul>
-                    <li>Instruction clarity: Ensuring immediate understanding of objectives</li>
-                    <li>Path drawing responsiveness: Guaranteeing smooth connections</li>
-                    <li>Visual feedback effectiveness: Confirming that distance changes aided comprehension</li>
+                    <li>Clarity of instructions: Ensuring players immediately understood the objective</li>
+                    <li>Responsiveness of path drawing: Making sure the lines connected smoothly</li>
+                    <li>Impact of visual feedback: Confirming that seeing the distance change helped comprehension</li>
                 </ul>
-                <p>Suggestions included implementing a 'best route' comparison feature and varying node quantities for adjustable difficulty. This feedback directly guided improvements to both interface and core gameplay mechanics.</p>
+                <p>Suggestions included adding a 'best route' comparison for direct learning and varying the number of planets for different difficulty levels. This feedback directly informed iterative improvements to the user interface and the core gameplay loop.</p>
             </div>
         </section>
     </div>
 
     <footer>
-        &copy; <span id="current-year"></span> TSP Game Design Process. All rights reserved.
+        &copy; <span id="current-year"></span> Design Thinking Process for TSP Game. All rights reserved.
     </footer>
 
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
@@ -266,8 +274,8 @@
             }
         });
 
-        // Animate steps on scroll
-        const steps = document.querySelectorAll('.process-step');
+        // Animate phases on scroll
+        const phases = document.querySelectorAll('.design-phase');
         
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -276,7 +284,7 @@
                     entry.target.style.transform = 'translateY(0)';
                     
                     // Add pulse animation to number
-                    const number = entry.target.querySelector('.step-number');
+                    const number = entry.target.querySelector('.phase-number');
                     number.style.animation = 'pulse 0.5s ease-out';
                     
                     setTimeout(() => {
@@ -286,20 +294,24 @@
             });
         }, { threshold: 0.1 });
 
-        steps.forEach(step => {
-            observer.observe(step);
+        phases.forEach(phase => {
+            observer.observe(phase);
         });
 
-        // Add hover effect to steps
-        steps.forEach(step => {
-            step.addEventListener('mouseenter', () => {
-                const number = step.querySelector('.step-number');
+        // Add hover effect to phases
+        phases.forEach(phase => {
+            phase.addEventListener('mouseenter', () => {
+                const number = phase.querySelector('.phase-number');
                 number.style.transform = 'scale(1.1) rotate(10deg)';
+                const title = phase.querySelector('.phase-title');
+                title.style.textShadow = '0 0 10px rgba(56, 189, 248, 0.5)';
             });
             
-            step.addEventListener('mouseleave', () => {
-                const number = step.querySelector('.step-number');
+            phase.addEventListener('mouseleave', () => {
+                const number = phase.querySelector('.phase-number');
                 number.style.transform = 'scale(1) rotate(0)';
+                const title = phase.querySelector('.phase-title');
+                title.style.textShadow = 'none';
             });
         });
     </script>
