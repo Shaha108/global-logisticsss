@@ -26,8 +26,8 @@
     <!-- Navbar -->
     <nav class="fixed top-0 left-0 right-0 flex justify-between items-center bg-[#2e3b55] text-white p-4 z-50 dark:bg-gray-800">
       <div class="text-xl font-bold">🍽️ FoodZone</div>
-      <div class="italic font-semibold">"Savor the Taste of Excellence"</div>
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2">
+        <span id="weather" class="text-sm italic hidden sm:inline">☀️ Sunny</span>
         <button onclick="toggleDarkMode()" class="p-2 rounded-full bg-gray-200 dark:bg-gray-600">
           🌓
         </button>
@@ -40,7 +40,7 @@
     <!-- Hero -->
     <header id="home" class="pt-28 text-center bg-gray-50 px-4 dark:bg-gray-800">
       <h1 class="text-4xl font-bold mb-2 dark:text-white">Welcome to FoodZone</h1>
-      <p class="text-lg text-gray-700 dark:text-gray-300">Select your delicious meals below</p>
+      <p class="text-lg text-gray-700 dark:text-gray-300" id="recommendation">Try our special today!</p>
     </header>
 
     <!-- Filter Buttons -->
@@ -92,7 +92,7 @@
       </h2>
       <div id="order-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8"></div>
       <p class="text-center mt-4 text-gray-700 dark:text-gray-300">
-        Estimated Delivery: <strong>30–45 minutes</strong>
+        Estimated Delivery: <strong id="delivery-time">30–45 minutes</strong>
       </p>
       
       <!-- Review Button -->
@@ -133,7 +133,7 @@
   </div>
 
   <script>
-    // MENU ITEMS ARRAY (SIZNING ASOSIY KODINGIZ)
+    // MENU ITEMS ARRAY WITH RATINGS (3-funksiya)
     const menuItems = [
       {
         id: 1,
@@ -142,6 +142,7 @@
         emoji: "🍫",
         price: "$6.99",
         ingredients: "Molten chocolate, flour, eggs, butter",
+        rating: 4.5
       },
       {
         id: 2,
@@ -150,6 +151,7 @@
         emoji: "🍓",
         price: "$7.49",
         ingredients: "Cream cheese, strawberries, sugar, crust",
+        rating: 4.8
       },
       {
         id: 3,
@@ -158,6 +160,7 @@
         emoji: "🍰",
         price: "$6.50",
         ingredients: "Mascarpone, espresso, ladyfingers, cocoa",
+        rating: 4.2
       },
       {
         id: 4,
@@ -166,6 +169,7 @@
         emoji: "🌈",
         price: "$5.25",
         ingredients: "Almond flour, egg whites, sugar, filling",
+        rating: 4.0
       },
       {
         id: 5,
@@ -174,6 +178,7 @@
         emoji: "🍹",
         price: "$4.99",
         ingredients: "Mint, lime, soda water, sugar",
+        rating: 4.7
       },
       {
         id: 6,
@@ -182,6 +187,7 @@
         emoji: "🍓",
         price: "$5.50",
         ingredients: "Strawberries, yogurt, honey",
+        rating: 4.3
       },
       {
         id: 7,
@@ -190,6 +196,7 @@
         emoji: "☕",
         price: "$3.99",
         ingredients: "Espresso, milk, foam",
+        rating: 4.6
       },
       {
         id: 8,
@@ -198,6 +205,7 @@
         emoji: "🍋",
         price: "$2.99",
         ingredients: "Lemon juice, water, sugar",
+        rating: 4.1
       },
       {
         id: 9,
@@ -206,6 +214,7 @@
         emoji: "🥗",
         price: "$7.99",
         ingredients: "Romaine, croutons, parmesan, dressing",
+        rating: 4.4
       },
       {
         id: 10,
@@ -214,6 +223,7 @@
         emoji: "🇬🇷",
         price: "$7.49",
         ingredients: "Tomatoes, cucumber, olives, feta",
+        rating: 4.5
       },
       {
         id: 11,
@@ -222,6 +232,7 @@
         emoji: "🍅",
         price: "$6.95",
         ingredients: "Tomato, mozzarella, basil, olive oil",
+        rating: 4.3
       },
       {
         id: 12,
@@ -230,6 +241,7 @@
         emoji: "🌾",
         price: "$8.25",
         ingredients: "Quinoa, veggies, lemon, herbs",
+        rating: 4.0
       },
     ];
 
@@ -239,7 +251,7 @@
     const orderList = document.getElementById("order-list");
     const orderContainer = document.getElementById("order-container");
 
-    // ASOSIY FUNKSIYALAR (SIZNING KODINGIZ)
+    // 3. RATING FUNCTION (Yulduzchalar bilan ko'rsatish)
     function displayMenu(items) {
       menuContainer.innerHTML = "";
       items.forEach((item) => {
@@ -249,6 +261,10 @@
           <img src="images/${item.id}.jpg" alt="${item.name}" class="w-full h-32 object-cover rounded-t-lg mb-2">
           <div class="text-4xl mb-2 dark:text-white">${item.emoji}</div>
           <h4 class="font-semibold dark:text-white">${item.name}</h4>
+          <div class="flex justify-center my-1 text-yellow-400">
+            ${'★'.repeat(Math.round(item.rating))}${'☆'.repeat(5-Math.round(item.rating))}
+            <span class="text-xs text-gray-500 ml-1 dark:text-gray-300">${item.rating}</span>
+          </div>
           <p class="text-sm text-gray-700 dark:text-gray-300"><strong>Price:</strong> ${item.price}</p>
           <p class="text-sm text-gray-500 dark:text-gray-400"><strong>Ingredients:</strong> ${item.ingredients}</p>
           <button class="mt-2 bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 transition" onclick="addToCart(${item.id})">Order</button>
@@ -257,45 +273,48 @@
       });
     }
 
-    function filterMenu(type) {
-      const buttons = document.querySelectorAll(".filter-btn");
-      buttons.forEach((btn) => {
-        btn.classList.remove("ring-4", "ring-cyan-300");
-      });
-
-      if (type === "all") {
-        buttons[0].classList.add("ring-4", "ring-cyan-300");
-        displayMenu(menuItems);
-      } else {
-        const filtered = menuItems.filter((item) => item.type === type);
-        const buttonIndex = Array.from(buttons).findIndex(btn => 
-          btn.textContent.toLowerCase().includes(type)
-        );
-        if (buttonIndex !== -1) {
-          buttons[buttonIndex].classList.add("ring-4", "ring-cyan-300");
-        }
-        displayMenu(filtered);
-      }
+    // 4. DELIVERY TIME CALCULATION (Yetkazib berish muddati)
+    function calculateDeliveryTime() {
+      const baseTime = 30; // minut
+      const additionalTime = Math.floor(cart.length / 3) * 10;
+      document.getElementById("delivery-time").textContent = 
+        `${baseTime + additionalTime}-${baseTime + additionalTime + 15} minutes`;
     }
 
-    // 9. SAVAT ANIMATSIYASI
+    // 6. WEATHER WIDGET (Ob-havo widgeti)
+    const weatherConditions = ["☀️ Sunny", "🌧️ Rainy", "❄️ Cold", "🌤️ Partly Cloudy"];
+    function updateWeather() {
+      const randomWeather = weatherConditions[Math.floor(Math.random() * weatherConditions.length)];
+      document.getElementById("weather").textContent = randomWeather;
+    }
+
+    // 7. RECOMMENDATION (Tavsiya etilgan mahsulot)
+    function getRecommendedItem() {
+      const randomItem = menuItems[Math.floor(Math.random() * menuItems.length)];
+      document.getElementById("recommendation").textContent = 
+        `Try our ${randomItem.name}! ${randomItem.emoji} (Rated ${randomItem.rating}/5)`;
+    }
+
+    // SAVAT ANIMATSIYASI
     function addToCart(id) {
       const product = menuItems.find((item) => item.id === id);
       cart.push(product);
       
-      // Savat sonini yangilash va animatsiya
       const cartCount = document.getElementById("cart-count");
       cartCount.textContent = cart.length;
       cartCount.classList.add("cart-bounce");
       setTimeout(() => {
         cartCount.classList.remove("cart-bounce");
       }, 500);
+      
+      calculateDeliveryTime(); // Yetkazib berish muddatini yangilash
     }
 
     function showOrderPage() {
       document.getElementById("menu-page").classList.add("hidden");
       document.getElementById("order-page").classList.remove("hidden");
       displayOrder();
+      calculateDeliveryTime();
     }
 
     function showMenuPage() {
@@ -315,6 +334,9 @@
             <img src="images/${item.id}.jpg" alt="${item.name}" class="w-full h-24 object-cover rounded-t-lg mb-2">
             <div class="text-5xl mb-2 dark:text-white">${item.emoji}</div>
             <h4 class="font-semibold text-lg dark:text-white">${item.name}</h4>
+            <div class="flex justify-center my-1 text-yellow-400 text-sm">
+              ${'★'.repeat(Math.round(item.rating))}${'☆'.repeat(5-Math.round(item.rating))}
+            </div>
             <p class="text-gray-600 dark:text-gray-300">${item.price}</p>
             <div class="absolute inset-0 bg-white bg-opacity-90 flex flex-col justify-center items-center opacity-0 hover:opacity-100 transition-opacity p-4 rounded-xl dark:bg-gray-800 dark:bg-opacity-90">
               <h4 class="text-lg font-bold dark:text-white">${item.name}</h4>
@@ -366,7 +388,7 @@
         </h2>
         <div id="order-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8"></div>
         <p class="text-center mt-4 text-gray-700 dark:text-gray-300">
-          Estimated Delivery: <strong>30–45 minutes</strong>
+          Estimated Delivery: <strong id="delivery-time">30–45 minutes</strong>
         </p>
         <div class="flex flex-wrap justify-center gap-4 mt-6">
           <button onclick="showMenuPage()" class="bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-lg text-center">
@@ -383,7 +405,7 @@
       showMenuPage();
     }
 
-    // 5. FIKR QOLDIRISH FUNKSIYASI
+    // FIKR QOLDIRISH FUNKSIYASI
     function showReviewForm() {
       document.getElementById('review-form').classList.remove('hidden');
     }
@@ -410,16 +432,27 @@
       localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
     }
 
-    // DARK MODE PREFERENSITI TEKSHIRISH
-    if (localStorage.getItem('darkMode') === 'true') {
-      document.documentElement.classList.add('dark');
+    // INITIALIZATION
+    function init() {
+      // Dark mode preference
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.documentElement.classList.add('dark');
+      }
+      
+      // Weather widget
+      updateWeather();
+      setInterval(updateWeather, 3600000); // Har 1 soatda yangilash
+      
+      // Recommendation
+      getRecommendedItem();
+      setInterval(getRecommendedItem, 30000); // Har 30 sekundda yangi tavsiya
+      
+      // Initial menu display
+      displayMenu(menuItems);
+      document.querySelectorAll(".filter-btn")[0].classList.add("ring-4", "ring-cyan-300");
     }
 
-    // INITIAL RENDER
-    displayMenu(menuItems);
-    window.onload = () => {
-      document.querySelectorAll(".filter-btn")[0].classList.add("ring-4", "ring-cyan-300");
-    };
+    window.onload = init;
   </script>
 </body>
 </html>
