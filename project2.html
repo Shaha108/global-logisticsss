@@ -10,6 +10,15 @@
       darkMode: 'class',
     }
   </script>
+  <style>
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .cart-bounce {
+      animation: bounce 0.5s ease;
+    }
+  </style>
 </head>
 <body class="bg-gradient-to-br from-blue-100 to-blue-50 font-sans dark:bg-gray-900 dark:from-gray-800 dark:to-gray-900">
   <!-- Main Menu Page -->
@@ -76,7 +85,7 @@
   </div>
 
   <!-- Order Page -->
-  <div id="order-page" class="hidden min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-blue-200 p-6 dark:bg-gray-800" style="cursor: url('https://cdn.jsdelivr.net/gh/uzair-ashraf/cursor-fun/cursors/cursor6.cur'), auto;">
+  <div id="order-page" class="hidden min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-blue-200 p-6 dark:bg-gray-800">
     <div id="order-container" class="bg-white rounded-2xl shadow-xl p-8 max-w-3xl w-full dark:bg-gray-700">
       <h2 class="text-2xl font-semibold text-center text-gray-800 dark:text-white">
         🧾 Your Order
@@ -85,6 +94,30 @@
       <p class="text-center mt-4 text-gray-700 dark:text-gray-300">
         Estimated Delivery: <strong>30–45 minutes</strong>
       </p>
+      
+      <!-- Review Button -->
+      <button onclick="showReviewForm()" 
+              class="bg-purple-500 hover:bg-purple-400 text-white px-4 py-2 rounded-lg mt-4 w-full">
+        ✍️ Leave Review
+      </button>
+      
+      <!-- Review Form (Initially Hidden) -->
+      <div id="review-form" class="hidden mt-6 p-4 bg-gray-100 rounded-lg dark:bg-gray-600">
+        <textarea id="review-text" class="w-full p-2 border rounded mb-2 dark:bg-gray-700 dark:text-white" 
+                  placeholder="Your review... (max 100 chars)"></textarea>
+        <div class="flex justify-end gap-2">
+          <button onclick="hideReviewForm()" 
+                  class="bg-gray-400 hover:bg-gray-300 text-white px-3 py-1 rounded">
+            Cancel
+          </button>
+          <button onclick="submitReview()" 
+                  class="bg-green-500 hover:bg-green-400 text-white px-3 py-1 rounded">
+            Submit
+          </button>
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
       <div class="flex flex-wrap justify-center gap-4 mt-6">
         <button onclick="showMenuPage()" class="bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-lg text-center">
           ← Back to Menu
@@ -100,6 +133,7 @@
   </div>
 
   <script>
+    // MENU ITEMS ARRAY (SIZNING ASOSIY KODINGIZ)
     const menuItems = [
       {
         id: 1,
@@ -205,6 +239,7 @@
     const orderList = document.getElementById("order-list");
     const orderContainer = document.getElementById("order-container");
 
+    // ASOSIY FUNKSIYALAR (SIZNING KODINGIZ)
     function displayMenu(items) {
       menuContainer.innerHTML = "";
       items.forEach((item) => {
@@ -243,10 +278,18 @@
       }
     }
 
+    // 9. SAVAT ANIMATSIYASI
     function addToCart(id) {
       const product = menuItems.find((item) => item.id === id);
       cart.push(product);
+      
+      // Savat sonini yangilash va animatsiya
+      const cartCount = document.getElementById("cart-count");
       cartCount.textContent = cart.length;
+      cartCount.classList.add("cart-bounce");
+      setTimeout(() => {
+        cartCount.classList.remove("cart-bounce");
+      }, 500);
     }
 
     function showOrderPage() {
@@ -340,17 +383,39 @@
       showMenuPage();
     }
 
+    // 5. FIKR QOLDIRISH FUNKSIYASI
+    function showReviewForm() {
+      document.getElementById('review-form').classList.remove('hidden');
+    }
+
+    function hideReviewForm() {
+      document.getElementById('review-form').classList.add('hidden');
+      document.getElementById('review-text').value = '';
+    }
+
+    function submitReview() {
+      const reviewText = document.getElementById('review-text').value.slice(0, 100);
+      if (reviewText.trim()) {
+        localStorage.setItem('foodZoneReview', reviewText);
+        alert('Thank you for your review!');
+        hideReviewForm();
+      } else {
+        alert('Please enter your review first');
+      }
+    }
+
+    // DARK MODE FUNKSIYASI
     function toggleDarkMode() {
       document.documentElement.classList.toggle('dark');
       localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
     }
 
-    // Check for saved dark mode preference
+    // DARK MODE PREFERENSITI TEKSHIRISH
     if (localStorage.getItem('darkMode') === 'true') {
       document.documentElement.classList.add('dark');
     }
 
-    // Initial render
+    // INITIAL RENDER
     displayMenu(menuItems);
     window.onload = () => {
       document.querySelectorAll(".filter-btn")[0].classList.add("ring-4", "ring-cyan-300");
