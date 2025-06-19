@@ -1,419 +1,929 @@
 <!DOCTYPE html>
-
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Restaurant Ordering App</title>
+    <title>FoodZone - Delicious Meals</title>
+    <!-- Favicon -->
+    <link rel="icon" href="https://placehold.co/32x32/ff6600/ffffff?text=FZ" type="image/x-icon">
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+      /* Base styles for the body */
+      body {
+          font-family: 'Inter', sans-serif; /* Fallback to sans-serif */
+          /* Inherits bg-gradient-to-br from-blue-100 to-blue-50 from body tag */
+      }
+
+      /* Custom styles for filter buttons */
       .filter-btn {
         @apply bg-gradient-to-r from-blue-400 to-cyan-400 text-white font-medium px-5 py-2 rounded-full shadow-md transition-transform transform hover:scale-105 hover:shadow-lg;
       }
 
-```
-  .filter-btn.active {
-    @apply ring-4 ring-cyan-300;
-  }
-</style>
-```
+      /* Active state for filter buttons */
+      .filter-btn.active {
+        @apply ring-4 ring-cyan-300; /* Add a ring for clear active state */
+      }
 
+      /* Custom animation for notifications (toasts) */
+      @keyframes slideInRight {
+          from {
+              transform: translateX(100%);
+              opacity: 0;
+          }
+          to {
+              transform: translateX(0);
+              opacity: 1;
+          }
+      }
+      @keyframes fadeOut {
+          from {
+              opacity: 1;
+          }
+          to {
+              opacity: 0;
+          }
+      }
+
+      .notification-enter {
+          animation: slideInRight 0.3s ease-out forwards;
+      }
+      .notification-exit {
+          animation: fadeOut 0.3s ease-in forwards;
+      }
+
+      /* Base Modal styling */
+      .modal {
+          display: none; /* Hidden by default */
+          position: fixed; /* Stay in place */
+          z-index: 1000; /* Sit on top of everything */
+          left: 0;
+          top: 0;
+          width: 100%; /* Full width */
+          height: 100%; /* Full height */
+          overflow: auto; /* Enable scroll if content is too large */
+          background-color: rgba(0,0,0,0.6); /* Black background with opacity */
+          display: flex;
+          justify-content: center;
+          align-items: center;
+      }
+      .modal-content {
+          background-color: #ffffff;
+          margin: auto;
+          padding: 30px;
+          border-radius: 1rem; /* Rounded corners */
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Soft shadow */
+          width: 90%; /* Responsive width */
+          max-width: 500px; /* Max width for larger screens */
+          position: relative;
+          transform: scale(0.9); /* Start slightly smaller for transition */
+          opacity: 0; /* Start invisible for transition */
+          transition: all 0.3s ease-in-out; /* Smooth transition for scale and opacity */
+      }
+      .modal.show .modal-content {
+          transform: scale(1); /* Scale to full size */
+          opacity: 1; /* Fade in */
+      }
+      .close-button {
+          position: absolute;
+          top: 15px;
+          right: 20px;
+          color: #aaa;
+          font-size: 28px;
+          font-weight: bold;
+          cursor: pointer;
+      }
+      .close-button:hover,
+      .close-button:focus {
+          color: #333;
+          text-decoration: none;
+          cursor: pointer;
+      }
+
+      /* Styles for Order Page items */
+      .order-item-card {
+        @apply relative bg-gray-100 rounded-xl shadow-md p-4 text-center transition transform hover:scale-105 hover:bg-gray-200 flex flex-col justify-between;
+      }
+      .order-item-info {
+        @apply flex items-center justify-between mt-2;
+      }
+      .order-item-quantity-controls {
+        @apply flex items-center space-x-2;
+      }
+      .quantity-btn {
+        @apply bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-sm font-bold hover:bg-blue-300 transition-colors;
+      }
+      .remove-item-btn {
+        @apply text-red-500 hover:text-red-700 transition duration-200 p-1 rounded-full hover:bg-red-100;
+      }
+
+      /* Accessibility for Accordion */
+      .accordion-header {
+        @apply flex justify-between items-center w-full px-4 py-3 text-left font-semibold bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300 rounded-md transition-colors duration-200;
+      }
+      .accordion-content {
+        @apply px-4 pt-2 pb-4 bg-white border border-t-0 border-gray-200 rounded-b-md;
+      }
+
+      /* Custom Scrollbar for Menu Grid */
+      #menu {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch; /* for smooth scrolling on iOS */
+      }
+      /* Ensure search bar looks good on mobile */
+      #search-bar {
+        @apply w-full sm:w-80 p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-200;
+      }
+    </style>
   </head>
   <body class="bg-gradient-to-br from-blue-100 to-blue-50 font-sans">
+    <!-- Notifications Container -->
+    <div id="notificationContainer" class="fixed top-4 right-4 z-[1001] space-y-3 w-full max-w-xs"></div>
+
     <!-- Main Menu Page -->
     <div id="menu-page">
       <!-- Navbar -->
       <nav
-        class="fixed top-0 left-0 right-0 flex justify-between items-center bg-[#2e3b55] text-white p-4 z-50"
+        class="fixed top-0 left-0 right-0 flex justify-between items-center bg-[#2e3b55] text-white p-4 z-50 flex-wrap sm:flex-nowrap"
       >
-        <div class="text-xl font-bold">🍽️ FoodZone</div>
-        <div class="italic font-semibold">"Savor the Taste of Excellence"</div>
-        <button
-          onclick="showOrderPage()"
-          class="bg-gradient-to-r from-blue-400 to-cyan-400 px-4 py-2 rounded text-white shadow hover:scale-105 transition"
-        >
-          🛒 Cart (<span id="cart-count">0</span>)
-        </button>
+        <div class="text-xl font-bold flex-shrink-0 mb-2 sm:mb-0">🍽️ FoodZone</div>
+        <div class="italic font-semibold text-sm sm:text-base mb-2 sm:mb-0 flex-grow text-center">"Savor the Taste of Excellence"</div>
+        <div class="flex items-center space-x-2 sm:space-x-4 flex-wrap justify-center sm:justify-end">
+            <!-- Ask Chef AI Button -->
+            <button id="askChefAIBtn" class="bg-white text-blue-600 px-3 py-1 sm:px-4 sm:py-2 rounded-full font-semibold text-sm hover:bg-blue-100 transition duration-300 shadow-md transform hover:scale-105">
+                Ask Chef AI ✨
+            </button>
+            <button
+              onclick="showOrderPage()"
+              class="bg-gradient-to-r from-blue-400 to-cyan-400 px-3 py-1 sm:px-4 sm:py-2 rounded text-white shadow hover:scale-105 transition text-sm sm:text-base"
+            >
+              🛒 Cart (<span id="cart-count">0</span>)
+            </button>
+        </div>
       </nav>
 
-```
-  <!-- Hero -->
-  <header id="home" class="pt-28 text-center bg-gray-50 px-4">
-    <h1 class="text-4xl font-bold mb-2">Welcome to FoodZone</h1>
-    <p class="text-lg text-gray-700">Select your delicious meals below</p>
-  </header>
+      <!-- Hero -->
+      <header id="home" class="pt-28 text-center bg-gray-50 px-4 py-8">
+        <h1 class="text-4xl sm:text-5xl font-bold mb-2">Welcome to FoodZone</h1>
+        <p class="text-lg text-gray-700">Select your delicious meals below</p>
+      </header>
 
-  <!-- Filter Buttons -->
-  <section class="flex justify-center gap-4 py-6 flex-wrap">
-    <button
-      onclick="filterMenu('all')"
-      class="filter-btn px-5 py-2 rounded-full text-white bg-gradient-to-r from-blue-400 to-cyan-400 shadow-md hover:scale-105 transition"
-    >
-      All
-    </button>
-    <button
-      onclick="filterMenu('dessert')"
-      class="filter-btn px-5 py-2 rounded-full text-white bg-gradient-to-r from-blue-400 to-cyan-400 shadow-md hover:scale-105 transition"
-    >
-      Desserts
-    </button>
-    <button
-      onclick="filterMenu('drink')"
-      class="filter-btn px-5 py-2 rounded-full text-white bg-gradient-to-r from-blue-400 to-cyan-400 shadow-md hover:scale-105 transition"
-    >
-      Drinks
-    </button>
-    <button
-      onclick="filterMenu('salad')"
-      class="filter-btn px-5 py-2 rounded-full text-white bg-gradient-to-r from-blue-400 to-cyan-400 shadow-md hover:scale-105 transition"
-    >
-      Salads
-    </button>
-  </section>
+      <!-- Search Bar -->
+      <section class="flex justify-center py-4 px-4">
+        <input
+          type="text"
+          id="search-bar"
+          placeholder="Search by name or ingredients..."
+          oninput="performSearch(this.value)"
+        />
+      </section>
 
-  <!-- Menu Grid -->
-  <section
-    class="flex flex-wrap justify-center gap-6 px-4 py-8 max-h-[700px] overflow-y-auto"
-    id="menu"
-  ></section>
+      <!-- Filter Buttons -->
+      <section class="flex justify-center gap-4 py-6 flex-wrap px-4">
+        <button
+          onclick="filterMenu('all')"
+          class="filter-btn active"
+        >
+          All
+        </button>
+        <button
+          onclick="filterMenu('popular')"
+          class="filter-btn"
+        >
+          Popular Picks
+        </button>
+        <button
+          onclick="filterMenu('dessert')"
+          class="filter-btn"
+        >
+          Desserts
+        </button>
+        <button
+          onclick="filterMenu('drink')"
+          class="filter-btn"
+        >
+          Drinks
+        </button>
+        <button
+          onclick="filterMenu('salad')"
+          class="filter-btn"
+        >
+          Salads
+        </button>
+      </section>
 
-  <!-- About Section -->
-  <section class="bg-gray-50 text-center py-8 px-4">
-    <h2 class="text-2xl font-bold mb-2">About Us</h2>
-    <p class="mb-2">
-      Welcome to FoodZone! We are a passionate team of culinary experts
-      dedicated to bringing you the finest gourmet experiences.
-    </p>
-    <p>
-      At FoodZone, quality ingredients, fast service, and customer
-      satisfaction are our top priorities. Taste the difference!
-    </p>
-  </section>
+      <!-- Menu Grid -->
+      <section
+        class="flex flex-wrap justify-center gap-6 px-4 py-8 max-h-[700px] overflow-y-auto"
+        id="menu"
+      ></section>
 
-  <!-- Contact Section -->
-  <section class="text-center py-8 bg-white px-4">
-    <h2 class="text-2xl font-bold mb-4">Contact Us</h2>
-    <p>📍 Address: 123 Food Street, Gourmet City, FL 45678</p>
-    <p>📞 Phone: +1 (555) 123-4567</p>
-    <p>📧 Email: contact@foodzone.com</p>
-  </section>
-</div>
+      <!-- FAQ Section -->
+      <section class="bg-gray-50 py-10 px-4">
+          <div class="container mx-auto max-w-2xl">
+              <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Frequently Asked Questions</h2>
+              <div id="faq-accordion" class="space-y-4">
+                  <!-- FAQ Item 1 -->
+                  <div class="border border-gray-200 rounded-lg shadow-sm">
+                      <button class="accordion-header" onclick="toggleAccordion('faq1')" aria-expanded="false" aria-controls="faq1-content">
+                          <span>How long does delivery take?</span>
+                          <span class="accordion-icon text-gray-600 transform transition-transform duration-200">▼</span>
+                      </button>
+                      <div id="faq1-content" class="accordion-content hidden" role="region" aria-labelledby="faq1">
+                          <p class="text-gray-700">Estimated delivery time is usually 30-45 minutes, depending on your location and current order volume.</p>
+                      </div>
+                  </div>
+                  <!-- FAQ Item 2 -->
+                  <div class="border border-gray-200 rounded-lg shadow-sm">
+                      <button class="accordion-header" onclick="toggleAccordion('faq2')" aria-expanded="false" aria-controls="faq2-content">
+                          <span>Can I modify my order after placing it?</span>
+                          <span class="accordion-icon text-gray-600 transform transition-transform duration-200">▼</span>
+                      </button>
+                      <div id="faq2-content" class="accordion-content hidden" role="region" aria-labelledby="faq2">
+                          <p class="text-gray-700">Once an order is placed, modifications are difficult. Please contact our support line immediately if you need to make changes.</p>
+                      </div>
+                  </div>
+                  <!-- FAQ Item 3 -->
+                  <div class="border border-gray-200 rounded-lg shadow-sm">
+                      <button class="accordion-header" onclick="toggleAccordion('faq3')" aria-expanded="false" aria-controls="faq3-content">
+                          <span>What payment methods do you accept?</span>
+                          <span class="accordion-icon text-gray-600 transform transition-transform duration-200">▼</span>
+                      </button>
+                      <div id="faq3-content" class="accordion-content hidden" role="region" aria-labelledby="faq3">
+                          <p class="text-gray-700">We accept major credit cards (Visa, Mastercard, Amex) and online payment platforms.</p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
 
-<!-- Order Page -->
-<div id="order-page" class="hidden min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-blue-200 p-6" style="cursor: url('https://cdn.jsdelivr.net/gh/uzair-ashraf/cursor-fun/cursors/cursor6.cur'), auto;">
-  <div
-    id="order-container"
-    class="bg-white rounded-2xl shadow-xl p-8 max-w-3xl w-full"
-  >
-    <h2 class="text-2xl font-semibold text-center text-gray-800">
-      🧾 Your Order
-    </h2>
-    <div
-      id="order-list"
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8"
-    ></div>
-    <p class="text-center mt-4 text-gray-700">
-      Estimated Delivery: <strong>30–45 minutes</strong>
-    </p>
-    <div class="flex flex-wrap justify-center gap-4 mt-6">
-      <button
-        onclick="showMenuPage()"
-        class="bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-lg text-center"
-      >← Back to Menu</button>
-      <button
-        class="bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-lg"
-        onclick="clearCart()"
-      >
-        🗑️ Clear Order
-      </button>
-      <button
-        class="bg-green-500 hover:bg-green-400 text-white px-4 py-2 rounded-lg"
-        onclick="finishOrder()"
-      >
-        ✅ Finish Order
-      </button>
+      <!-- About Section -->
+      <section class="bg-gray-50 text-center py-8 px-4">
+        <h2 class="text-2xl font-bold mb-2">About Us</h2>
+        <p class="mb-2">
+          Welcome to FoodZone! We are a passionate team of culinary experts
+          dedicated to bringing you the finest gourmet experiences.
+        </p>
+        <p>
+          At FoodZone, quality ingredients, fast service, and customer
+          satisfaction are our top priorities. Taste the difference!
+        </p>
+      </section>
+
+      <!-- Contact Section -->
+      <section class="text-center py-8 bg-white px-4">
+        <h2 class="text-2xl font-bold mb-4">Contact Us</h2>
+        <p>📍 Address: 123 Food Street, Gourmet City, FL 45678</p>
+        <p>📞 Phone: +1 (555) 123-4567</p>
+        <p>📧 Email: contact@foodzone.com</p>
+      </section>
     </div>
-  </div>
-</div>
 
-<!-- JS -->
-<script>
-  const menuItems = [
-    {
-      id: 1,
-      name: "Chocolate Lava Cake",
-      type: "dessert",
-      emoji: "🍫",
-      price: "$6.99",
-      ingredients: "Molten chocolate, flour, eggs, butter",
-    },
-    {
-      id: 2,
-      name: "Strawberry Cheesecake",
-      type: "dessert",
-      emoji: "🍓",
-      price: "$7.49",
-      ingredients: "Cream cheese, strawberries, sugar, crust",
-    },
-    {
-      id: 3,
-      name: "Tiramisu",
-      type: "dessert",
-      emoji: "🍰",
-      price: "$6.50",
-      ingredients: "Mascarpone, espresso, ladyfingers, cocoa",
-    },
-    {
-      id: 4,
-      name: "Macarons",
-      type: "dessert",
-      emoji: "🌈",
-      price: "$5.25",
-      ingredients: "Almond flour, egg whites, sugar, filling",
-    },
-    {
-      id: 5,
-      name: "Mojito",
-      type: "drink",
-      emoji: "🍹",
-      price: "$4.99",
-      ingredients: "Mint, lime, soda water, sugar",
-    },
-    {
-      id: 6,
-      name: "Strawberry Smoothie",
-      type: "drink",
-      emoji: "🍓",
-      price: "$5.50",
-      ingredients: "Strawberries, yogurt, honey",
-    },
-    {
-      id: 7,
-      name: "Cappuccino",
-      type: "drink",
-      emoji: "☕",
-      price: "$3.99",
-      ingredients: "Espresso, milk, foam",
-    },
-    {
-      id: 8,
-      name: "Lemonade",
-      type: "drink",
-      emoji: "🍋",
-      price: "$2.99",
-      ingredients: "Lemon juice, water, sugar",
-    },
-    {
-      id: 9,
-      name: "Caesar Salad",
-      type: "salad",
-      emoji: "🥗",
-      price: "$7.99",
-      ingredients: "Romaine, croutons, parmesan, dressing",
-    },
-    {
-      id: 10,
-      name: "Greek Salad",
-      type: "salad",
-      emoji: "🇬🇷",
-      price: "$7.49",
-      ingredients: "Tomatoes, cucumber, olives, feta",
-    },
-    {
-      id: 11,
-      name: "Caprese Salad",
-      type: "salad",
-      emoji: "🍅",
-      price: "$6.95",
-      ingredients: "Tomato, mozzarella, basil, olive oil",
-    },
-    {
-      id: 12,
-      name: "Quinoa Salad",
-      type: "salad",
-      emoji: "🌾",
-      price: "$8.25",
-      ingredients: "Quinoa, veggies, lemon, herbs",
-    },
-  ];
+    <!-- Order Page -->
+    <div id="order-page" class="hidden min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-blue-200 p-6" style="cursor: url('https://cdn.jsdelivr.net/gh/uzair-ashraf/cursor-fun/cursors/cursor6.cur'), auto;">
+      <div
+        id="order-container"
+        class="bg-white rounded-2xl shadow-xl p-8 max-w-3xl w-full"
+      >
+        <h2 class="text-2xl font-semibold text-center text-gray-800">
+          🧾 Your Order
+        </h2>
+        <div
+          id="order-list"
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8"
+        >
+        </div>
+        <div class="text-right text-xl font-bold text-gray-800 mt-6 border-t pt-4 border-gray-200">
+            Total: <span id="cart-total">$0.00</span>
+        </div>
+        <p class="text-center mt-4 text-gray-700">
+          Estimated Delivery: <strong>30–45 minutes</strong>
+        </p>
+        <div class="flex flex-wrap justify-center gap-4 mt-6">
+          <button
+            onclick="showMenuPage()"
+            class="bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-lg text-center transition transform hover:scale-105 shadow-md"
+          >← Back to Menu</button>
+          <button
+            class="bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-lg transition transform hover:scale-105 shadow-md"
+            onclick="clearCart()"
+          >
+            🗑️ Clear Order
+          </button>
+          <button
+            class="bg-green-500 hover:bg-green-400 text-white px-4 py-2 rounded-lg transition transform hover:scale-105 shadow-md"
+            onclick="finishOrder()"
+          >
+            ✅ Finish Order
+          </button>
+        </div>
+      </div>
+    </div>
 
-  let cart = [];
-  const menuContainer = document.getElementById("menu");
-  const cartCount = document.getElementById("cart-count");
-  const orderList = document.getElementById("order-list");
-  const orderContainer = document.getElementById("order-container");
+    <!-- Ask Chef AI Modal -->
+    <div id="chefAIModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="hideChefAIModal()">&times;</span>
+            <h4 class="text-2xl font-bold text-gray-800 mb-6 text-center">Ask Chef AI ✨</h4>
+            <div class="mb-4">
+                <label for="chefAIQueryInput" class="block text-gray-700 text-sm font-medium mb-2">What's on your mind?</label>
+                <textarea id="chefAIQueryInput" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="E.g., What goes well with chicken? How to make a quick sauce?"></textarea>
+            </div>
+            <button id="sendChefAIQueryBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-300 shadow-md" onclick="sendChefAIQuery(document.getElementById('chefAIQueryInput').value)">
+                Get Advice
+            </button>
+            <div class="mt-6 p-4 bg-gray-100 rounded-lg border border-gray-200">
+                <h5 class="text-lg font-semibold text-gray-800 mb-2">Chef AI's Response:</h5>
+                <p id="chefAIResponse" class="text-gray-700 italic">Chef AI's advice will appear here...</p>
+            </div>
+        </div>
+    </div>
 
-  function displayMenu(items) {
-    menuContainer.innerHTML = "";
-    items.forEach((item) => {
-      const div = document.createElement("div");
-      div.className =
-        "bg-white border border-gray-200 rounded-lg p-4 w-52 text-center shadow hover:scale-105 transition";
-      div.innerHTML = `
-        <div class="text-4xl mb-2">${item.emoji}</div>
-        <h4 class="font-semibold">${item.name}</h4>
-        <p class="text-sm text-gray-700"><strong>Price:</strong> ${item.price}</p>
-        <p class="text-sm text-gray-500"><strong>Ingredients:</strong> ${item.ingredients}</p>
-        <button class="mt-2 bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 transition" onclick="addToCart(${item.id})">Order</button>
-      `;
-      menuContainer.appendChild(div);
-    });
-  }
+    <!-- JS -->
+    <script>
+      // IV. Code Quality & Maintainability: Modular JavaScript (Logical Grouping)
+      // =====================================================================
 
-  function filterMenu(type) {
-    document.querySelectorAll(".filter-btn").forEach((btn) => {
-      btn.classList.remove("bg-blue-500", "text-white", "shadow-md");
-      btn.classList.add(
-        "bg-gradient-to-r",
-        "from-blue-400",
-        "to-cyan-400",
-        "text-white"
-      );
-    });
+      // Global App State Variables
+      let cart = []; // Stores items in cart with quantity: { item: productObject, quantity: 1 }
+      const menuContainer = document.getElementById("menu");
+      const cartCount = document.getElementById("cart-count");
+      const orderList = document.getElementById("order-list");
+      const orderContainer = document.getElementById("order-container");
+      const cartTotalSpan = document.getElementById("cart-total");
+      const searchBar = document.getElementById("search-bar");
 
-    const buttons = document.querySelectorAll(".filter-btn");
-    buttons.forEach((btn) => {
-      if (type === "all" && btn.textContent.toLowerCase() === "all") {
-        btn.classList.add("bg-blue-500", "text-white", "shadow-md");
-      } else if (btn.textContent.toLowerCase().includes(type)) {
-        btn.classList.add("bg-blue-500", "text-white", "shadow-md");
+      // III. New Features & Content Sections: "Popular Picks" / "Bestsellers" Section
+      // =============================================================================
+      // Dummy menu items (hardcoded) - added 'isPopular' for Popular Picks
+      const menuItems = [
+        {
+          id: 1,
+          name: "Chocolate Lava Cake",
+          type: "dessert",
+          emoji: "🍫",
+          price: "$6.99",
+          ingredients: "Molten chocolate, flour, eggs, butter",
+          isPopular: true
+        },
+        {
+          id: 2,
+          name: "Strawberry Cheesecake",
+          type: "dessert",
+          emoji: "🍓",
+          price: "$7.49",
+          ingredients: "Cream cheese, strawberries, sugar, crust",
+          isPopular: false
+        },
+        {
+          id: 3,
+          name: "Tiramisu",
+          type: "dessert",
+          emoji: "🍰",
+          price: "$6.50",
+          ingredients: "Mascarpone, espresso, ladyfingers, cocoa",
+          isPopular: true
+        },
+        {
+          id: 4,
+          name: "Macarons",
+          type: "dessert",
+          emoji: "🌈",
+          price: "$5.25",
+          ingredients: "Almond flour, egg whites, sugar, filling",
+          isPopular: false
+        },
+        {
+          id: 5,
+          name: "Mojito",
+          type: "drink",
+          emoji: "🍹",
+          price: "$4.99",
+          ingredients: "Mint, lime, soda water, sugar",
+          isPopular: true
+        },
+        {
+          id: 6,
+          name: "Strawberry Smoothie",
+          type: "drink",
+          emoji: "🍓",
+          price: "$5.50",
+          ingredients: "Strawberries, yogurt, honey",
+          isPopular: false
+        },
+        {
+          id: 7,
+          name: "Cappuccino",
+          type: "drink",
+          emoji: "☕",
+          price: "$3.99",
+          ingredients: "Espresso, milk, foam",
+          isPopular: true
+        },
+        {
+          id: 8,
+          name: "Lemonade",
+          type: "drink",
+          emoji: "🍋",
+          price: "$2.99",
+          ingredients: "Lemon juice, water, sugar",
+          isPopular: false
+        },
+        {
+          id: 9,
+          name: "Caesar Salad",
+          type: "salad",
+          emoji: "🥗",
+          price: "$7.99",
+          ingredients: "Romaine, croutons, parmesan, dressing",
+          isPopular: true
+        },
+        {
+          id: 10,
+          name: "Greek Salad",
+          type: "salad",
+          emoji: "🇬🇷",
+          price: "$7.49",
+          ingredients: "Tomatoes, cucumber, olives, feta",
+          isPopular: false
+        },
+        {
+          id: 11,
+          name: "Caprese Salad",
+          type: "salad",
+          emoji: "🍅",
+          price: "$6.95",
+          ingredients: "Tomato, mozzarella, basil, olive oil",
+          isPopular: true
+        },
+        {
+          id: 12,
+          name: "Quinoa Salad",
+          type: "salad",
+          emoji: "🌾",
+          price: "$8.25",
+          ingredients: "Quinoa, veggies, lemon, herbs",
+          isPopular: false
+        },
+      ];
+
+      // III. New Features & Content Sections: Simple Notifications/Toasts
+      // =================================================================
+      function showNotification(message, type = 'success', duration = 3000) {
+          const container = document.getElementById('notificationContainer');
+          const notification = document.createElement('div');
+          notification.className = `p-4 rounded-lg shadow-md flex items-center justify-between text-white font-medium notification-enter ${
+              type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+          }`;
+          notification.innerHTML = `
+              <span>${message}</span>
+              <button class="ml-4 text-white hover:text-gray-200" onclick="this.parentElement.classList.add('notification-exit'); setTimeout(() => this.parentElement.remove(), 300);">
+                  &times;
+              </button>
+          `;
+          container.appendChild(notification);
+
+          setTimeout(() => {
+              notification.classList.add('notification-exit');
+              notification.addEventListener('animationend', () => {
+                  notification.remove();
+              }, { once: true });
+          }, duration);
       }
-    });
 
-    if (type === "all") {
-      displayMenu(menuItems);
-    } else {
-      const filtered = menuItems.filter((item) => item.type === type);
-      displayMenu(filtered);
-    }
-  }
+      // II. Design & Responsiveness Polish: Favicon
+      // (Favicon link added in HTML head section)
 
-  function addToCart(id) {
-    const product = menuItems.find((item) => item.id === id);
-    cart.push(product);
-    cartCount.textContent = cart.length;
-  }
+      // I. High-Priority User Experience (UX) Enhancements & Core Functionality
+      // =========================================================================
 
-  function showOrderPage() {
-    document.getElementById("menu-page").classList.add("hidden");
-    document.getElementById("order-page").classList.remove("hidden");
-    displayOrder();
-  }
+      /**
+       * Displays menu items in the main menu grid.
+       * @param {Array} items - The array of menu items to display.
+       */
+      function displayMenu(items) {
+        menuContainer.innerHTML = ""; // Clear existing items
 
-  function showMenuPage() {
-    document.getElementById("order-page").classList.add("hidden");
-    document.getElementById("menu-page").classList.remove("hidden");
-  }
+        if (items.length === 0) {
+            menuContainer.innerHTML = '<p class="col-span-full text-center text-gray-600 py-10">No items found matching your criteria.</p>';
+            return;
+        }
 
-  function displayOrder() {
-    if (cart.length === 0) {
-      orderList.innerHTML =
-        '<p class="col-span-full text-center text-gray-600">Your cart is empty.</p>';
-    } else {
-      orderList.innerHTML = "";
-      cart.forEach((item) => {
-        const div = document.createElement("div");
-        div.className =
-          "relative bg-gray-100 rounded-xl shadow-md p-4 text-center transition transform hover:scale-105 hover:bg-gray-200";
-        div.innerHTML = `
-          <div class="text-5xl mb-2">${item.emoji}</div>
-          <h4 class="font-semibold text-lg">${item.name}</h4>
-          <p class="text-gray-600">${item.price}</p>
-          <div class="absolute inset-0 bg-white bg-opacity-90 flex flex-col justify-center items-center opacity-0 hover:opacity-100 transition-opacity p-4 rounded-xl">
-            <h4 class="text-lg font-bold">${item.name}</h4>
-            <p class="text-gray-700 text-sm mt-2">${
-              item.ingredients || "Delicious item from our kitchen."
-            }</p>
+        items.forEach((item) => {
+          const div = document.createElement("div");
+          div.className =
+            "bg-white border border-gray-200 rounded-lg p-4 w-52 text-center shadow hover:scale-105 transition duration-300 ease-in-out"; // Added transition
+          div.innerHTML = `
+            <div class="text-4xl mb-2">${item.emoji}</div>
+            <h4 class="font-semibold">${item.name}</h4>
+            <p class="text-sm text-gray-700"><strong>Price:</strong> ${item.price}</p>
+            <p class="text-sm text-gray-500"><strong>Ingredients:</strong> ${item.ingredients}</p>
+            <button id="orderBtn-${item.id}" class="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition duration-300 ease-in-out transform hover:scale-105" onclick="addToCart(${item.id}, this)">Order</button>
+          `;
+          menuContainer.appendChild(div);
+        });
+      }
+
+      /**
+       * Filters the menu items based on type or displays all.
+       * @param {string} type - The type to filter by ('all', 'dessert', 'drink', 'salad', 'popular').
+       */
+      function filterMenu(type) {
+        // Clear active state from all filter buttons
+        document.querySelectorAll(".filter-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+
+        // Add active state to the clicked button
+        const clickedButton = Array.from(document.querySelectorAll(".filter-btn")).find(btn =>
+            (type === "all" && btn.textContent.toLowerCase().includes("all")) ||
+            (type === "popular" && btn.textContent.toLowerCase().includes("popular")) ||
+            (btn.textContent.toLowerCase().includes(type))
+        );
+        if (clickedButton) {
+            clickedButton.classList.add("active");
+        }
+
+        let filteredItems = [];
+        if (type === "all") {
+          filteredItems = menuItems;
+        } else if (type === "popular") {
+          filteredItems = menuItems.filter((item) => item.isPopular);
+        } else {
+          filteredItems = menuItems.filter((item) => item.type === type);
+        }
+        displayMenu(filteredItems);
+        searchBar.value = ''; // Clear search bar when filtering
+      }
+
+      /**
+       * Adds an item to the cart or increments its quantity.
+       * @param {number} id - The ID of the item to add.
+       * @param {HTMLElement} button - The button element that was clicked.
+       */
+      function addToCart(id, button) {
+        const product = menuItems.find((item) => item.id === id);
+        const existingItemIndex = cart.findIndex(cartItem => cartItem.item.id === id);
+
+        if (existingItemIndex > -1) {
+            cart[existingItemIndex].quantity += 1;
+        } else {
+            cart.push({ item: product, quantity: 1 });
+        }
+        updateCartCount();
+        showNotification(`${product.name} added to cart!`, 'success');
+
+        // Visual feedback on button
+        const originalText = button.textContent;
+        button.textContent = "Added!";
+        button.classList.add("bg-green-700");
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove("bg-green-700");
+        }, 800);
+      }
+
+      /**
+       * Updates the cart item count displayed in the navbar.
+       */
+      function updateCartCount() {
+        const totalItems = cart.reduce((sum, cartItem) => sum + cartItem.quantity, 0);
+        cartCount.textContent = totalItems;
+      }
+
+      /**
+       * Shows the order page and displays the current cart contents.
+       */
+      function showOrderPage() {
+        document.getElementById("menu-page").classList.add("hidden");
+        document.getElementById("order-page").classList.remove("hidden");
+        displayOrder();
+      }
+
+      /**
+       * Shows the main menu page.
+       */
+      function showMenuPage() {
+        document.getElementById("order-page").classList.add("hidden");
+        document.getElementById("menu-page").classList.remove("hidden");
+      }
+
+      /**
+       * Displays the items currently in the cart on the order page.
+       * Includes quantity controls and remove buttons.
+       */
+      function displayOrder() {
+        orderList.innerHTML = ""; // Clear existing items
+
+        if (cart.length === 0) {
+          orderList.innerHTML =
+            '<div class="col-span-full text-center text-gray-600 py-10">' +
+            '<i class="fas fa-shopping-basket text-6xl text-gray-400 mb-4"></i>' +
+            '<p class="text-xl font-semibold">Your cart is empty!</p>' +
+            '<button onclick="showMenuPage()" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md transition transform hover:scale-105">Start Ordering Now!</button>' +
+            '</div>';
+        } else {
+          cart.forEach((cartItem) => {
+            const item = cartItem.item;
+            const div = document.createElement("div");
+            div.className = "order-item-card"; // Reusable class
+            div.innerHTML = `
+              <div class="text-5xl mb-2">${item.emoji}</div>
+              <h4 class="font-semibold text-lg">${item.name}</h4>
+              <p class="text-gray-600">${item.price}</p>
+              <p class="text-sm text-gray-500 mb-2">Quantity: ${cartItem.quantity}</p>
+              <div class="flex justify-center space-x-2 mb-4">
+                  <button class="quantity-btn" onclick="updateItemQuantity(${item.id}, -1)">-</button>
+                  <span class="text-lg font-bold">${cartItem.quantity}</span>
+                  <button class="quantity-btn" onclick="updateItemQuantity(${item.id}, 1)">+</button>
+              </div>
+              <button class="remove-item-btn" onclick="removeItemFromCart(${item.id})" aria-label="Remove ${item.name} from cart">
+                  <i class="fas fa-times-circle"></i> Remove
+              </button>
+            `;
+            orderList.appendChild(div);
+          });
+        }
+        updateCartTotal(); // Update the running total every time the cart is displayed
+      }
+
+      /**
+       * Increases or decreases the quantity of an item in the cart.
+       * @param {number} id - The ID of the item.
+       * @param {number} delta - The change in quantity (-1 for decrease, 1 for increase).
+       */
+      function updateItemQuantity(id, delta) {
+          const itemIndex = cart.findIndex(cartItem => cartItem.item.id === id);
+          if (itemIndex > -1) {
+              cart[itemIndex].quantity += delta;
+              if (cart[itemIndex].quantity <= 0) {
+                  removeItemFromCart(id); // Remove if quantity drops to 0 or less
+              } else {
+                  showNotification(`Quantity of ${cart[itemIndex].item.name} updated.`, 'info');
+                  displayOrder(); // Re-render to reflect quantity change
+                  updateCartCount(); // Update cart count in navbar
+              }
+          }
+      }
+
+      /**
+       * Removes a specific item from the cart.
+       * @param {number} id - The ID of the item to remove.
+       */
+      function removeItemFromCart(id) {
+          const originalLength = cart.length;
+          cart = cart.filter(cartItem => cartItem.item.id !== id);
+          if (cart.length < originalLength) {
+              showNotification("Item removed from cart.", "error"); // Use error type for removal
+          }
+          displayOrder();
+          updateCartCount();
+      }
+
+      /**
+       * Calculates and updates the total price displayed in the cart.
+       */
+      function updateCartTotal() {
+          let total = 0;
+          cart.forEach(cartItem => {
+              const price = parseFloat(cartItem.item.price.replace(/[^0-9.]/g, ""));
+              total += price * cartItem.quantity;
+          });
+          cartTotalSpan.textContent = `$${total.toFixed(2)}`;
+      }
+
+      /**
+       * Clears all items from the cart.
+       */
+      function clearCart() {
+        cart = [];
+        cartCount.textContent = cart.length;
+        displayOrder(); // Update display to show empty cart message
+        showNotification("Your cart has been cleared.", 'error'); // Use custom toast
+      }
+
+      /**
+       * Handles the finalization of the order.
+       */
+      function finishOrder() {
+        if (cart.length === 0) {
+            showNotification("Your cart is empty. Please add items before finishing your order.", "error");
+            return; // Exit if cart is empty
+        }
+
+        const total = cart.reduce((sum, cartItem) => {
+          const price = parseFloat(cartItem.item.price.replace(/[^0-9.]/g, ""));
+          return sum + (isNaN(price) ? 0 : price) * cartItem.quantity;
+        }, 0);
+
+        orderContainer.innerHTML = `
+          <div class="text-center">
+            <h2 class="text-3xl font-bold text-green-600 mb-4">🎉 Successfully Ordered!</h2>
+            <p class="text-gray-700 text-lg mb-2">Your total is <strong>$${total.toFixed(
+              2
+            )}</strong>.</p>
+            <p class="text-gray-600 mb-6">Thank you for your order. It will be delivered shortly!</p>
+            <button
+              onclick="resetApp()"
+              class="inline-block bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-lg transition transform hover:scale-105 shadow-md"
+            >← Back to Menu</button>
           </div>
         `;
-        orderList.appendChild(div);
-      });
-    }
-  }
+        showNotification("Order placed successfully! Expected delivery in 30-45 minutes.", 'success'); // Use custom toast
 
-  function clearCart() {
-    cart = [];
-    cartCount.textContent = cart.length;
-    displayOrder();
-  }
+        cart = []; // Clear cart after successful order
+        updateCartCount(); // Update cart count in navbar
+      }
 
-  function finishOrder() {
-    if (cart.length === 0) return;
+      /**
+       * Resets the app state after an order is finished.
+       */
+      function resetApp() {
+        cart = []; // Ensure cart is fully reset
+        updateCartCount(); // Update cart count in navbar
 
-    const total = cart.reduce((sum, item) => {
-      const price = parseFloat(item.price.replace(/[^0-9.]/g, ""));
-      return sum + (isNaN(price) ? 0 : price);
-    }, 0);
+        // Restore the original structure of the order page
+        document.getElementById("order-page").innerHTML = `
+            <div
+              id="order-container"
+              class="bg-white rounded-2xl shadow-xl p-8 max-w-3xl w-full"
+            >
+              <h2 class="text-2xl font-semibold text-center text-gray-800">
+                🧾 Your Order
+              </h2>
+              <div
+                id="order-list"
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8"
+              ></div>
+              <div class="text-right text-xl font-bold text-gray-800 mt-6 border-t pt-4 border-gray-200">
+                  Total: <span id="cart-total">$0.00</span>
+              </div>
+              <p class="text-center mt-4 text-gray-700">
+                Estimated Delivery: <strong>30–45 minutes</strong>
+              </p>
+              <div class="flex flex-wrap justify-center gap-4 mt-6">
+                <button
+                  onclick="showMenuPage()"
+                  class="bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-lg text-center transition transform hover:scale-105 shadow-md"
+                >← Back to Menu</button>
+                <button
+                  class="bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-lg transition transform hover:scale-105 shadow-md"
+                  onclick="clearCart()"
+                >
+                  🗑️ Clear Order
+                </button>
+                <button
+                  class="bg-green-500 hover:bg-green-400 text-white px-4 py-2 rounded-lg transition transform hover:scale-105 shadow-md"
+                  onclick="finishOrder()"
+                >
+                  ✅ Finish Order
+                </button>
+              </div>
+            </div>
+        `;
+        // Re-assign global constants for elements after re-rendering order-page
+        // This is crucial because innerHTML overwrites the elements, making old references invalid.
+        // It's generally better practice to manipulate existing DOM nodes rather than overwriting large sections,
+        // but given the app's structure, this is a direct fix for the resetApp issue.
+        // In a more complex app, consider using a framework or more granular DOM updates.
+        Object.assign(this, {
+            orderList: document.getElementById("order-list"),
+            orderContainer: document.getElementById("order-container"),
+            cartTotalSpan: document.getElementById("cart-total")
+        });
 
-    orderContainer.innerHTML = `
-      <div class="text-center">
-        <h2 class="text-3xl font-bold text-green-600 mb-4">🎉 Successfully Ordered!</h2>
-        <p class="text-gray-700 text-lg mb-2">Your total is <strong>$${total.toFixed(
-          2
-        )}</strong>.</p>
-        <p class="text-gray-600 mb-6">Thank you for your order. It will be delivered shortly!</p>
-        <button
-          onclick="resetApp()"
-          class="inline-block bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-lg"
-        >← Back to Menu</button>
-      </div>
-    `;
 
-    cart = [];
-    cartCount.textContent = cart.length;
-  }
+        showMenuPage(); // Navigate back to the menu page
+      }
 
-  function resetApp() {
-    cart = [];
-    cartCount.textContent = cart.length;
-    orderContainer.innerHTML = `
-      <h2 class="text-2xl font-semibold text-center text-gray-800">
-        🧾 Your Order
-      </h2>
-      <div
-        id="order-list"
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8"
-      ></div>
-      <p class="text-center mt-4 text-gray-700">
-        Estimated Delivery: <strong>30–45 minutes</strong>
-      </p>
-      <div class="flex flex-wrap justify-center gap-4 mt-6">
-        <button
-          onclick="showMenuPage()"
-          class="bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-lg text-center"
-        >← Back to Menu</button>
-        <button
-          class="bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-lg"
-          onclick="clearCart()"
-        >
-          🗑️ Clear Order
-        </button>
-        <button
-          class="bg-green-500 hover:bg-green-400 text-white px-4 py-2 rounded-lg"
-          onclick="finishOrder()"
-        >
-          ✅ Finish Order
-        </button>
-      </div>
-    `;
-    showMenuPage();
-  }
+      // III. New Features & Content Sections: Basic Search Functionality (Client-Side)
+      // ==============================================================================
+      /**
+       * Filters menu items based on a search query.
+       * @param {string} query - The search string.
+       */
+      function performSearch(query) {
+          const lowerCaseQuery = query.toLowerCase();
+          const filtered = menuItems.filter(item =>
+              item.name.toLowerCase().includes(lowerCaseQuery) ||
+              item.ingredients.toLowerCase().includes(lowerCaseQuery)
+          );
+          displayMenu(filtered);
+          // Deactivate all filter buttons when searching
+          document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+      }
 
-  // Initial render
-  displayMenu(menuItems);
-  window.onload = () => {
-    document
-      .querySelector(".filter-btn")
-      .classList.add("bg-blue-500", "text-white", "shadow-md");
-  };
-</script>
 
-<style>
-  .filter-btn {
-    @apply px-4 py-2 rounded bg-gradient-to-r from-blue-400 to-cyan-400 text-white transition hover:scale-105;
-  }
-</style>
-```
+      // III. New Features & Content Sections: Ask Chef AI (LLM Integration)
+      // ====================================================================
+      /**
+       * Shows the Ask Chef AI modal.
+       */
+      function showChefAIModal() {
+          const modal = document.getElementById('chefAIModal');
+          document.getElementById('chefAIResponse').textContent = 'Chef AI\'s advice will appear here...'; // Reset
+          document.getElementById('chefAIQueryInput').value = ''; // Clear input
+          modal.classList.add('show');
+          modal.style.display = 'flex';
+      }
 
+      /**
+       * Hides the Ask Chef AI modal.
+       */
+      function hideChefAIModal() {
+          const modal = document.getElementById('chefAIModal');
+          modal.classList.remove('show');
+          setTimeout(() => modal.style.display = 'none', 300);
+      }
+
+      /**
+       * Sends a query to the Gemini API (Chef AI) and displays the response.
+       * @param {string} queryText - The user's question for Chef AI.
+       */
+      async function sendChefAIQuery(queryText) {
+          if (!queryText.trim()) {
+              showNotification("Please enter your question for Chef AI.", "error");
+              return;
+          }
+
+          const chefAIResponseArea = document.getElementById('chefAIResponse');
+          const sendChefAIQueryBtn = document.getElementById('sendChefAIQueryBtn');
+          const chefAIQueryInput = document.getElementById('chefAIQueryInput');
+
+          chefAIResponseArea.textContent = 'Chef AI is thinking...';
+          sendChefAIQueryBtn.disabled = true;
+          sendChefAIQueryBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+          try {
+              let chatHistory = [];
+              chatHistory.push({ role: "user", parts: [{ text: `Act as a culinary expert and provide helpful advice. User question: ${queryText}` }] });
+
+              const payload = { contents: chatHistory };
+              const apiKey = ""; // Canvas will automatically provide the API key
+              const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+              const response = await fetch(apiUrl, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(payload)
+              });
+
+              const result = await response.json();
+              if (result.candidates && result.candidates.length > 0 &&
+                  result.candidates[0].content && result.candidates[0].content.parts &&
+                  result.candidates[0].content.parts.length > 0) {
+                  const aiResponse = result.candidates[0].content.parts[0].text;
+                  chefAIResponseArea.textContent = aiResponse;
+                  showNotification("Chef AI has responded!", "success");
+              } else {
+                  chefAIResponseArea.textContent = 'Chef AI could not provide a response.';
+                  showNotification("Failed to get Chef AI response.", "error");
+              }
+          } catch (error) {
+              console.error("Error sending Chef AI query:", error);
+              chefAIResponseArea.textContent = 'Error contacting Chef AI. Please try again later.';
+              showNotification(`Error: ${error.message}`, "error");
+          } finally {
+              sendChefAIQueryBtn.disabled = false;
+              sendChefAIQueryBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+              chefAIQueryInput.value = ''; // Clear input after sending
+          }
+      }
+
+      // III. New Features & Content Sections: Frequently Asked Questions (FAQ) Section
+      // ==============================================================================
+      /**
+       * Toggles the visibility of an accordion content.
+       * @param {string} faqId - The ID of the FAQ item to toggle.
+       */
+      function toggleAccordion(faqId) {
+          const content = document.getElementById(`${faqId}-content`);
+          const header = content.previousElementSibling; // The button is the previous sibling
+          const icon = header.querySelector('.accordion-icon');
+
+          if (content.classList.contains('hidden')) {
+              content.classList.remove('hidden');
+              content.style.maxHeight = content.scrollHeight + 'px'; // Animate height
+              header.setAttribute('aria-expanded', 'true');
+              icon.style.transform = 'rotate(180deg)'; // Rotate icon up
+          } else {
+              content.style.maxHeight = null; // Collapse
+              content.classList.add('hidden');
+              header.setAttribute('aria-expanded', 'false');
+              icon.style.transform = 'rotate(0deg)'; // Rotate icon down
+          }
+      }
+
+      // Initial render on page load
+      window.onload = () => {
+        // Use setTimeout with 0ms to ensure DOM is fully loaded and rendered before populating menu
+        setTimeout(() => {
+            filterMenu('all'); // Initialize with 'All' filter active and display menu
+            updateCartCount(); // Ensure cart count is 0 on load
+        }, 0);
+      };
+    </script>
   </body>
 </html>
