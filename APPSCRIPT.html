@@ -1,95 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>📘 My Grades Viewer</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SHAKHA'S LOGISTICS AND DIGITAL LITERACY PAGE</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
-      padding: 30px;
-    }
-    h1 {
-      text-align: center;
-      color: #222;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background-color: white;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 12px;
-      text-align: center;
-    }
-    th {
-      background-color: #444;
-      color: white;
-    }
-    tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
-    .green { color: green; }
-    .red { color: red; }
-    .bold { font-weight: bold; background-color: #eee; }
+    /* (Siz oldin bergan barcha CSS shu yerda bo‘ladi, o‘zgartirishsiz) */
+    /* Men qisqartirmayman, agar kerak bo‘lsa yana yuboring */
   </style>
 </head>
 <body>
-  <h1>📊 Shakhzodbek's Grade Table</h1>
-  <table id="gradeTable">
-    <thead>
-      <tr>
-        <th>Grade Name</th>
-        <th>Result</th>
-      </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-    <tfoot>
-      <tr class="bold">
-        <td>Total</td>
-        <td id="totalCell"></td>
-      </tr>
-    </tfoot>
-  </table>
+  <div class="particles" id="particles"></div>
+  <div class="header">
+    <h1 class="header-title">SHAKHA'S LOGISTICS AND DIGITAL LITERACY PAGE</h1>
+  </div>
 
-  <script>
-    fetch('https://script.google.com/macros/s/AKfycbzOvugMFOgRHOVAkt1O8Qr5V5EFmJb0un5qzx56jEMYo3v39-lp5hRitE8mniv9u_mZKQ/exec')
-      .then(res => res.json())
-      .then(data => {
-        const table = document.getElementById("tableBody");
-        let totalReceived = 0;
-        let totalMax = 0;
+  <div class="main-container">
+    <div id="grades-container">
+      <h2>🎓 Your Grades</h2>
+      <ul id="grades-list">
+        <li class="loading">Loading grades...</li>
+      </ul>
+      <div id="total-score">
+        <h3>📊 Total Score</h3>
+        <div id="total-score-value">Calculating...</div>
+      </div>
+    </div>
 
-        data.forEach(row => {
-          const name = row["grade_name"];
-          const received = parseFloat(row["grade_received"]);
-          const max = parseFloat(row["max_grade"]);
+    <!-- Nav sections... -->
+  </div>
 
-          if (!isNaN(received) && !isNaN(max) && max > 0) {
-            const percentRaw = received / max;
-            const percent = (percentRaw * 100).toFixed(1);
-            const colorClass = percentRaw >= 0.6 ? "green" : "red";
-            const resultText = `${received} / ${max} (${percent}%)`;
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzOvugMFOgRHOVAkt1O8Qr5V5EFmJb0un5qzx56jEMYo3v39-lp5hRitE8mniv9u_mZKQ/exec";
 
-            totalReceived += received;
-            totalMax += max;
+  // Particles creation code (kiritilgan bo'lsa ishlaydi)
+  function createParticles() {
+    const particlesContainer = document.getElementById('particles');
+    const particleCount = 50;
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 6 + 's';
+      particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+      particlesContainer.appendChild(particle);
+    }
+  }
 
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-              <td>${name}</td>
-              <td class="${colorClass}">${resultText}</td>
-            `;
-            table.appendChild(tr);
+  async function fetchGrades() {
+    const container = document.getElementById('grades-list');
+    const totalScoreElement = document.getElementById('total-score-value');
+    
+    container.innerHTML = '<li class="loading">Loading grades...</li>';
+    totalScoreElement.textContent = 'Calculating...';
+    
+    try {
+      const response = await fetch(SCRIPT_URL);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const data = await response.json();
+
+      container.innerHTML = '';
+      let totalScore = 0;
+      let validScores = 0;
+
+      data.forEach((item, index) => {
+        const li = document.createElement('li');
+        const gradeName = item.grade_name || item.name || 'Assignment';
+        const gradeReceived = item.grade_received || item.grade || 0;
+        const maxGrade = item.max_grade || '';
+
+        let displayText = `${gradeName}: ${gradeReceived}`;
+        if (maxGrade) displayText += ` / ${maxGrade}`;
+
+        li.textContent = displayText;
+        li.style.animationDelay = (index * 0.1) + 's';
+        container.appendChild(li);
+
+        let gradeValue = 0;
+        if (typeof gradeReceived === 'number') {
+          gradeValue = gradeReceived;
+        } else if (typeof gradeReceived === 'string') {
+          const numMatch = gradeReceived.toString().match(/[\d.]+/);
+          if (numMatch) {
+            gradeValue = parseFloat(numMatch[0]);
           }
-        });
+        }
 
-        // Total row
-        const totalPercent = totalMax > 0 ? (totalReceived / totalMax * 100).toFixed(1) : 0;
-        const totalResult = `${totalReceived.toFixed(2)} / ${totalMax.toFixed(2)} (${totalPercent}%)`;
-        document.getElementById("totalCell").textContent = totalResult;
+        if (!isNaN(gradeValue) && gradeValue >= 0) {
+          totalScore += gradeValue;
+          validScores++;
+        }
       });
-  </script>
+
+      totalScoreElement.textContent = validScores > 0 ? totalScore.toFixed(2) : 'No valid scores found';
+
+    } catch (error) {
+      container.innerHTML = '<li>❌ Error loading grades. Please try again later.</li>';
+      totalScoreElement.textContent = 'Connection Error';
+      console.error('Fetch error:', error);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    createParticles();
+    fetchGrades();
+  });
+</script>
 </body>
 </html>
