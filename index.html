@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SHAKHA'S LOGISTICS AND DIGITAL LITERACY PAGE</title>
     <style>
+      /* Sizning oldingi style qismingiz shu yerda o'zgarmaydi */
+      /* ... (style kodlaringizni shu yerda qoldiraman) ... */
+      /* To'liq style kodlaringizni quyida joylashtiraman */
       * {
         margin: 0;
         padding: 0;
@@ -422,7 +425,7 @@
 
     <!-- SCRIPT to fetch grades and create particles -->
     <script>
-      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzongyNzLarAU6Egj9lv-MgrAp6U2CcHj0M_ysTaXoZFAkgrBwDdHALaKLx9J0Hz2ZhKA/exec";
+      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxo7_AdhriotR_-tO7r48szGjBi7_XiEECO1hFFpuq0_ZmVJR1_GgqpDBmj3HQeDWEarA/exec";
 
       // Create animated particles
       function createParticles() {
@@ -434,91 +437,4 @@
           particle.className = 'particle';
           particle.style.left = Math.random() * 100 + '%';
           particle.style.animationDelay = Math.random() * 6 + 's';
-          particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
-          particlesContainer.appendChild(particle);
-        }
-      }
-
-      // Animate list items on load
-      function animateListItems() {
-        const listItems = document.querySelectorAll('#grades-list li');
-        listItems.forEach((item, index) => {
-          item.style.animationDelay = (index * 0.1) + 's';
-        });
-      }
-
-      async function fetchGrades() {
-        const container = document.getElementById('grades-list');
-        const totalScoreElement = document.getElementById('total-score-value');
-        
-        container.innerHTML = '<li class="loading">Loading grades...</li>';
-        totalScoreElement.textContent = 'Calculating...';
-        
-        try {
-          const response = await fetch(SCRIPT_URL);
-          if (!response.ok) throw new Error('Network response was not ok');
-          const data = await response.json();
-
-          console.log('Received data:', data);
-
-          container.innerHTML = '';
-          let totalScore = 0;
-          let validScores = 0;
-
-          data.forEach((student, index) => {
-            const li = document.createElement('li');
-            const gradeName = student.grade_name || student.name || 'Assignment';
-            const gradeReceived = student.grade_received || student.grade || 0;
-            const maxGrade = student.max_grade || '';
-            
-            let displayText = `${gradeName}: ${gradeReceived}`;
-            if (maxGrade) {
-              displayText += ` / ${maxGrade}`;
-            }
-            
-            li.textContent = displayText;
-            li.style.animationDelay = (index * 0.1) + 's';
-            container.appendChild(li);
-            
-            let gradeValue = 0;
-            
-            if (typeof gradeReceived === 'number') {
-              gradeValue = gradeReceived;
-            } else if (typeof gradeReceived === 'string') {
-              const numMatch = gradeReceived.toString().match(/[\d.]+/);
-              if (numMatch) {
-                gradeValue = parseFloat(numMatch[0]);
-              }
-            }
-            
-            if (!isNaN(gradeValue) && gradeValue >= 0) {
-              totalScore += gradeValue;
-              validScores++;
-            }
-            
-            console.log(`Assignment: ${gradeName}, Grade Received: ${gradeReceived}, Parsed: ${gradeValue}`);
-          });
-
-          if (validScores > 0) {
-            totalScoreElement.textContent = totalScore.toFixed(2);
-          } else {
-            totalScoreElement.textContent = 'No valid scores found';
-          }
-          
-          console.log(`Total Score: ${totalScore}, Valid Scores: ${validScores}`);
-          
-        } catch (error) {
-          container.innerHTML = '<li>❌ Error loading grades. Please try again later.</li>';
-          totalScoreElement.textContent = 'Connection Error';
-          console.error('Fetch error:', error);
-        }
-      }
-
-      // Initialize everything
-      document.addEventListener('DOMContentLoaded', function() {
-        createParticles();
-        fetchGrades();
-      });
-    </script>
-  </body>
-</html>
+          particle.style.animationDuration
