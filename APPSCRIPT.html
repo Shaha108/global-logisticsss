@@ -33,6 +33,7 @@
     }
     .green { color: green; }
     .red { color: red; }
+    .bold { font-weight: bold; background-color: #eee; }
   </style>
 </head>
 <body>
@@ -45,6 +46,12 @@
       </tr>
     </thead>
     <tbody id="tableBody"></tbody>
+    <tfoot>
+      <tr class="bold">
+        <td>Total</td>
+        <td id="totalCell"></td>
+      </tr>
+    </tfoot>
   </table>
 
   <script>
@@ -52,24 +59,36 @@
       .then(res => res.json())
       .then(data => {
         const table = document.getElementById("tableBody");
-        data.forEach(row => {
-          const tr = document.createElement("tr");
+        let totalReceived = 0;
+        let totalMax = 0;
 
+        data.forEach(row => {
           const name = row["grade_name"];
           const received = parseFloat(row["grade_received"]);
           const max = parseFloat(row["max_grade"]);
-          const percentRaw = max > 0 ? (received / max) : 0;
-          const percent = (percentRaw * 100).toFixed(1);
 
-          const resultText = `${received} / ${max} (${percent}%)`;
-          const colorClass = percentRaw >= 60 ? "green" : "red";
+          if (!isNaN(received) && !isNaN(max) && max > 0) {
+            const percentRaw = received / max;
+            const percent = (percentRaw * 100).toFixed(1);
+            const colorClass = percentRaw >= 0.6 ? "green" : "red";
+            const resultText = `${received} / ${max} (${percent}%)`;
 
-          tr.innerHTML = `
-            <td>${name}</td>
-            <td class="${colorClass}">${resultText}</td>
-          `;
-          table.appendChild(tr);
+            totalReceived += received;
+            totalMax += max;
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${name}</td>
+              <td class="${colorClass}">${resultText}</td>
+            `;
+            table.appendChild(tr);
+          }
         });
+
+        // Total row
+        const totalPercent = totalMax > 0 ? (totalReceived / totalMax * 100).toFixed(1) : 0;
+        const totalResult = `${totalReceived.toFixed(2)} / ${totalMax.toFixed(2)} (${totalPercent}%)`;
+        document.getElementById("totalCell").textContent = totalResult;
       });
   </script>
 </body>
