@@ -1,268 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCG Calculator | Feynman-Inspired Guide</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #4285F4;
-            --secondary: #34A853;
-            --dark: #202124;
-        }
-        body {
-            font-family: 'Roboto', sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background: #f9f9f9;
-            color: var(--dark);
-        }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 40px 0;
-            text-align: center;
-            border-radius: 0 0 20px 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            animation: fadeIn 1s ease-in-out;
-        }
-        h1 {
-            margin: 0;
-            font-size: 2.5rem;
-        }
-        h2 {
-            color: var(--primary);
-            border-bottom: 2px solid var(--primary);
-            padding-bottom: 8px;
-            margin-top: 40px;
-        }
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            margin: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s;
-            display: inline-block;
-        }
-        .btn:hover {
-            background: #3367D6;
-            transform: scale(1.05);
-        }
-        #grades-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            animation: slideIn 0.8s ease-out;
-        }
-        #grades-table th, #grades-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        #grades-table th {
-            background: var(--primary);
-            color: white;
-        }
-        #grades-table tr:nth-child(even) {
-            background: #f2f2f2;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes slideIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .highlight {
-            background: #E8F0FE;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-weight: 500;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>📘 My Grades Viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 30px;
+    }
+    h1 {
+      text-align: center;
+      color: #222;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: white;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 12px;
+      text-align: center;
+    }
+    th {
+      background-color: #444;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    .green { color: green; }
+    .red { color: red; }
+  </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>Google Apps Script: CCG Calculator</h1>
-            <p>A Feynman-inspired guide to automation</p>
-        </div>
-    </header>
+  <h1>📊 Shakhzodbek's Grade Table</h1>
+  <table id="gradeTable">
+    <thead>
+      <tr>
+        <th>Grade Name</th>
+        <th>Result</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
 
-    <div class="container">
-        <div class="card">
-            <h2>What is Google Apps Script?</h2>
-            <p><span class="highlight">GAS</span> is a JavaScript-based platform that lets you automate Google Workspace apps like Sheets, Docs, and Forms. It's like giving superpowers to your spreadsheets.</p>
-            <p><strong>Example:</strong> Fetch grades from Sheets → Calculate weighted averages → Display results here.</p>
-        </div>
+  <script>
+    fetch('https://script.google.com/macros/s/AKfycbzOvugMFOgRHOVAkt1O8Qr5V5EFmJb0un5qzx56jEMYo3v39-lp5hRitE8mniv9u_mZKQ/exec')
+      .then(res => res.json())
+      .then(data => {
+        const table = document.getElementById("tableBody");
+        data.forEach(row => {
+          const tr = document.createElement("tr");
 
-        <div class="card">
-            <h2>5Ws of GAS (Feynman Method)</h2>
-            <ul>
-                <li><strong>What:</strong> Cloud-based scripting for Google apps</li>
-                <li><strong>Why:</strong> Free, no servers, seamless integration</li>
-                <li><strong>Who:</strong> Educators, analysts, small businesses</li>
-                <li><strong>When:</strong> Quick automations (emails, calculations)</li>
-                <li><strong>How:</strong> Write code in script.google.com</li>
-            </ul>
-        </div>
+          const name = row["grade_name"];
+          const received = parseFloat(row["grade_received"]);
+          const max = parseFloat(row["max_grade"]);
+          const percentRaw = max > 0 ? (received / max) : 0;
+          const percent = (percentRaw * 100).toFixed(1);
 
-        <div class="card">
-            <h2>Creative Uses of GAS</h2>
-            <div style="columns: 2; gap: 20px;">
-                <ul>
-                    <li>Auto-grade assignments</li>
-                    <li>Generate PDF certificates</li>
-                    <li>Sync Sheets with Calendar</li>
-                </ul>
-                <ul>
-                    <li>Slack/Discord bots</li>
-                    <li>Custom API endpoints</li>
-                    <li>Data scraping tools</li>
-                </ul>
-            </div>
-        </div>
+          const resultText = `${received} / ${max} (${percent}%)`;
+          const colorClass = percentRaw >= 60 ? "green" : "red";
 
-        <div class="card">
-            <h2>Pros & Cons</h2>
-            <table width="100%">
-                <tr>
-                    <td width="50%" valign="top">
-                        <strong>👍 Pros</strong>
-                        <ul>
-                            <li>No infrastructure needed</li>
-                            <li>Instant Google integration</li>
-                            <li>Free tier available</li>
-                        </ul>
-                    </td>
-                    <td width="50%" valign="top">
-                        <strong>👎 Cons</strong>
-                        <ul>
-                            <li>6 min/day execution limit</li>
-                            <li>No proper debugging</li>
-                            <li>Can be slow</li>
-                        </ul>
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="card">
-            <h2>Live CCG Calculator</h2>
-            <p>Connected to your Google Sheet via Apps Script:</p>
-            <button class="btn" onclick="fetchGrades()">Load My Grades</button>
-            <table id="grades-table">
-                <thead>
-                    <tr>
-                        <th>Assignment</th>
-                        <th>Score</th>
-                        <th>Weight</th>
-                        <th>Weighted</th>
-                    </tr>
-                </thead>
-                <tbody id="grades-data">
-                    <!-- Data will appear here -->
-                </tbody>
-            </table>
-            <div id="ccg-result" style="font-size: 1.2rem; margin-top: 15px; font-weight: bold;"></div>
-        </div>
-
-        <div class="card">
-            <h2>How It Works</h2>
-            <p>The JavaScript code fetches data from your <span class="highlight">Google Apps Script endpoint</span>:</p>
-            <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto;">
-async function fetchGrades() {
-    const response = await fetch('YOUR_SCRIPT_URL');
-    const data = await response.json();
-    // Process and display grades...
-}</pre>
-            <p>Your GAS script processes the Sheet data and returns JSON:</p>
-            <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto;">
-function doGet() {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet();
-    const data = sheet.getRange("A2:D10").getValues();
-    return ContentService.createTextOutput(JSON.stringify(data));
-}</pre>
-        </div>
-    </div>
-
-    <script>
-        // Animate cards on scroll
-        const cards = document.querySelectorAll('.card');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = 1;
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, { threshold: 0.1 });
-
-        cards.forEach(card => {
-            card.style.opacity = 0;
-            card.style.transform = 'translateY(20px)';
-            card.style.transition = 'all 0.6s ease-out';
-            observer.observe(card);
+          tr.innerHTML = `
+            <td>${name}</td>
+            <td class="${colorClass}">${resultText}</td>
+          `;
+          table.appendChild(tr);
         });
-
-        // Fetch grades from your GAS endpoint
-        async function fetchGrades() {
-            try {
-                const response = await fetch('https://script.google.com/macros/s/AKfycbxo7_AdhriotR_-tO7r48szGjBi7_XiEECO1hFFpuq0_ZmVJR1_GgqpDBmj3HQeDWEarA/exec');
-                const data = await response.json();
-                
-                let tbody = document.getElementById('grades-data');
-                tbody.innerHTML = '';
-                let totalWeighted = 0;
-                let totalWeight = 0;
-                
-                data.forEach(row => {
-                    const [name, score, weight] = row;
-                    const weighted = score * (weight/100);
-                    totalWeighted += weighted;
-                    totalWeight += parseFloat(weight) || 0;
-                    
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${name}</td>
-                        <td>${score}</td>
-                        <td>${weight}%</td>
-                        <td>${weighted.toFixed(2)}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-                
-                const ccg = (totalWeighted / (totalWeight/100)).toFixed(2);
-                document.getElementById('ccg-result').innerHTML = `Your Current Course Grade: <span style="color: ${ccg >= 70 ? 'var(--secondary)' : '#EA4335'}">${ccg}</span>`;
-                
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Failed to load grades. Check console for details.');
-            }
-        }
-    </script>
+      });
+  </script>
 </body>
 </html>
