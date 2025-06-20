@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SHAKHA'S LOGISTICS AND DIGITAL LITERACY PAGE</title>
     <style>
-      /* Sizning oldingi style qismingiz shu yerda o'zgarmaydi */
-      /* ... (style kodlaringizni shu yerda qoldiraman) ... */
-      /* To'liq style kodlaringizni quyida joylashtiraman */
       * {
         margin: 0;
         padding: 0;
@@ -425,7 +422,7 @@
 
     <!-- SCRIPT to fetch grades and create particles -->
     <script>
-      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxo7_AdhriotR_-tO7r48szGjBi7_XiEECO1hFFpuq0_ZmVJR1_GgqpDBmj3HQeDWEarA/exec";
+      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxo7AdhriotR_-tO7r48szGjBi7_XiEECO1hFFpuq0_ZmVJR1_GgqpDBmj3HQeDWEarA/exec";
 
       // Create animated particles
       function createParticles() {
@@ -437,4 +434,75 @@
           particle.className = 'particle';
           particle.style.left = Math.random() * 100 + '%';
           particle.style.animationDelay = Math.random() * 6 + 's';
-          particle.style.animationDuration
+          particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+          particlesContainer.appendChild(particle);
+        }
+      }
+
+      // Animate list items on load
+      function animateListItems() {
+        const listItems = document.querySelectorAll('#grades-list li');
+        listItems.forEach((item, index) => {
+          item.style.animationDelay = (index * 0.1) + 's';
+          item.classList.add('slideIn');
+        });
+      }
+
+      // Fetch grades from Google Apps Script Web App
+      function fetchGrades() {
+        const gradesList = document.getElementById('grades-list');
+        const totalScoreValue = document.getElementById('total-score-value');
+
+        // Show loading message
+        gradesList.innerHTML = '<li class="loading">Loading grades...</li>';
+        totalScoreValue.textContent = 'Calculating...';
+
+        fetch(SCRIPT_URL)
+          .then(response => response.json())
+          .then(data => {
+            gradesList.innerHTML = ''; // Clear loading
+
+            if (!data || data.length === 0) {
+              gradesList.innerHTML = '<li>No grades found.</li>';
+              totalScoreValue.textContent = 'N/A';
+              return;
+            }
+
+            // Calculate total score
+            let total = 0;
+            let count = 0;
+
+            data.forEach((grade) => {
+              if (grade && grade.Grade !== undefined && grade.Grade !== "") {
+                total += Number(grade.Grade);
+                count++;
+                const li = document.createElement('li');
+                li.textContent = `${grade.Assignments} : ${grade.Grade}`;
+                gradesList.appendChild(li);
+              }
+            });
+
+            if (count === 0) {
+              totalScoreValue.textContent = "N/A";
+              return;
+            }
+
+            const average = (total / count).toFixed(3);
+            totalScoreValue.textContent = average;
+
+            animateListItems();
+          })
+          .catch(err => {
+            gradesList.innerHTML = '<li>Error loading grades. Please try again later.</li>';
+            totalScoreValue.textContent = 'Error';
+            console.error('Fetch error:', err);
+          });
+      }
+
+      window.onload = () => {
+        createParticles();
+        fetchGrades();
+      };
+    </script>
+  </body>
+</html>
